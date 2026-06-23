@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RENTAP XVII 2026 — Agi Idup, Agi Ngelaban</title>
+  <meta name="description" content="RENTAP XVII — Malaysian-German Sports & Culture Tournament. 26–27 September 2026 at Schulcampus Werderau, Nürnberg." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<header class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="#home" class="nav-logo" aria-label="RENTAP XVII home">
+      RENTAP<span>XVII</span>
+    </a>
+    <nav aria-label="Main navigation">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about">About</a></li>
+        <li><a href="#sports">Sports</a></li>
+        <li><a href="#schedule">Schedule</a></li>
+        <li><a href="#culture">Culture</a></li>
+        <li><a href="#info">Info</a></li>
+        <li><a href="#register" class="nav-cta">Register</a></li>
+      </ul>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="home" aria-label="Event introduction">
+  <div class="hero-photo" aria-hidden="true"></div>
+  <div class="hero-pattern" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <p class="hero-slogan" aria-label="Agi Idup, Agi Ngelaban — Still alive, still fighting">
+      Agi Idup, Agi Ngelaban
+    </p>
+    <h1 class="hero-title" id="heroTitle" aria-label="RENTAP XVII">
+      <span class="hero-letters" aria-hidden="true">
+        <span class="hl">R</span><span class="hl">E</span><span class="hl">N</span><span class="hl">T</span><span class="hl">A</span><span class="hl">P</span>
+      </span>
+      <span class="hero-edition">XVII</span>
+    </h1>
+    <p class="hero-sub">Malaysian–German Sports &amp; Culture Tournament</p>
+
+    <div class="hero-facts">
+      <div class="hero-fact">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>26 – 27 September 2026</span>
+      </div>
+      <div class="hero-fact">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>Schulcampus Werderau, Nürnberg</span>
+      </div>
+    </div>
+
+    <div class="countdown" role="timer" aria-label="Countdown to RENTAP XVII">
+      <div class="cd-unit"><span class="cd-num" id="cd-days">--</span><span class="cd-label">Days</span></div>
+      <div class="cd-sep" aria-hidden="true">:</div>
+      <div class="cd-unit"><span class="cd-num" id="cd-hours">--</span><span class="cd-label">Hours</span></div>
+      <div class="cd-sep" aria-hidden="true">:</div>
+      <div class="cd-unit"><span class="cd-num" id="cd-mins">--</span><span class="cd-label">Mins</span></div>
+      <div class="cd-sep" aria-hidden="true">:</div>
+      <div class="cd-unit"><span class="cd-num" id="cd-secs">--</span><span class="cd-label">Secs</span></div>
+    </div>
+
+    <div class="hero-ctas">
+      <a href="#register" class="btn btn-primary">Register as Player</a>
+      <a href="#register" class="btn btn-ghost">Become a Volunteer</a>
+    </div>
+  </div>
+  <a href="#about" class="hero-scroll" aria-label="Scroll to about section">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+  </a>
+</section>
+
+<!-- ===== DIVIDER STRIP ===== -->
+<div class="strip" aria-hidden="true">
+  <span>Earth Shaker</span><span>•</span>
+  <span>Agi Idup, Agi Ngelaban</span><span>•</span>
+  <span>Nürnberg 2026</span><span>•</span>
+  <span>RENTAP XVII</span><span>•</span>
+  <span>Earth Shaker</span><span>•</span>
+  <span>Agi Idup, Agi Ngelaban</span><span>•</span>
+  <span>Nürnberg 2026</span><span>•</span>
+  <span>RENTAP XVII</span><span>•</span>
+</div>
+
+<!-- ===== ABOUT ===== -->
+<section class="section" id="about">
+  <div class="container">
+    <span class="eyebrow">Our Story</span>
+    <h2 class="section-heading">The Legend of <em>Rentap</em></h2>
+    <div class="about-grid">
+      <div class="about-body">
+        <p>
+          <strong>Rentap</strong> was a legendary Iban warrior from Sarawak who led a fierce resistance
+          against Brooke Colonial rule in the mid-19th century. His name means
+          <em>"Shaker of Hearts"</em> — or <em>"Earth Shaker."</em>
+        </p>
+        <p>
+          After witnessing the inequality of his people and the disregard for their customs,
+          he led a revolution against the oppressors. History remembers him as a symbol of
+          <strong>Indigenous resistance and undying pride.</strong>
+        </p>
+        <p>
+          RENTAP XVII carries that spirit into Germany. It is not merely a sports tournament —
+          it is a declaration that the Malaysian community here is still alive, still fighting,
+          still proud.
+        </p>
+        <blockquote class="pull-quote">
+          "Let RENTAP XVII be a living tribute to that spirit — a reminder of pride,
+          resilience, courage, and the will to shake the hearts of the people."
+        </blockquote>
+      </div>
+      <div class="about-stats">
+        <div class="stat-block">
+          <span class="stat-num">17<span class="stat-suffix">th</span></span>
+          <span class="stat-label">Edition of RENTAP</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-num">9</span>
+          <span class="stat-label">Sports Categories</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-num">2</span>
+          <span class="stat-label">Days of Competition</span>
+        </div>
+        <div class="stat-block stat-block--gold">
+          <span class="stat-num">1</span>
+          <span class="stat-label">Community, One Spirit</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SPORTS ===== -->
+<section class="section section--dark" id="sports">
+  <div class="container">
+    <span class="eyebrow eyebrow--light">Competition</span>
+    <h2 class="section-heading section-heading--light">Nine Sports, <em>One Arena</em></h2>
+    <p class="section-desc section-desc--light">
+      Two days. Nine disciplines. Find your game, build your team, and compete for glory.
+    </p>
+    <ul class="sports-grid" role="list">
+      <li class="sport-card"><a href="sport.html?s=badminton" class="sport-card-link" aria-label="Badminton — view rules">
+        <div class="sport-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+        </div>
+        <span>Badminton</span>
+      </a></li>
+      <li class="sport-card"><a href="sport.html?s=basketball" class="sport-card-link" aria-label="Basketball — view rules">
+        <div class="sport-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93a10 10 0 0 1 14.14 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/></svg>
+        </div>
+        <span>Basketball</span>
+      </a></li>
+      <li class="sport-card"><a href="sport.html?s=football" class="sport-card-link" aria-label="Football — view rules">
+        <div class="sport-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <span>Football</span>
+      </a></li>
+      <li class="sport-card"><a href="sport.html?s=volleyball" class="sport-card-link" aria-label="Volleyball — view rules">
+        <div class="sport-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><path d="M2 12h20"/></svg>
+        </div>
+        <span>Volleyball</span>
+      </a></li>
+      <li class="sport-card"><a href="sport.html?s=touch-rugby" class="sport-card-link" aria-label="Touch Rugby — view rules">
+        <div class="sport-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="12" rx="10" ry="7"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+        </div>
+        <span>Touch Rugby</span>
+      </a></li>
+      <li class="sport-card"><a href="sport.html?s=netball" class="sport-card-link" aria-label="Netball — view rules">
+        <div class="sport-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+        </div>
+        <span>Netball</span>
+      </a></li>
+      <li class="sport-card"><a href="sport.html?s=track" class="sport-card-link" aria-label="Track — view rules">
+        <div class="sport-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <span>Track</span>
+      </a></li>
+      <li class="sport-card"><a href="sport.html?s=table-tennis" class="sport-card-link" aria-label="Table Tennis — view rules">
+        <div class="sport-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="10" rx="2"/><circle cx="7" cy="12" r="2"/><circle cx="17" cy="12" r="2"/></svg>
+        </div>
+        <span>Table Tennis</span>
+      </a></li>
+      <li class="sport-card sport-card--wide"><a href="sport.html?s=tug-of-war" class="sport-card-link" aria-label="Tug of War — view rules">
+        <div class="sport-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12h16M4 12l4-4M4 12l4 4M20 12l-4-4M20 12l-4 4"/></svg>
+        </div>
+        <span>Tug of War</span>
+      </a></li>
+    </ul>
+    <p class="sports-note">
+      Full rules, team sizes &amp; equipment requirements in the official Rulebook.
+      Match schedule confirmed by the Sports Team closer to the event.
+    </p>
+  </div>
+</section>
+
+<!-- ===== SCHEDULE ===== -->
+<section class="section" id="schedule">
+  <div class="container">
+    <span class="eyebrow">Itinerary</span>
+    <h2 class="section-heading">Weekend <em>Schedule</em></h2>
+    <div class="tabs" role="tablist" aria-label="Event schedule by day">
+      <button class="tab active" id="tab-sat" role="tab" aria-selected="true" aria-controls="panel-sat" onclick="switchTab('sat', this)">
+        Saturday · 26 Sep
+      </button>
+      <button class="tab" id="tab-sun" role="tab" aria-selected="false" aria-controls="panel-sun" onclick="switchTab('sun', this)">
+        Sunday · 27 Sep
+      </button>
+    </div>
+
+    <div class="tab-panel" id="panel-sat" role="tabpanel" aria-labelledby="tab-sat">
+      <ol class="timeline" aria-label="Saturday schedule">
+        <li class="tl-item">
+          <time class="tl-time" datetime="2026-09-26T08:00">08:00</time>
+          <div class="tl-node" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Players' Registration</h3>
+            <p>Check in at the registration desk and collect your tournament kit.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <time class="tl-time" datetime="2026-09-26T09:00">09:00</time>
+          <div class="tl-node" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Opening Ceremony</h3>
+            <p>Official launch of RENTAP XVII 2026.</p>
+          </div>
+        </li>
+        <li class="tl-item tl-item--highlight">
+          <time class="tl-time" datetime="2026-09-26T09:45">09:45</time>
+          <div class="tl-node tl-node--highlight" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Games Start</h3>
+            <p>Badminton · Basketball · Football · Volleyball · Touch Rugby · Netball · Track · Table Tennis · Tug of War</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <time class="tl-time" datetime="2026-09-26T10:30">10:30</time>
+          <div class="tl-node" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Bazaar Opens</h3>
+            <p>Malaysian street food and drinks stalls open for the day.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <time class="tl-time" datetime="2026-09-26T12:00">12:00</time>
+          <div class="tl-node" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Lunch Break</h3>
+            <p>Midday break. Bazaar remains open throughout.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <time class="tl-time" datetime="2026-09-26T13:30">13:30</time>
+          <div class="tl-node" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Games Resume</h3>
+            <p>All sporting competitions continue into the afternoon.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <time class="tl-time" datetime="2026-09-26T18:00">18:00</time>
+          <div class="tl-node" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Games End</h3>
+            <p>Day 1 competitions conclude. Rest up for tonight.</p>
+          </div>
+        </li>
+        <li class="tl-item tl-item--highlight">
+          <time class="tl-time" datetime="2026-09-26T20:00">20:00</time>
+          <div class="tl-node tl-node--highlight" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Malam Kebudayaan Begins</h3>
+            <p>Cultural night — traditional performances, live music, and community celebrations.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <time class="tl-time" datetime="2026-09-26T22:00">22:00</time>
+          <div class="tl-node" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Malam Kebudayaan Closes</h3>
+            <p>End of Day 1. See you tomorrow.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="tab-panel hidden" id="panel-sun" role="tabpanel" aria-labelledby="tab-sun">
+      <ol class="timeline" aria-label="Sunday schedule">
+        <li class="tl-item tl-item--highlight">
+          <time class="tl-time" datetime="2026-09-27T09:30">09:30</time>
+          <div class="tl-node tl-node--highlight" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Games &amp; Bazaar Open</h3>
+            <p>Badminton · Basketball · Football · Volleyball · Touch Rugby · Netball · Track · Table Tennis · Tug of War</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <time class="tl-time" datetime="2026-09-27T13:45">13:45</time>
+          <div class="tl-node" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Bazaar Closes</h3>
+            <p>Food stalls wrap up. Final games underway.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <time class="tl-time" datetime="2026-09-27T14:00">14:00</time>
+          <div class="tl-node" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Games End</h3>
+            <p>All Day 2 competitions conclude.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <time class="tl-time" datetime="2026-09-27T14:30">14:30</time>
+          <div class="tl-node" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Closing Ceremony</h3>
+            <p>Official closing of RENTAP XVII 2026.</p>
+          </div>
+        </li>
+        <li class="tl-item tl-item--highlight">
+          <time class="tl-time" datetime="2026-09-27T14:40">14:40</time>
+          <div class="tl-node tl-node--highlight" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>Prize Giving</h3>
+            <p>Trophies and awards presented to winners across all nine sports categories.</p>
+          </div>
+        </li>
+        <li class="tl-item">
+          <time class="tl-time" datetime="2026-09-27T16:00">16:00</time>
+          <div class="tl-node" aria-hidden="true"></div>
+          <div class="tl-body">
+            <h3>RENTAP XVII Officially Ends</h3>
+            <p>Until RENTAP XVIII — Agi Idup, Agi Ngelaban.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CULTURE ===== -->
+<section class="section section--dark" id="culture">
+  <div class="container">
+    <span class="eyebrow eyebrow--light">More Than Sports</span>
+    <h2 class="section-heading section-heading--light">Culture &amp; <em>Community</em></h2>
+    <div class="culture-grid">
+      <div class="culture-card">
+        <div class="culture-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h18v3H3zM3 6l2 15h14L21 6"/><path d="M8 11h8M8 15h5"/></svg>
+        </div>
+        <h3>Food Bazaar</h3>
+        <p>
+          An authentic Malaysian street food bazaar runs alongside the tournament all weekend.
+          <em>Nasi lemak, satay, teh tarik</em>, and more — alongside local German classics.
+        </p>
+      </div>
+      <div class="culture-card">
+        <div class="culture-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        </div>
+        <h3>Malam Kebudayaan</h3>
+        <p>
+          Saturday night becomes a cultural showcase — traditional Malaysian performances,
+          live music, dancing, and community celebration running until 10 PM.
+        </p>
+      </div>
+      <div class="culture-card">
+        <div class="culture-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3>The Society</h3>
+        <p>
+          RENTAP is organised by a registered Malaysian community e.V. in Germany.
+          We welcome permanent members who share our love for culture and community spirit
+          beyond the event.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== REGISTER ===== -->
+<section class="section section--register" id="register">
+  <div class="container">
+    <span class="eyebrow eyebrow--light">Join Us</span>
+    <h2 class="section-heading section-heading--light">Sign Up for <em>RENTAP XVII</em></h2>
+    <div class="register-grid">
+      <div class="reg-card">
+        <div class="reg-card-top">
+          <span class="reg-tag">Player</span>
+          <h3>Compete</h3>
+          <p>Register individually or as a team, choose your sport, and play for glory.</p>
+        </div>
+        <ul class="reg-list" aria-label="Player registration includes">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Individual or team registration
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Tournament jersey included
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Meals during the event
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Participant insurance covered
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Early-bird pricing available
+          </li>
+        </ul>
+        <button class="btn btn-primary reg-btn" onclick="openModal('player')">Player Registration</button>
+      </div>
+
+      <div class="reg-card reg-card--alt">
+        <div class="reg-card-top">
+          <span class="reg-tag reg-tag--alt">Volunteer</span>
+          <h3>Serve</h3>
+          <p>Be part of the team behind the tournament. Free sign-up, big impact.</p>
+        </div>
+        <ul class="reg-list" aria-label="Volunteer registration includes">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Free registration
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Roles: referee, food helper, setup crew
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Exclusive volunteer t-shirt
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Free meals throughout the event
+          </li>
+        </ul>
+        <button class="btn btn-outline reg-btn" onclick="openModal('volunteer')">Volunteer Sign-Up</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRACTICAL INFO ===== -->
+<section class="section" id="info">
+  <div class="container">
+    <span class="eyebrow">Getting There</span>
+    <h2 class="section-heading">Practical <em>Information</em></h2>
+    <div class="info-grid">
+      <div class="info-col">
+        <h3 class="info-heading">Venue</h3>
+        <address class="venue-address">
+          Mittelschule Nürnberg<br>
+          Schulcampus Werderau<br>
+          Maiacher Straße 6<br>
+          90441 Nürnberg, Germany
+        </address>
+        <div class="map-wrap">
+          <iframe
+            title="RENTAP XVII venue — Schulcampus Werderau, Nürnberg"
+            src="https://maps.google.com/maps?q=Maiacher+Stra%C3%9Fe+6,+90441+N%C3%BCrnberg&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            aria-label="Google Maps showing Schulcampus Werderau, Nürnberg">
+          </iframe>
+        </div>
+      </div>
+      <div class="info-col">
+        <h3 class="info-heading">Getting There</h3>
+        <div class="travel-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="8" width="20" height="12" rx="2"/><path d="M6 8V6a6 6 0 0 1 12 0v2"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+          <div>
+            <strong>Public Transport</strong>
+            <p>Take U-Bahn or bus to the Werderau area. Check the VGN app for live routes from Nürnberg Hbf.</p>
+          </div>
+        </div>
+        <div class="travel-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><path d="M5 22v-2M19 22v-2"/></svg>
+          <div>
+            <strong>By Car</strong>
+            <p>Parking is available at the Schulcampus Werderau grounds. Follow on-site signage on the day.</p>
+          </div>
+        </div>
+        <h3 class="info-heading" style="margin-top: 2rem;">Accommodation</h3>
+        <p style="color: var(--text-muted); line-height: 1.7;">
+          Travelling from outside Nürnberg? We recommend hotels and hostels in the city centre,
+          which are well connected to the venue by public transport.
+        </p>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <h3 class="faq-heading">Frequently Asked Questions</h3>
+    <dl class="faq-list" aria-label="Frequently asked questions">
+      <div class="faq-item">
+        <dt>
+          <button class="faq-btn" aria-expanded="false" onclick="toggleFaq(this)">
+            Can I register individually without a full team?
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </dt>
+        <dd class="faq-answer" hidden>
+          Yes — individual registrations are accepted for applicable sports. Details on team formation will be in the registration form.
+        </dd>
+      </div>
+      <div class="faq-item">
+        <dt>
+          <button class="faq-btn" aria-expanded="false" onclick="toggleFaq(this)">
+            What does the entry fee cover?
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </dt>
+        <dd class="faq-answer" hidden>
+          Your entry fee covers a tournament jersey, meals during the event, and participant insurance for the full duration of the tournament.
+        </dd>
+      </div>
+      <div class="faq-item">
+        <dt>
+          <button class="faq-btn" aria-expanded="false" onclick="toggleFaq(this)">
+            What happens if it rains?
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </dt>
+        <dd class="faq-answer" hidden>
+          Most sports venues at the Schulcampus have indoor facilities. Any schedule adjustments due to weather will be announced on the day by the organising committee.
+        </dd>
+      </div>
+      <div class="faq-item">
+        <dt>
+          <button class="faq-btn" aria-expanded="false" onclick="toggleFaq(this)">
+            Are lockers available at the venue?
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </dt>
+        <dd class="faq-answer" hidden>
+          Limited storage space may be available. We recommend bringing only what you need for the day.
+        </dd>
+      </div>
+      <div class="faq-item">
+        <dt>
+          <button class="faq-btn" aria-expanded="false" onclick="toggleFaq(this)">
+            Can I attend as a spectator?
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </dt>
+        <dd class="faq-answer" hidden>
+          Spectators are welcome! Entry details for non-participants will be announced closer to the event.
+        </dd>
+      </div>
+      <div class="faq-item">
+        <dt>
+          <button class="faq-btn" aria-expanded="false" onclick="toggleFaq(this)">
+            Will there be photos and video taken at the event?
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </dt>
+        <dd class="faq-answer" hidden>
+          Yes. By attending RENTAP XVII you consent to being photographed or filmed. Full details in our <a href="agb.html">AGB (Terms &amp; Conditions)</a>.
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<!-- ===== SPONSORS ===== -->
+<section class="section section--dark" id="sponsors">
+  <div class="container container--center">
+    <span class="eyebrow eyebrow--light">Partners</span>
+    <h2 class="section-heading section-heading--light">Sponsors &amp; <em>Partners</em></h2>
+    <p class="section-desc section-desc--light">
+      Interested in supporting RENTAP XVII? Partner with the biggest Malaysian
+      community event in Germany and put your brand in front of our community.
+    </p>
+    <div class="sponsor-grid" aria-label="Sponsor logos">
+      <div class="sponsor-slot">Your Brand Here</div>
+      <div class="sponsor-slot">Your Brand Here</div>
+      <div class="sponsor-slot">Your Brand Here</div>
+      <div class="sponsor-slot">Your Brand Here</div>
+    </div>
+    <a href="mailto:rentap@example.com" class="btn btn-ghost" style="margin-top: 2.5rem;">
+      Become a Sponsor
+    </a>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">RENTAP<span>XVII</span></div>
+        <p class="footer-tagline">"Agi Idup, Agi Ngelaban"<br><em>Still alive, still fighting.</em></p>
+        <p class="footer-meta">26–27 September 2026 · Nürnberg, Germany</p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="#about">About RENTAP</a></li>
+          <li><a href="#sports">Sports Categories</a></li>
+          <li><a href="#schedule">Schedule</a></li>
+          <li><a href="#culture">Culture &amp; Bazaar</a></li>
+          <li><a href="#register">Register</a></li>
+          <li><a href="#info">Practical Info</a></li>
+        </ul>
+      </nav>
+      <nav class="footer-nav" aria-label="Legal links">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="impressum.html">Impressum</a></li>
+          <li><a href="datenschutz.html">Datenschutzerklärung</a></li>
+          <li><a href="agb.html">AGB (Terms &amp; Conditions)</a></li>
+        </ul>
+        <h4 style="margin-top: 1.5rem;">Contact</h4>
+        <ul>
+          <li><a href="mailto:rentap@example.com">rentap@example.com</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 RENTAP XVII. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="impressum.html">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+        <a href="agb.html">AGB</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== REGISTRATION MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-label="Registration form" hidden>
+  <div class="modal" id="modalBox">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close registration form">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+
+    <div id="form-player" class="modal-pane">
+      <h2>Player Registration</h2>
+      <p>Registration opens soon. Leave your details and we'll notify you when sign-ups go live.</p>
+      <form onsubmit="submitForm(event)" novalidate>
+        <div class="form-field">
+          <label for="p-name">Full Name</label>
+          <input id="p-name" type="text" required placeholder="Your full name" autocomplete="name" />
+        </div>
+        <div class="form-field">
+          <label for="p-email">Email Address</label>
+          <input id="p-email" type="email" required placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="form-field">
+          <label for="p-sport">Sport Category</label>
+          <select id="p-sport" required>
+            <option value="">Select a sport…</option>
+            <option>Badminton</option>
+            <option>Basketball</option>
+            <option>Football</option>
+            <option>Volleyball</option>
+            <option>Touch Rugby</option>
+            <option>Netball</option>
+            <option>Track</option>
+            <option>Table Tennis</option>
+            <option>Tug of War</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="p-team">Team Name <span class="optional">(optional)</span></label>
+          <input id="p-team" type="text" placeholder="Your team name" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Notify Me When Registration Opens</button>
+      </form>
+    </div>
+
+    <div id="form-volunteer" class="modal-pane" hidden>
+      <h2>Volunteer Sign-Up</h2>
+      <p>Join the team that makes RENTAP XVII happen. Free sign-up — meals and t-shirt included.</p>
+      <form onsubmit="submitForm(event)" novalidate>
+        <div class="form-field">
+          <label for="v-name">Full Name</label>
+          <input id="v-name" type="text" required placeholder="Your full name" autocomplete="name" />
+        </div>
+        <div class="form-field">
+          <label for="v-email">Email Address</label>
+          <input id="v-email" type="email" required placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="form-field">
+          <label for="v-role">Preferred Role</label>
+          <select id="v-role" required>
+            <option value="">Select a role…</option>
+            <option>Referee</option>
+            <option>Food Stall Helper</option>
+            <option>Setup Crew</option>
+            <option>Registration Desk</option>
+            <option>General Assistant</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Submit My Interest</button>
+      </form>
+    </div>
+
+    <div id="form-success" class="modal-pane modal-success" hidden>
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <h2>You're on the list!</h2>
+      <p>Thanks for your interest in RENTAP XVII. We'll be in touch with registration details soon.</p>
+      <button class="btn btn-primary" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

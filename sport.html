@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rules — RENTAP XVII</title>
+  <meta name="description" content="Rules and regulations for RENTAP XVII sports categories." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    .sport-hero {
+      padding-top: calc(var(--nav-h) + 3.5rem);
+      padding-bottom: 3rem;
+      background: var(--ink);
+      position: relative;
+      overflow: hidden;
+    }
+    .sport-hero-pattern {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cpolygon points='30,4 56,30 30,56 4,30' stroke='%23A8200D' stroke-width='0.8' opacity='0.2'/%3E%3Cpolygon points='30,14 46,30 30,46 14,30' stroke='%23C8922A' stroke-width='0.5' opacity='0.15'/%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+    .sport-hero-pattern::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 20%, var(--ink) 85%);
+    }
+    .sport-hero-inner {
+      position: relative;
+      z-index: 1;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      color: var(--text-muted);
+      font-size: .9rem;
+      margin-bottom: 2rem;
+      transition: color 200ms;
+    }
+    .back-link:hover { color: var(--light); }
+    .sport-icon-lg {
+      width: 4rem;
+      height: 4rem;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .sport-icon-lg svg { width: 100%; height: 100%; }
+    .sport-title {
+      font-family: var(--display);
+      font-size: clamp(3rem, 8vw, 6rem);
+      letter-spacing: .06em;
+      color: var(--light);
+      line-height: 1;
+      margin-bottom: .5rem;
+    }
+    .sport-subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    /* Quick-info chips */
+    .sport-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      margin-top: 1.5rem;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .35rem .85rem;
+      background: rgba(200,146,42,.1);
+      border: 1px solid rgba(200,146,42,.25);
+      border-radius: 999px;
+      font-size: .82rem;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: .03em;
+    }
+    .chip svg { flex-shrink: 0; }
+
+    /* Rules body */
+    .rules-body { padding-block: clamp(3rem, 6vw, 5rem); }
+    .rules-col { max-width: 820px; }
+
+    .rules-section { margin-bottom: 3rem; }
+    .rules-section-title {
+      font-family: var(--display);
+      font-size: 1.5rem;
+      letter-spacing: .06em;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+      padding-bottom: .6rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .rules-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .7rem;
+    }
+    .rules-list li {
+      display: flex;
+      gap: .75rem;
+      align-items: flex-start;
+      color: var(--text);
+      font-size: .95rem;
+      line-height: 1.7;
+    }
+    .rules-list li::before {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--red);
+      flex-shrink: 0;
+      margin-top: .55rem;
+    }
+    .rules-list li strong { color: var(--light); }
+
+    .rules-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: .75rem;
+      font-size: .9rem;
+    }
+    .rules-table th {
+      background: rgba(200,146,42,.1);
+      color: var(--gold);
+      font-weight: 700;
+      text-align: left;
+      padding: .6rem .85rem;
+      border: 1px solid var(--border);
+      font-size: .8rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .rules-table td {
+      padding: .55rem .85rem;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .rules-table tr:nth-child(even) td { background: rgba(255,255,255,.02); }
+
+    .pic-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background: rgba(168,32,13,.08);
+      border: 1px solid rgba(168,32,13,.2);
+      border-radius: var(--radius-lg);
+      margin-top: 2rem;
+    }
+    .pic-card svg { color: var(--red); flex-shrink: 0; }
+    .pic-card p { color: var(--text-muted); font-size: .88rem; max-width: none; margin: 0; }
+    .pic-card strong { color: var(--light); display: block; margin-bottom: .1rem; }
+
+    #sport-not-found { display: none; text-align: center; padding: 4rem 0; }
+    #sport-not-found h2 { font-family: var(--display); font-size: 2rem; color: var(--light); margin-bottom: .75rem; }
+    #sport-not-found p { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<header class="navbar scrolled" id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">RENTAP<span>XVII</span></a>
+    <nav aria-label="Main navigation">
+      <ul class="nav-links">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#sports">Sports</a></li>
+        <li><a href="index.html#schedule">Schedule</a></li>
+        <li><a href="index.html#register" class="nav-cta">Register</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="sport-hero" id="sportHero">
+  <div class="sport-hero-pattern" aria-hidden="true"></div>
+  <div class="container sport-hero-inner">
+    <a href="index.html#sports" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      All Sports
+    </a>
+    <div class="sport-icon-lg" id="heroIcon" aria-hidden="true"></div>
+    <h1 class="sport-title" id="sportTitle">—</h1>
+    <p class="sport-subtitle" id="sportSubtitle">RENTAP XVII · Rules &amp; Regulations</p>
+    <div class="sport-chips" id="sportChips"></div>
+  </div>
+</section>
+
+<!-- RULES BODY -->
+<main class="rules-body">
+  <div class="container">
+    <div class="rules-col" id="rulesContent"></div>
+    <div id="sport-not-found">
+      <h2>Sport Not Found</h2>
+      <p>We couldn't find rules for this sport. <a href="index.html#sports">Go back to sports.</a></p>
+    </div>
+  </div>
+</main>
+
+<footer class="footer" style="margin-top:0;">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0;">
+      <p>© 2026 RENTAP XVII. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="impressum.html">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+        <a href="agb.html">AGB</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── SPORT DATA ────────────────────────────────
+const SPORTS = {
+  football: {
+    name: 'Football',
+    subtitle: 'Men\'s · Half-Field · 9v9',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+    chips: ['Men Only', '13 Players (9+4 subs)', 'Half-Field Pitch', 'Max 10 Teams'],
+    pic: { name: 'Muhammad Haziq', phone: '+49 176 26791278' },
+    sections: [
+      {
+        title: 'General Rules',
+        rules: [
+          'Men-only teams. 13 players per squad: 9 field players + 4 substitutes.',
+          'Played on a half-field grass pitch with rolling substitutions.',
+          'Limited to 8 Malaysian teams + 2 International teams (Malaysians prioritised).',
+          'Max. 2 international players per Malaysian-majority team; only 1 on the field at the same time.',
+          'Each team must provide a referee and two linesmen.',
+          'A player may only play for one team. Metal-studded boots (6-stud / SG-boots) are not allowed.',
+        ]
+      },
+      {
+        title: 'Match Format & Duration',
+        table: {
+          headers: ['Stage', 'First Half', 'Interval', 'Second Half', 'Total Match Time', 'Time Slot'],
+          rows: [
+            ['Group Stage', '10 min', '2 min', '10 min', '22 min', '35 min'],
+            ['Semi-finals & Final', '15 min', '3 min', '15 min', '33 min', '45 min'],
+          ]
+        }
+      },
+      {
+        title: 'Scoring System',
+        rules: [
+          'Group Stage: Teams divided into two groups (A & B). Win = 3 pts, Draw = 1 pt, Loss = 0 pts.',
+          'Tie-breakers in order: Head-to-head result → Goal difference → Goals scored → Penalty shoot-out (5 kicks).',
+          'Four teams from each group advance to the quarter-finals.',
+          'Knockout draws and finals: if level after 90 min, penalty shoot-out (5 kicks). No extra time.',
+        ]
+      },
+      {
+        title: 'Key Playing Rules',
+        rules: [
+          'Game started by coin flip. Winning team chooses direction of play; opposing team takes kick-off.',
+          'Clock does NOT stop during play. Injured players must be substituted out and treated off the field.',
+          'If a team is unavailable within 5 minutes of scheduled kick-off, the game is forfeited 3–0.',
+          'Goalkeepers have 6 seconds to handle the ball in their penalty box. No direct back passes to keeper.',
+          'Direct free kick offences include: kicking, tripping, jumping at, charging, striking, pushing, tackling an opponent, or handball.',
+          'Penalty kick awarded if a direct free kick offence is committed inside the penalty area.',
+        ]
+      },
+      {
+        title: 'Referee',
+        rules: [
+          'Referees may warn or eject players who bring the game into disrepute.',
+          'Referees may play advantage if a team is not negatively affected by an offence.',
+          'The referee\'s decision is final.',
+          'Each team must provide players to serve as referee and two linesmen.',
+        ]
+      }
+    ]
+  },
+
+  badminton: {
+    name: 'Badminton',
+    subtitle: 'Singles & Doubles · 5 Categories',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>`,
+    chips: ["Women's Single", "Men's Single", "Women's Doubles", "Men's Doubles", "Mixed Doubles", 'Max 16 per Category'],
+    pic: { name: 'Thasarathakumar', phone: '+49 176 58657148' },
+    sections: [
+      {
+        title: 'General Rules',
+        rules: [
+          "Five categories: Women's Single (WS), Men's Single (MS), Women's Doubles (WD), Men's Doubles (MD), Mixed Doubles (XD).",
+          'Maximum 16 players/pairs per category.',
+          'International players are allowed in WS, WD, and XD. MS and MD are strictly for Malaysians.',
+          'Shuttlecocks are provided by the committee. Players must bring their own racquet.',
+          'Minimum 4 teams/players required per category; otherwise the category may be adjusted or cancelled.',
+        ]
+      },
+      {
+        title: 'Tournament Format',
+        rules: [
+          'Group Stage: Teams divided into Group A and Group B. Each team plays every other team in their group (Round-Robin).',
+          'Points: Win = 2 pts, Loss = 0 pts.',
+          'Top-performing teams from each group advance to the Knockout Stage.',
+          'Knockout Stage: Single-elimination until a winner is determined.',
+        ]
+      },
+      {
+        title: 'Match Rules',
+        rules: [
+          'All singles and doubles matches are best-of-3 games.',
+          'First player/team to score 21 points wins a game.',
+          'First to win 2 out of 3 games wins the match.',
+          'All games are scored and refereed by an official appointed by the RENTAP XVII committee.',
+          'Linesmen will be represented by players not currently in a match.',
+        ]
+      }
+    ]
+  },
+
+  basketball: {
+    name: 'Basketball',
+    subtitle: 'Mixed · Half Court · 3v3',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93a10 10 0 0 1 14.14 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/></svg>`,
+    chips: ['Mixed Category', 'Half Court', 'GM7 Ball', '3 Field Players', '2 Substitutes'],
+    pic: { name: 'Jiann Ynan', phone: '+49 176 34188878' },
+    sections: [
+      {
+        title: 'General Rules',
+        rules: [
+          'Mixed category (men and women). Played on a half court with a GM7 ball.',
+          'Team roster: min. 3 and max. 5 players (3 field players + 2 substitutes). At any time, 3 players are on court.',
+          'No limitation on the number of international players per team.',
+          'Substitutions permitted when the ball becomes dead prior to a check-ball or free throw.',
+        ]
+      },
+      {
+        title: 'Scoring',
+        rules: [
+          '1 point for every successful shot inside the 3-point line.',
+          '2 points for every successful shot from behind the 3-point line.',
+          '1 point for every successful free throw.',
+          'Score limit for regular playing time: 21 points.',
+        ]
+      },
+      {
+        title: 'Playing Time',
+        rules: [
+          'Regular time: 7-1-7 format (two 7-minute halves with a 1-minute interval). Clock stops when the ball becomes dead.',
+          'Overtime: 1-minute rest, then first team to score 3 points wins. Team winning the coin-flip starts offensively.',
+        ]
+      },
+      {
+        title: 'Fixtures',
+        rules: [
+          'League stage: Round-Robin. Win = 3 pts, Draw = 1 pt, Loss = 0 pts. Top 2 teams per group advance.',
+          'Knockout: Semi-Final 1, Semi-Final 2, 3rd/4th place match (TBD), Final.',
+        ]
+      },
+      {
+        title: 'Fouls & Violations',
+        rules: [
+          'Foul limit per team: 5.',
+          'Dribbling / travelling violation → Change of possession (check-ball).',
+          'Contact foul → Change of possession (check-ball).',
+          'Technical foul → 1 free throw + change of possession.',
+          'Unsportsmanlike foul → 2 free throws + change of possession. Player disqualified after 2 unsportsmanlike fouls.',
+          'Shooting foul → 1 free throw (inside arc) or 2 free throws (behind arc).',
+          'After 5 team fouls: 1 free throw + change of possession for every subsequent foul.',
+        ]
+      }
+    ]
+  },
+
+  volleyball: {
+    name: 'Volleyball',
+    subtitle: 'Mixed · 6v6 · FIVB Rules',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><path d="M2 12h20"/></svg>`,
+    chips: ['Mixed Gender', 'Max 8 Teams', '6 Field + 3 Subs', 'Net: 2.40m'],
+    pic: { name: 'Liq Hua Kang', phone: '+49 176 87191288' },
+    sections: [
+      {
+        title: 'General Rules',
+        rules: [
+          'Maximum 8 mixed-gender teams; min. 6 and max. 9 players per team (6 field + max. 3 substitutes).',
+          'Teams must consist primarily of Malaysians. Max. 2 international players per team, with only 1 on the court at any time.',
+          'Libero (if used) must wear a contrasting outfit. Net height: 2.40 metres.',
+          'Each team is encouraged to bring their own ball.',
+          'Any rule violation results in a point awarded to the opponent.',
+        ]
+      },
+      {
+        title: 'Scoring System',
+        rules: [
+          'Preliminary Group Stage (Day 1): Set won by first team to reach 15 points (best-of-3).',
+          'Group Stage points: 2–0 win = 3 pts, 2–1 win = 2 pts, 1–2 loss = 1 pt, 0–2 or forfeit = 0 pts.',
+          'Knockout Stage (Day 2): Sets won by first team to reach 25 pts (1st & 2nd sets) or 15 pts (3rd set), best-of-3.',
+          'Group placement determined by: accumulated points → win/loss ratio → number of sets won.',
+        ]
+      },
+      {
+        title: 'Gameplay',
+        rules: [
+          'Coin toss before each game; winner chooses to serve/receive and side of court.',
+          'A starting player may leave and re-enter the game, but only once per set.',
+          'Touching or holding the net is not permitted.',
+          'When the receiving team gains the right to serve, players rotate one position clockwise.',
+        ]
+      },
+      {
+        title: 'Officials',
+        rules: [
+          'Games refereed by officials appointed by the RENTAP XVII committee.',
+          'General FIVB volleyball rules apply.',
+          'Officials: 1st & 2nd Referee, 2 Linesmen, 1 Scorekeeper.',
+          'Each team must be ready to provide the 2nd Referee and 2 Linesmen if required.',
+          'The Referee\'s decision is final.',
+        ]
+      }
+    ]
+  },
+
+  'touch-rugby': {
+    name: 'Touch Rugby',
+    subtitle: 'Mixed · 6v6 · 60m × 50m Pitch',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="12" rx="10" ry="7"/><line x1="2" y1="12" x2="22" y2="12"/></svg>`,
+    chips: ['Mixed Gender', 'Min 6 on Field', 'Max 10 per Squad', 'Rolling Subs', '6 Touches'],
+    pic: { name: 'Aniq Danial', phone: '+49 152 51410145' },
+    sections: [
+      {
+        title: 'General Rules',
+        rules: [
+          'Pitch: 60 metres long (try zone to try zone) × 50 metres wide. Try Area is 5 metres long.',
+          'Min. 6 players on the field at any time. Min. 4 players required for match to commence. Teams may have up to 10 players.',
+          'Mixed teams: Tries scored by female players are worth 2 points each (standard tries = 1 point).',
+          'Max. 2 international players per team; only 1 on the field at the same time.',
+          'Rolling substitutions allowed throughout; no need to halt play.',
+        ]
+      },
+      {
+        title: 'Gameplay',
+        rules: [
+          'Kick-off: Game starts with a tap at the halfway line. Defence must be on/behind their 10-metre line and may only move forward after the tap.',
+          'The attacking team moves forward and may pass the ball backwards to score a try.',
+          'Once the ball carrier is touched, attackers must immediately perform a rollball at the mark. Defence retreats 7 metres (10 for penalties).',
+          'You may NOT pass the ball after being touched. Change of possession happens after 6 touches.',
+          'After a try is scored, the game restarts with a tap at the halfway line.',
+        ]
+      },
+      {
+        title: 'Touch & Rollball',
+        rules: [
+          'A touch is contact with any part of the body, ball, clothing, or hair. Minimum force must be used at all times.',
+          'After a touch, all defending players must retire 7 metres from the mark.',
+          'The Dummy Half picks up the ball after a rollball. If the Dummy Half is touched while in possession, the attacking team loses possession. A Dummy Half cannot score.',
+          'Falsely calling a touch results in a penalty.',
+        ]
+      },
+      {
+        title: 'Loss of Possession',
+        rules: [
+          'Ball dropped to the ground.',
+          'Dummy Half touched while in possession.',
+          'The 6th touch occurs.',
+          'Dummy Half places ball on or over the score line.',
+          'Player in possession steps on or over the boundary.',
+        ]
+      },
+      {
+        title: 'Penalties & Misconduct',
+        rules: [
+          'Penalty infringements: Forward pass, touch-and-pass, rollball off the mark, offside, incorrect substitution, obstruction, deliberate delay.',
+          'When penalised: non-offending team restarts with a tap; defending team retires 10 metres.',
+          'Misconduct includes: continual rule breaches, swearing, back-chatting officials, fighting, using physical force, intentional tripping.',
+          'Foul play may result in penalty, sin bin, or dismissal for the remainder of the match.',
+          'Extra Time: If a winner is required, teams drop to 4 players per side and play 2 mins. Golden ball applies if still tied.',
+        ]
+      }
+    ]
+  },
+
+  netball: {
+    name: 'Netball',
+    subtitle: '3v3 Women\'s · League Format',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>`,
+    chips: ["Women's 3v3", 'Max 6 Teams', '3 Players + 2 Subs', '5–2–5 Duration', 'Open to All Nationalities'],
+    pic: { name: 'Iqma Nadhirah', phone: '+49 176 65930506' },
+    sections: [
+      {
+        title: 'General Rules',
+        rules: [
+          "3v3 Women's Category only.",
+          '3 players + maximum 2 substitutes per team (min. 3, max. 5 players).',
+          'No limitation on the number of international players.',
+          'Teams with 5 non-Malaysian players are also allowed to register.',
+          'Maximum 6 teams in total.',
+        ]
+      },
+      {
+        title: 'Scoring & Format',
+        rules: [
+          'League format: all teams play each other.',
+          'Win = 3 pts, Draw = 1 pt, Loss = 0 pts.',
+          'Top 3 teams in the final league standings receive medals according to their placement.',
+        ]
+      },
+      {
+        title: 'Game Duration',
+        rules: [
+          'Match format: 5-2-5 (two 5-minute halves with no more than 2 minutes interval between halves).',
+          'All games are refereed by officials appointed by the RENTAP XVII committee.',
+        ]
+      }
+    ]
+  },
+
+  track: {
+    name: 'Track',
+    subtitle: '100m · 200m · 400m · 4×100m Relay',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>`,
+    chips: ['Men & Women', 'Malaysians Only', '100m · 200m · 400m', '4×100m Relay', 'Max 3 Heats'],
+    pic: { name: 'Alyaa Yasmeena', phone: '+49 151 20218887' },
+    sections: [
+      {
+        title: 'Categories',
+        rules: [
+          '100m (Men & Women)',
+          '200m (Men & Women)',
+          '400m (Men & Women)',
+          '4×100m Relay (Men & Women)',
+          'All categories are open to Malaysian players only.',
+        ]
+      },
+      {
+        title: '100m / 200m / 400m Rules',
+        rules: [
+          'Runners must keep their feet behind the starting line at all times before the starter\'s whistle.',
+          'All runners start on the starter\'s whistle.',
+          'False start = automatic disqualification. (A false start is when a runner\'s feet move or they cross the line before the whistle.)',
+          'Runners must stay in their lanes at all times. Stepping on the lane line = leaving the lane = disqualification.',
+          'Runner whose body crosses the finish line first wins.',
+          'Maximum 3 heats. Runner with the best time in each heat advances to the final.',
+          'Note: 200m and 400m have staggered starting lines.',
+        ]
+      },
+      {
+        title: '4×100m Relay Rules',
+        rules: [
+          '4 runners per team; each runner completes 100m carrying a baton.',
+          'The baton must be passed to the next runner within the designated changeover area.',
+          'Failure to pass within the changeover area = disqualification.',
+          'If the baton drops, the runner must pick it up and continue. Failure to do so = team loses.',
+          'False start = team disqualification.',
+          'Runners must stay in their lanes. Obstruction = team disqualification.',
+          'The first team across the finish line with baton in hand wins.',
+        ]
+      }
+    ]
+  },
+
+  'table-tennis': {
+    name: 'Table Tennis',
+    subtitle: 'Singles & Doubles',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="10" rx="2"/><circle cx="7" cy="12" r="2"/><circle cx="17" cy="12" r="2"/></svg>`,
+    chips: ['Singles & Doubles', 'Standard ITTF Rules', 'Best of 5 Sets'],
+    pic: null,
+    sections: [
+      {
+        title: 'General Rules',
+        rules: [
+          'Standard ITTF (International Table Tennis Federation) rules apply.',
+          'Paddles / rackets and balls will be provided by the committee.',
+          'Players are encouraged to bring their own paddles if preferred.',
+          'Full schedule and category details to be confirmed by the Sports PIC before the event.',
+        ]
+      },
+      {
+        title: 'Scoring',
+        rules: [
+          'Each set is played to 11 points. A player must win by 2 clear points.',
+          'Matches are best-of-5 sets.',
+          'Service alternates every 2 points. At deuce (10–10), service alternates every point.',
+          'Toss determines first serve and side at the start of the match.',
+        ]
+      },
+      {
+        title: 'Key Playing Rules',
+        rules: [
+          'The ball must be held in a stationary, open palm above the table level before serving.',
+          'The ball must be tossed vertically at least 16cm before being struck.',
+          'The ball must first bounce on the server\'s side, then clear the net and bounce on the receiver\'s side.',
+          'Players must not touch the table surface with the free hand during a rally.',
+          'A let is called if the ball touches the net on a valid serve and still lands in the correct area.',
+        ]
+      }
+    ]
+  },
+
+  'tug-of-war': {
+    name: 'Tug of War',
+    subtitle: 'Team · Mixed Category',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12h16M4 12l4-4M4 12l4 4M20 12l-4-4M20 12l-4 4"/></svg>`,
+    chips: ['Mixed Teams', 'Knockout Format', 'Team Event'],
+    pic: null,
+    sections: [
+      {
+        title: 'General Rules',
+        rules: [
+          'Mixed-gender teams. Full team composition details to be confirmed by the Sports PIC.',
+          'Standard tug-of-war rules apply. Both teams pull a rope in opposite directions.',
+          'The team that pulls the opposing team\'s marker past the centre line wins the bout.',
+          'Three bouts per match; best-of-three wins the match.',
+        ]
+      },
+      {
+        title: 'Fouls & Conduct',
+        rules: [
+          'No player may loop, knot, or wrap the rope around any part of their body.',
+          'Sitting or lying down during a pull is not permitted.',
+          'Anchor position (last puller) must maintain legal grip at all times.',
+          'Any foul results in a warning; repeated fouls may result in disqualification of the bout.',
+        ]
+      },
+      {
+        title: 'Safety',
+        rules: [
+          'Proper footwear must be worn. Metal-studded boots are not permitted.',
+          'Gloves are permitted but not mandatory.',
+          'In the event of injury, the bout is paused and may be replayed at the referee\'s discretion.',
+          'The referee\'s decision is final.',
+        ]
+      }
+    ]
+  }
+};
+
+// ── RENDER ────────────────────────────────────
+function renderSport() {
+  const params = new URLSearchParams(window.location.search);
+  const slug   = params.get('s') || '';
+  const sport  = SPORTS[slug];
+
+  if (!sport) {
+    document.getElementById('sport-not-found').style.display = 'block';
+    document.title = 'Sport Not Found — RENTAP XVII';
+    return;
+  }
+
+  document.title = sport.name + ' Rules — RENTAP XVII';
+  document.getElementById('sportTitle').textContent    = sport.name;
+  document.getElementById('sportSubtitle').textContent = sport.subtitle + ' · RENTAP XVII Rules & Regulations';
+  document.getElementById('heroIcon').innerHTML        = sport.icon;
+
+  // Chips
+  const chipsEl = document.getElementById('sportChips');
+  sport.chips.forEach(c => {
+    const el = document.createElement('span');
+    el.className = 'chip';
+    el.textContent = c;
+    chipsEl.appendChild(el);
+  });
+
+  // Rules content
+  const content = document.getElementById('rulesContent');
+  sport.sections.forEach(sec => {
+    const div = document.createElement('div');
+    div.className = 'rules-section';
+
+    const h = document.createElement('h2');
+    h.className = 'rules-section-title';
+    h.textContent = sec.title;
+    div.appendChild(h);
+
+    if (sec.table) {
+      const tbl = document.createElement('table');
+      tbl.className = 'rules-table';
+      const thead = document.createElement('thead');
+      const tr = document.createElement('tr');
+      sec.table.headers.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        tr.appendChild(th);
+      });
+      thead.appendChild(tr);
+      tbl.appendChild(thead);
+      const tbody = document.createElement('tbody');
+      sec.table.rows.forEach(row => {
+        const tr = document.createElement('tr');
+        row.forEach(cell => {
+          const td = document.createElement('td');
+          td.textContent = cell;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      tbl.appendChild(tbody);
+      div.appendChild(tbl);
+    }
+
+    if (sec.rules) {
+      const ul = document.createElement('ul');
+      ul.className = 'rules-list';
+      sec.rules.forEach(r => {
+        const li = document.createElement('li');
+        li.textContent = r;
+        ul.appendChild(li);
+      });
+      div.appendChild(ul);
+    }
+
+    content.appendChild(div);
+  });
+
+  // PIC card
+  if (sport.pic) {
+    const card = document.createElement('div');
+    card.className = 'pic-card';
+    card.innerHTML = `
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.62 4.34 2 2 0 0 1 3.59 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <div>
+        <strong>Person In Charge (PIC): ${sport.pic.name}</strong>
+        <p>Contact for questions and disputes: <a href="tel:${sport.pic.phone.replace(/\s/g,'')}">${sport.pic.phone}</a></p>
+      </div>`;
+    content.appendChild(card);
+  }
+
+  // General rules note
+  const note = document.createElement('p');
+  note.style.cssText = 'margin-top:2.5rem;color:var(--text-muted);font-size:.88rem;line-height:1.7;border-top:1px solid var(--border);padding-top:1.5rem;';
+  note.innerHTML = 'These rules are based on the RENTAP Rulebook. The organising committee reserves the right to make amendments. All official decisions by referees and PICs are final. For full general event rules see the <a href="agb.html">AGB</a>.';
+  content.appendChild(note);
+}
+
+renderSport();
+</script>
+</body>
+</html>
