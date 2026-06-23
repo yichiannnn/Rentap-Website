@@ -74,6 +74,7 @@
     <div class="hero-ctas">
       <a href="#register" class="btn btn-primary">Register as Player</a>
       <a href="#register" class="btn btn-ghost">Become a Volunteer</a>
+      <a href="#register" class="btn btn-gold">Cheer as Spectator</a>
     </div>
   </div>
   <a href="#about" class="hero-scroll" aria-label="Scroll to about section">
@@ -83,14 +84,26 @@
 
 <!-- ===== DIVIDER STRIP ===== -->
 <div class="strip" aria-hidden="true">
-  <span>Earth Shaker</span><span>•</span>
-  <span>Agi Idup, Agi Ngelaban</span><span>•</span>
-  <span>Nürnberg 2026</span><span>•</span>
-  <span>RENTAP XVII</span><span>•</span>
-  <span>Earth Shaker</span><span>•</span>
-  <span>Agi Idup, Agi Ngelaban</span><span>•</span>
-  <span>Nürnberg 2026</span><span>•</span>
-  <span>RENTAP XVII</span><span>•</span>
+  <div class="strip-track">
+    <span>Earth Shaker</span><span class="strip-dot">•</span>
+    <span>Agi Idup, Agi Ngelaban</span><span class="strip-dot">•</span>
+    <span>Nürnberg 2026</span><span class="strip-dot">•</span>
+    <span>RENTAP XVII</span><span class="strip-dot">•</span>
+    <span>Earth Shaker</span><span class="strip-dot">•</span>
+    <span>Agi Idup, Agi Ngelaban</span><span class="strip-dot">•</span>
+    <span>Nürnberg 2026</span><span class="strip-dot">•</span>
+    <span>RENTAP XVII</span><span class="strip-dot">•</span>
+  </div>
+  <div class="strip-track" aria-hidden="true">
+    <span>Earth Shaker</span><span class="strip-dot">•</span>
+    <span>Agi Idup, Agi Ngelaban</span><span class="strip-dot">•</span>
+    <span>Nürnberg 2026</span><span class="strip-dot">•</span>
+    <span>RENTAP XVII</span><span class="strip-dot">•</span>
+    <span>Earth Shaker</span><span class="strip-dot">•</span>
+    <span>Agi Idup, Agi Ngelaban</span><span class="strip-dot">•</span>
+    <span>Nürnberg 2026</span><span class="strip-dot">•</span>
+    <span>RENTAP XVII</span><span class="strip-dot">•</span>
+  </div>
 </div>
 
 <!-- ===== ABOUT ===== -->
@@ -151,57 +164,137 @@
       Two days. Nine disciplines. Find your game, build your team, and compete for glory.
     </p>
     <ul class="sports-grid" role="list">
+      <!-- Badminton: racket + shuttlecock -->
       <li class="sport-card"><a href="sport.html?s=badminton" class="sport-card-link" aria-label="Badminton — view rules">
         <div class="sport-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="9" cy="9" rx="5" ry="6" transform="rotate(-40 9 9)"/>
+            <line x1="13" y1="13" x2="19" y2="21"/>
+            <line x1="7" y1="4" x2="11" y2="4"/>
+            <circle cx="20" cy="4" r="1.5"/>
+            <path d="M18.5 4 L17 1.5 M20 4 L20 1.5 M21.5 4 L23 1.5"/>
+          </svg>
         </div>
         <span>Badminton</span>
       </a></li>
+      <!-- Basketball: ball with curved seam lines -->
       <li class="sport-card"><a href="sport.html?s=basketball" class="sport-card-link" aria-label="Basketball — view rules">
         <div class="sport-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93a10 10 0 0 1 14.14 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="12" cy="12" r="9.5"/>
+            <path d="M2.5 12h19"/>
+            <path d="M12 2.5v19"/>
+            <path d="M5.5 5.5 Q8 9 8 12 Q8 15 5.5 18.5"/>
+            <path d="M18.5 5.5 Q16 9 16 12 Q16 15 18.5 18.5"/>
+          </svg>
         </div>
         <span>Basketball</span>
       </a></li>
+      <!-- Football: accurate soccer ball — top pentagon + 5 radiating seams -->
       <li class="sport-card"><a href="sport.html?s=football" class="sport-card-link" aria-label="Football — view rules">
         <div class="sport-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9.5"/>
+            <!-- centre pentagon -->
+            <polygon points="12,8 14.4,9.8 13.5,12.6 10.5,12.6 9.6,9.8"/>
+            <!-- seams from each pentagon vertex to ball edge -->
+            <line x1="12"   y1="8"    x2="12"   y2="2.5"/>
+            <line x1="14.4" y1="9.8"  x2="19.5" y2="7.5"/>
+            <line x1="13.5" y1="12.6" x2="17.5" y2="17"/>
+            <line x1="10.5" y1="12.6" x2="6.5"  y2="17"/>
+            <line x1="9.6"  y1="9.8"  x2="4.5"  y2="7.5"/>
+          </svg>
         </div>
         <span>Football</span>
       </a></li>
+      <!-- Volleyball: classic 3-seam pinwheel swirling from the centre -->
       <li class="sport-card"><a href="sport.html?s=volleyball" class="sport-card-link" aria-label="Volleyball — view rules">
         <div class="sport-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><path d="M2 12h20"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9.5"/>
+            <g>
+              <path d="M12 12 C 11.1 8.9 11 5.7 12.9 2.7"/>
+              <path d="M12 12 C 11.1 8.9 11 5.7 12.9 2.7" transform="rotate(120 12 12)"/>
+              <path d="M12 12 C 11.1 8.9 11 5.7 12.9 2.7" transform="rotate(240 12 12)"/>
+            </g>
+          </svg>
         </div>
         <span>Volleyball</span>
       </a></li>
+      <!-- Touch Rugby: elongated prolate-spheroid ball with centre lacing -->
       <li class="sport-card"><a href="sport.html?s=touch-rugby" class="sport-card-link" aria-label="Touch Rugby — view rules">
         <div class="sport-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="12" rx="10" ry="7"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <!-- ball: wide, pointed at the two ends -->
+            <path d="M1.8 12 Q5 6 12 6 Q19 6 22.2 12 Q19 18 12 18 Q5 18 1.8 12 Z"/>
+            <!-- long centre seam -->
+            <line x1="3.4" y1="12" x2="20.6" y2="12"/>
+            <!-- lacing spine -->
+            <line x1="12" y1="8.6" x2="12" y2="15.4"/>
+            <!-- lacing cross-stitches -->
+            <line x1="10.4" y1="9.4"  x2="13.6" y2="9.4"/>
+            <line x1="10.4" y1="10.7" x2="13.6" y2="10.7"/>
+            <line x1="10.4" y1="13.3" x2="13.6" y2="13.3"/>
+            <line x1="10.4" y1="14.6" x2="13.6" y2="14.6"/>
+          </svg>
         </div>
         <span>Touch Rugby</span>
       </a></li>
+      <!-- Netball: ball + goal ring on post -->
       <li class="sport-card"><a href="sport.html?s=netball" class="sport-card-link" aria-label="Netball — view rules">
         <div class="sport-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="8" cy="15" r="4.5"/>
+            <line x1="17" y1="2" x2="17" y2="22"/>
+            <path d="M17 7 Q21 7 21 11 Q21 15 17 15"/>
+          </svg>
         </div>
         <span>Netball</span>
       </a></li>
+      <!-- Track: oval running track with lanes -->
       <li class="sport-card"><a href="sport.html?s=track" class="sport-card-link" aria-label="Track — view rules">
         <div class="sport-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <!-- outer lane -->
+            <rect x="1.5" y="5" width="21" height="14" rx="7"/>
+            <!-- middle lane -->
+            <rect x="4" y="7.5" width="16" height="9" rx="4.5"/>
+            <!-- inner field -->
+            <rect x="6.5" y="9.5" width="11" height="5" rx="2.5"/>
+            <!-- start/finish lane connectors -->
+            <line x1="12" y1="14.5" x2="12" y2="16.5"/>
+            <line x1="12" y1="16.5" x2="12" y2="19"/>
+          </svg>
         </div>
         <span>Track</span>
       </a></li>
+      <!-- Table Tennis: paddle + ball -->
       <li class="sport-card"><a href="sport.html?s=table-tennis" class="sport-card-link" aria-label="Table Tennis — view rules">
         <div class="sport-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="10" rx="2"/><circle cx="7" cy="12" r="2"/><circle cx="17" cy="12" r="2"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="10" cy="10" r="6.5"/>
+            <line x1="8" y1="5" x2="8" y2="15"/>
+            <line x1="15" y1="15" x2="20" y2="21"/>
+            <circle cx="20" cy="5" r="2.5"/>
+          </svg>
         </div>
         <span>Table Tennis</span>
       </a></li>
+      <!-- Tug of War: thick twisted rope -->
       <li class="sport-card sport-card--wide"><a href="sport.html?s=tug-of-war" class="sport-card-link" aria-label="Tug of War — view rules">
         <div class="sport-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12h16M4 12l4-4M4 12l4 4M20 12l-4-4M20 12l-4 4"/></svg>
+          <svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- rope body: rounded thick band -->
+            <path d="M3 12 Q3 8 7 8 L41 8 Q45 8 45 12 Q45 16 41 16 L7 16 Q3 16 3 12 Z"/>
+            <!-- twist strokes giving the braided look -->
+            <path d="M7 8 Q11 12 9 16"/>
+            <path d="M12 8 Q16 12 14 16"/>
+            <path d="M17 8 Q21 12 19 16"/>
+            <path d="M22 8 Q26 12 24 16"/>
+            <path d="M27 8 Q31 12 29 16"/>
+            <path d="M32 8 Q36 12 34 16"/>
+            <path d="M37 8 Q41 12 39 16"/>
+          </svg>
         </div>
         <span>Tug of War</span>
       </a></li>
@@ -282,23 +375,7 @@
           <div class="tl-node" aria-hidden="true"></div>
           <div class="tl-body">
             <h3>Games End</h3>
-            <p>Day 1 competitions conclude. Rest up for tonight.</p>
-          </div>
-        </li>
-        <li class="tl-item tl-item--highlight">
-          <time class="tl-time" datetime="2026-09-26T20:00">20:00</time>
-          <div class="tl-node tl-node--highlight" aria-hidden="true"></div>
-          <div class="tl-body">
-            <h3>Malam Kebudayaan Begins</h3>
-            <p>Cultural night — traditional performances, live music, and community celebrations.</p>
-          </div>
-        </li>
-        <li class="tl-item">
-          <time class="tl-time" datetime="2026-09-26T22:00">22:00</time>
-          <div class="tl-node" aria-hidden="true"></div>
-          <div class="tl-body">
-            <h3>Malam Kebudayaan Closes</h3>
-            <p>End of Day 1. See you tomorrow.</p>
+            <p>Day 1 competitions conclude. End of Day 1 — see you tomorrow.</p>
           </div>
         </li>
       </ol>
@@ -373,16 +450,6 @@
         <p>
           An authentic Malaysian street food bazaar runs alongside the tournament all weekend.
           <em>Nasi lemak, satay, teh tarik</em>, and more — alongside local German classics.
-        </p>
-      </div>
-      <div class="culture-card">
-        <div class="culture-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-        </div>
-        <h3>Malam Kebudayaan</h3>
-        <p>
-          Saturday night becomes a cultural showcase — traditional Malaysian performances,
-          live music, dancing, and community celebration running until 10 PM.
         </p>
       </div>
       <div class="culture-card">
@@ -462,6 +529,33 @@
           </li>
         </ul>
         <button class="btn btn-outline reg-btn" onclick="openModal('volunteer')">Volunteer Sign-Up</button>
+      </div>
+
+      <div class="reg-card reg-card--spec">
+        <div class="reg-card-top">
+          <span class="reg-tag reg-tag--spec">Spectator</span>
+          <h3>Cheer</h3>
+          <p>Come support the teams and enjoy the food bazaar. Everyone is welcome.</p>
+        </div>
+        <ul class="reg-list" aria-label="Spectator entry includes">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <strong>MGSS members: free entrance</strong>
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Non-members: an entrance fee will be charged
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Access to all matches &amp; ceremonies
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Malaysian food bazaar all weekend
+          </li>
+        </ul>
+        <button class="btn btn-outline reg-btn" onclick="openModal('spectator')">Spectator Registration</button>
       </div>
     </div>
   </div>
@@ -719,6 +813,30 @@
           </select>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Submit My Interest</button>
+      </form>
+    </div>
+
+    <div id="form-spectator" class="modal-pane" hidden>
+      <h2>Spectator Registration</h2>
+      <p>MGSS members enter free — non-members pay a small entrance fee online.</p>
+      <form onsubmit="submitForm(event)" novalidate>
+        <div class="form-field">
+          <label for="s-name">Full Name</label>
+          <input id="s-name" type="text" required placeholder="Your full name" autocomplete="name" />
+        </div>
+        <div class="form-field">
+          <label for="s-email">Email Address</label>
+          <input id="s-email" type="email" required placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="form-field">
+          <label for="s-member">MGSS Membership</label>
+          <select id="s-member" required>
+            <option value="">Are you an MGSS member?…</option>
+            <option>Yes — MGSS member (free entrance)</option>
+            <option>No — non-member (entrance fee applies)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Register to Attend</button>
       </form>
     </div>
 

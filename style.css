@@ -117,6 +117,13 @@ p { max-width: 68ch; }
 }
 .btn-ghost:hover { border-color: var(--light); background: rgba(237,232,222,0.08); color: var(--light); }
 
+.btn-gold {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+}
+.btn-gold:hover { background: var(--gold-light); border-color: var(--gold-light); color: var(--ink); }
+
 .btn-block { width: 100%; margin-top: 1.25rem; }
 
 /* ── NAVBAR ──────────────────────────────────── */
@@ -434,14 +441,21 @@ p { max-width: 68ch; }
 .strip {
   background: var(--red);
   overflow: hidden;
-  white-space: nowrap;
+  display: flex;
   padding: 0.6rem 0;
+}
+
+.strip-track {
   display: flex;
   gap: 2rem;
+  flex-shrink: 0;
+  min-width: 100%;
+  white-space: nowrap;
   animation: marquee 22s linear infinite;
 }
 
-.strip span {
+.strip-track span,
+.strip-track .strip-dot {
   font-family: var(--display);
   font-size: 0.95rem;
   letter-spacing: 0.15em;
@@ -451,7 +465,7 @@ p { max-width: 68ch; }
 
 @keyframes marquee {
   from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  to   { transform: translateX(-100%); }
 }
 
 /* ── SECTIONS ────────────────────────────────── */
@@ -791,7 +805,7 @@ p { max-width: 68ch; }
 /* ── REGISTER ────────────────────────────────── */
 .register-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   margin-top: 2rem;
 }
@@ -828,6 +842,13 @@ p { max-width: 68ch; }
   margin-bottom: 1rem;
 }
 .reg-tag--alt { background: var(--gold); color: var(--ink); }
+
+.reg-card--spec {
+  background: rgba(237,232,222,0.04);
+  border-color: rgba(237,232,222,0.18);
+}
+.reg-card--spec:hover { border-color: rgba(237,232,222,0.4); }
+.reg-tag--spec { background: var(--light); color: var(--ink); }
 
 .reg-card h3 {
   font-family: var(--display);

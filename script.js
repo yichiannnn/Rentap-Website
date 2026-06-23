@@ -91,6 +91,7 @@ const modalBox = document.getElementById('modalBox');
 function openModal(type) {
   document.getElementById('form-player').hidden    = (type !== 'player');
   document.getElementById('form-volunteer').hidden = (type !== 'volunteer');
+  document.getElementById('form-spectator').hidden = (type !== 'spectator');
   document.getElementById('form-success').hidden   = true;
 
   overlay.hidden = false;
@@ -122,6 +123,7 @@ function submitForm(e) {
   e.preventDefault();
   document.getElementById('form-player').hidden    = true;
   document.getElementById('form-volunteer').hidden = true;
+  document.getElementById('form-spectator').hidden = true;
   document.getElementById('form-success').hidden   = false;
   document.getElementById('form-success').querySelector('button').focus();
 }
