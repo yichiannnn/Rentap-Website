@@ -119,13 +119,68 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !overlay.hidden) closeModal();
 });
 
-function submitForm(e) {
-  e.preventDefault();
+function fieldVal(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function showRegSuccess() {
   document.getElementById('form-player').hidden    = true;
   document.getElementById('form-volunteer').hidden = true;
   document.getElementById('form-spectator').hidden = true;
   document.getElementById('form-success').hidden   = false;
   document.getElementById('form-success').querySelector('button').focus();
+}
+
+async function submitForm(e) {
+  e.preventDefault();
+  const form = e.target;
+
+  // Native validation (forms use novalidate, so trigger it explicitly)
+  if (!form.checkValidity()) { form.reportValidity(); return; }
+
+  // Which registration pane is active?
+  let type = null;
+  if (!document.getElementById('form-player').hidden)         type = 'player';
+  else if (!document.getElementById('form-volunteer').hidden) type = 'volunteer';
+  else if (!document.getElementById('form-spectator').hidden) type = 'spectator';
+  if (!type) return;
+
+  const data = { type };
+  if (type === 'player') {
+    data.name = fieldVal('p-name');
+    data.email = fieldVal('p-email');
+    data.sport = fieldVal('p-sport');
+    data.team = fieldVal('p-team');
+  } else if (type === 'volunteer') {
+    data.name = fieldVal('v-name');
+    data.email = fieldVal('v-email');
+    data.role = fieldVal('v-role');
+  } else if (type === 'spectator') {
+    data.name = fieldVal('s-name');
+    data.email = fieldVal('s-email');
+    data.membership = fieldVal('s-member');
+  }
+
+  const btn = form.querySelector('button[type="submit"]');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  try {
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Request failed');
+    showRegSuccess();
+  } catch (err) {
+    alert('Sorry, something went wrong submitting your registration. Please try again, or email malaysiangermanstudentssociety@gmail.com.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
 }
 
 // ── SMOOTH SCROLL OFFSET for fixed navbar ─────
