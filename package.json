@@ -1,0 +1,14 @@
+{
+  "name": "rentap-xvii-website",
+  "version": "1.0.0",
+  "description": "RENTAP XVII - Malaysian-German Sports & Culture Tournament Website",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'Static site - no build required'",
+    "test": "echo 'No tests configured'"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.4.1"
+  }
+}
