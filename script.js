@@ -133,9 +133,21 @@ function openModal(type) {
   }, 50);
 }
 
+function toggleRoleInfo(btn) {
+  const panel = document.getElementById('role-info');
+  const isOpen = !panel.hidden;
+  panel.hidden = isOpen;
+  btn.setAttribute('aria-expanded', String(!isOpen));
+}
+
 function closeModal() {
   overlay.hidden = true;
   document.body.style.overflow = '';
+  // Reset the role-info panel each time the modal closes
+  const panel = document.getElementById('role-info');
+  const btn = document.getElementById('roleInfoBtn');
+  if (panel) panel.hidden = true;
+  if (btn) btn.setAttribute('aria-expanded', 'false');
 }
 
 // Close on overlay click

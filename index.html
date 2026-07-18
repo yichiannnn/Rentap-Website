@@ -810,15 +810,34 @@
           <input id="v-uni" type="text" required placeholder="Your university" autocomplete="organization" />
         </div>
         <div class="form-field">
-          <label for="v-role">Preferred Role</label>
+          <div class="label-row">
+            <label for="v-role">Preferred Role</label>
+            <button type="button" class="info-btn" id="roleInfoBtn" aria-expanded="false" aria-controls="role-info" onclick="toggleRoleInfo(this)" aria-label="View role descriptions">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </button>
+          </div>
           <select id="v-role" required>
             <option value="">Select a role…</option>
-            <option>Referee</option>
-            <option>Food Stall Helper</option>
-            <option>Setup Crew</option>
-            <option>Registration Desk</option>
-            <option>General Assistant</option>
+            <option>Emcee</option>
+            <option>Photographer</option>
+            <option>Medic</option>
+            <option>Sports Coordinator</option>
+            <option>Runner</option>
           </select>
+          <div id="role-info" class="role-info" hidden>
+            <dl>
+              <dt>Emcee</dt>
+              <dd>Host the Opening and Closing Ceremonies and keep the spirit of the event alive.</dd>
+              <dt>Photographer</dt>
+              <dd>Work with the media team to document the RENTAP weekend, shared via the MGSS Instagram. You'll follow a schedule covering various areas of the event.</dd>
+              <dt>Medic</dt>
+              <dd>Stay on standby throughout the games, especially near higher-injury-risk sports (volleyball, football, track &amp; field). Basic first-aid knowledge required — handle minor injuries with the provided kit; for major injuries, inform the PIC and call for external help. All medical supplies are provided.</dd>
+              <dt>Sports Coordinator</dt>
+              <dd>Ensure the smooth flow of matches and activities. You may also be assigned as a runner depending on availability.</dd>
+              <dt>Runner</dt>
+              <dd>Support wherever help is needed — as a linesman or referee, at the bazaar, or with logistics (buying items, passing things around, or helping the sports PIC track time and scores). Tasks are assigned based on event needs.</dd>
+            </dl>
+          </div>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Submit My Interest</button>
       </form>
