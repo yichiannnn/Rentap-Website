@@ -25,9 +25,8 @@ In your Vercel project dashboard:
 3. Vercel automatically adds the connection environment variables
    (`POSTGRES_URL`, `DATABASE_URL`, etc.) to the project.
 
-> If the `@vercel/postgres` SDK reports a missing `POSTGRES_URL`, copy the value of
-> `DATABASE_URL` into a new env var named `POSTGRES_URL` (Project → Settings →
-> Environment Variables) and redeploy.
+> The backend uses the `@neondatabase/serverless` driver and reads the `DATABASE_URL`
+> environment variable, which the Neon integration adds automatically. No extra config needed.
 
 ### 3. Create the table
 Open the database's **Query** console (in Vercel Storage, or in the Neon dashboard)

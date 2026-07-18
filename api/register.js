@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
 
 const TYPES = ['player', 'volunteer', 'spectator'];
 
@@ -9,6 +9,7 @@ export default async function handler(req, res) {
   }
 
   try {
+    const sql = neon(process.env.DATABASE_URL);
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
     let { type, name, email, sport, team, role, membership } = body;
 

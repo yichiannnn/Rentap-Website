@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
   const key = req.query.key || req.headers['x-admin-key'];
@@ -8,7 +8,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { rows } = await sql`
+    const sql = neon(process.env.DATABASE_URL);
+    const rows = await sql`
       SELECT id, type, name, email, sport, team, role, membership, created_at
       FROM registrations
       ORDER BY created_at DESC
