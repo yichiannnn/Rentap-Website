@@ -88,11 +88,40 @@ function toggleFaq(btn) {
 const overlay  = document.getElementById('modalOverlay');
 const modalBox = document.getElementById('modalBox');
 
+// ── Registration availability ────────────────
+// Flip a value to true when that registration opens.
+const REG_OPEN = {
+  player: false,
+  volunteer: true,
+  spectator: false
+};
+
+const COMING_SOON = {
+  player: {
+    title: 'Player Registration Opens Soon',
+    msg: 'Sport sign-ups are not open just yet. Registration will open soon — check back closer to the event to pick your sport and build your team.'
+  },
+  spectator: {
+    title: 'Spectator Registration Opens Soon',
+    msg: 'Spectator entry is not open yet. Registration will open soon — check back nearer the event to reserve your spot and cheer the teams on.'
+  }
+};
+
 function openModal(type) {
-  document.getElementById('form-player').hidden    = (type !== 'player');
-  document.getElementById('form-volunteer').hidden = (type !== 'volunteer');
-  document.getElementById('form-spectator').hidden = (type !== 'spectator');
-  document.getElementById('form-success').hidden   = true;
+  const panes = ['form-player', 'form-volunteer', 'form-spectator', 'form-comingsoon', 'form-success'];
+  panes.forEach(id => { document.getElementById(id).hidden = true; });
+
+  if (REG_OPEN[type]) {
+    document.getElementById('form-' + type).hidden = false;
+  } else {
+    const info = COMING_SOON[type] || {
+      title: 'Registration Opening Soon',
+      msg: 'This registration is not open yet. Please check back soon.'
+    };
+    document.getElementById('cs-title').textContent = info.title;
+    document.getElementById('cs-msg').textContent = info.msg;
+    document.getElementById('form-comingsoon').hidden = false;
+  }
 
   overlay.hidden = false;
   document.body.style.overflow = 'hidden';
