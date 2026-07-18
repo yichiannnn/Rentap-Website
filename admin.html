@@ -78,7 +78,7 @@
       <table id="table">
         <thead>
           <tr>
-            <th>#</th><th>Type</th><th>Name</th><th>Email</th>
+            <th>#</th><th>Type</th><th>Name</th><th>Email</th><th>Phone</th><th>University</th>
             <th>Sport</th><th>Team</th><th>Role</th><th>Membership</th><th>Registered</th>
           </tr>
         </thead>
@@ -143,6 +143,8 @@
         <td><span class="pill pill-${esc(r.type)}">${esc(r.type)}</span></td>
         <td>${esc(r.name)}</td>
         <td>${esc(r.email)}</td>
+        <td>${esc(r.phone)}</td>
+        <td>${esc(r.university)}</td>
         <td>${esc(r.sport)}</td>
         <td>${esc(r.team)}</td>
         <td>${esc(r.role)}</td>
@@ -154,7 +156,7 @@
 
   function downloadCSV() {
     const rows = visibleRows();
-    const headers = ['id', 'type', 'name', 'email', 'sport', 'team', 'role', 'membership', 'created_at'];
+    const headers = ['id', 'type', 'name', 'email', 'phone', 'university', 'sport', 'team', 'role', 'membership', 'created_at'];
     const csvCell = v => '"' + (v == null ? '' : String(v)).replace(/"/g, '""') + '"';
     const lines = [headers.join(',')];
     rows.forEach(r => lines.push(headers.map(h => csvCell(r[h])).join(',')));

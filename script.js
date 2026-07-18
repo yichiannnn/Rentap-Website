@@ -184,6 +184,8 @@ async function submitForm(e) {
   } else if (type === 'volunteer') {
     data.name = fieldVal('v-name');
     data.email = fieldVal('v-email');
+    data.phone = fieldVal('v-phone');
+    data.university = fieldVal('v-uni');
     data.role = fieldVal('v-role');
   } else if (type === 'spectator') {
     data.name = fieldVal('s-name');

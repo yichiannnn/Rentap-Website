@@ -38,6 +38,8 @@ CREATE TABLE IF NOT EXISTS registrations (
   type        TEXT NOT NULL,
   name        TEXT NOT NULL,
   email       TEXT NOT NULL,
+  phone       TEXT,
+  university  TEXT,
   sport       TEXT,
   team        TEXT,
   role        TEXT,
@@ -45,6 +47,13 @@ CREATE TABLE IF NOT EXISTS registrations (
   created_at  TIMESTAMPTZ DEFAULT now()
 );
 ```
+
+> **Already created the table before the phone/university fields were added?**
+> Run this once in the Neon SQL Editor to add the two new columns:
+> ```sql
+> ALTER TABLE registrations ADD COLUMN IF NOT EXISTS phone TEXT;
+> ALTER TABLE registrations ADD COLUMN IF NOT EXISTS university TEXT;
+> ```
 
 ### 4. Set the admin key
 Project → **Settings → Environment Variables** → add:
