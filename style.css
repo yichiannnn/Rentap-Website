@@ -1174,28 +1174,31 @@ p { max-width: 68ch; }
 
 .optional { font-weight: 400; color: var(--text-muted); }
 
-.label-row {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
 .info-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
+  gap: 0.45rem;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid rgba(200,146,42,0.45);
+  background: rgba(200,146,42,0.1);
+  color: var(--gold);
+  font-family: var(--body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  border-radius: 50%;
-  transition: color 200ms;
+  border-radius: 999px;
+  transition: background 200ms, border-color 200ms, color 200ms;
 }
+.info-btn svg { flex-shrink: 0; }
 .info-btn:hover,
-.info-btn[aria-expanded="true"] { color: var(--gold); }
+.info-btn[aria-expanded="true"] {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
+}
 .info-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
 .role-info {

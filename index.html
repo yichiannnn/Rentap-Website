@@ -810,12 +810,7 @@
           <input id="v-uni" type="text" required placeholder="Your university" autocomplete="organization" />
         </div>
         <div class="form-field">
-          <div class="label-row">
-            <label for="v-role">Preferred Role</label>
-            <button type="button" class="info-btn" id="roleInfoBtn" aria-expanded="false" aria-controls="role-info" onclick="toggleRoleInfo(this)" aria-label="View role descriptions">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            </button>
-          </div>
+          <label for="v-role">Preferred Role</label>
           <select id="v-role" required>
             <option value="">Select a role…</option>
             <option>Emcee</option>
@@ -824,6 +819,10 @@
             <option>Sports Coordinator</option>
             <option>Runner</option>
           </select>
+          <button type="button" class="info-btn" id="roleInfoBtn" aria-expanded="false" aria-controls="role-info" onclick="toggleRoleInfo(this)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span class="info-btn-text">What does each role involve?</span>
+          </button>
           <div id="role-info" class="role-info" hidden>
             <dl>
               <dt>Emcee</dt>
