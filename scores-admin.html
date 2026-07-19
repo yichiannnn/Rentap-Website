@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Score Console — RENTAP XVII Admin</title>
+  <style>
+    :root {
+      --ink: #0D1209; --surface: #111810; --surface-2: #192218;
+      --red: #A8200D; --red-hover: #C2260F; --gold: #C8922A; --gold-light: #DDA83A;
+      --light: #EDE8DE; --text: #D4CFBF; --muted: #7A8572; --border: #283021;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--ink); color: var(--text);
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      padding: 1.25rem 1rem 4rem; line-height: 1.5;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; }
+    h1 { color: var(--light); font-size: 1.4rem; margin: 0 0 .2rem; }
+    .sub { color: var(--muted); margin: 0 0 1.5rem; font-size: .88rem; }
+    a { color: var(--gold); }
+
+    label { display: block; font-size: .72rem; color: var(--muted); margin-bottom: .3rem; text-transform: uppercase; letter-spacing: .05em; }
+    input, select {
+      width: 100%; padding: .7rem .85rem; background: var(--ink);
+      border: 1px solid var(--border); border-radius: 6px; color: var(--light); font-size: 1rem;
+      min-height: 44px;
+    }
+    button { cursor: pointer; border: none; border-radius: 6px; font-weight: 600; font-size: .9rem; min-height: 44px; padding: .6rem 1rem; transition: opacity 150ms, background 150ms; }
+    button:hover { opacity: .9; }
+    button:disabled { opacity: .5; cursor: default; }
+    .btn-primary { background: var(--red); color: #fff; }
+    .btn-gold { background: var(--gold); color: var(--ink); }
+    .btn-ghost { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+    .btn-danger { background: transparent; color: #ff8a78; border: 1px solid rgba(168,32,13,.5); }
+    .err { color: #ff8a78; margin-top: .6rem; font-size: .88rem; }
+    .ok { color: var(--gold); font-size: .82rem; }
+
+    /* Gate */
+    .gate { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; max-width: 420px; }
+
+    /* Top bar */
+    .topbar { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .topbar .spacer { margin-left: auto; }
+
+    /* Sport selector (sticky) */
+    .sport-bar {
+      position: sticky; top: 0; z-index: 20; background: var(--ink);
+      padding: .6rem 0; border-bottom: 1px solid var(--border); margin-bottom: 1rem;
+    }
+    .sport-bar select { max-width: 260px; }
+
+    /* View tabs */
+    .vtabs { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .vtab { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); padding: .5rem .9rem; border-radius: 999px; font-size: .85rem; }
+    .vtab.active { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+
+    /* Cards / panels */
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
+    .card h3 { color: var(--light); font-size: 1rem; margin: 0 0 .75rem; }
+    .row { display: flex; gap: .6rem; flex-wrap: wrap; align-items: flex-end; }
+    .row > div { flex: 1 1 140px; }
+    .row .grow2 { flex: 2 1 220px; }
+    .inline-actions { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .5rem; }
+
+    .list-item { display: flex; align-items: center; gap: .6rem; padding: .55rem 0; border-bottom: 1px solid var(--border); }
+    .list-item:last-child { border-bottom: none; }
+    .list-item .name { color: var(--light); font-weight: 600; }
+    .badge { font-size: .7rem; color: var(--muted); background: var(--surface-2); padding: .1rem .45rem; border-radius: 999px; }
+
+    .player-row { display: flex; align-items: center; gap: .5rem; padding: .35rem 0; }
+    .player-row .num { width: 2.5rem; color: var(--gold); }
+    .player-row .pname { flex: 1; color: var(--text); }
+
+    .muted { color: var(--muted); font-size: .85rem; }
+    .stage-group { margin-bottom: 1.25rem; }
+    .stage-group h4 { color: var(--gold); font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; margin: 0 0 .5rem; }
+
+    /* Match control */
+    .mc-select { margin-bottom: 1rem; }
+    .status-flow { display: flex; gap: .5rem; flex-wrap: wrap; margin: 1rem 0; }
+    .status-flow button { flex: 1 1 auto; }
+    .status-now { font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+    .score-big { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; text-align: center; margin: 1rem 0; }
+    .score-big .tname { color: var(--light); font-weight: 700; }
+    .score-big .sc { font-size: 2.5rem; font-weight: 800; color: var(--gold); }
+    .goal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1rem 0; }
+    .goal-btns button { min-height: 64px; font-size: 1rem; background: var(--red); color: #fff; }
+    .minor-btns { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .minor-btns button { flex: 1 1 auto; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); font-size: .82rem; }
+    .stepper { display: flex; align-items: center; gap: .5rem; justify-content: center; }
+    .stepper button { width: 44px; background: var(--surface-2); border: 1px solid var(--border); color: var(--light); font-size: 1.2rem; }
+    .stepper .val { font-size: 1.8rem; font-weight: 800; color: var(--gold); min-width: 2.5rem; text-align: center; }
+
+    .ev-list { list-style: none; padding: 0; margin: 1rem 0 0; }
+    .ev-list li { display: flex; align-items: center; gap: .5rem; padding: .4rem 0; border-bottom: 1px solid var(--border); font-size: .85rem; }
+    .ev-min { color: var(--gold); font-weight: 700; width: 2.5rem; }
+    .ev-txt { flex: 1; color: var(--text); }
+    .ev-del { background: transparent; color: #ff8a78; border: 1px solid rgba(168,32,13,.4); min-height: 34px; padding: .2rem .6rem; font-size: .78rem; }
+
+    .set-row { display: flex; gap: .5rem; align-items: center; margin-bottom: .5rem; }
+    .set-row .setno { color: var(--muted); width: 3rem; font-size: .8rem; }
+    .set-row input { width: 70px; text-align: center; }
+    .set-sep { color: var(--muted); }
+
+    /* Modal sheet */
+    .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: flex-end; z-index: 100; }
+    .sheet-overlay.open { display: flex; }
+    .sheet { background: var(--surface); border-top: 2px solid var(--gold); border-radius: 14px 14px 0 0; width: 100%; max-width: 900px; margin: 0 auto; padding: 1.25rem 1rem 2rem; max-height: 80vh; overflow-y: auto; }
+    .sheet h3 { color: var(--light); margin: 0 0 1rem; }
+    .picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: .5rem; margin-bottom: 1rem; }
+    .picker-grid button { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); text-align: left; padding: .6rem .7rem; }
+    .picker-grid button.sel { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+    .toggle-line { display: flex; align-items: center; gap: .5rem; margin: .75rem 0; }
+    .toggle-line input { width: auto; min-height: auto; }
+    @media (min-width: 640px) { .sheet-overlay { align-items: center; } .sheet { border-radius: 14px; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>RENTAP XVII — Score Console</h1>
+  <p class="sub">Super admin only. Public results appear at <a href="live.html" target="_blank" rel="noopener">live.html</a>.</p>
+
+  <!-- GATE -->
+  <div id="gate" class="gate">
+    <label for="key">Admin Key</label>
+    <input type="password" id="key" placeholder="Enter admin key" autocomplete="off" />
+    <button class="btn-primary" style="margin-top:1rem;width:100%" onclick="unlock()">Unlock Console</button>
+    <p id="gateErr" class="err" hidden></p>
+  </div>
+
+  <!-- APP -->
+  <div id="app" hidden>
+    <div class="sport-bar">
+      <div class="topbar">
+        <div style="flex:1 1 200px">
+          <label for="sportSel">Sport</label>
+          <select id="sportSel" onchange="onSportChange()"></select>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn-ghost" onclick="lock()" style="align-self:flex-end">Lock</button>
+      </div>
+    </div>
+
+    <div class="vtabs">
+      <button class="vtab active" data-view="teams" onclick="setView('teams')">Teams &amp; Squads</button>
+      <button class="vtab" data-view="fixtures" onclick="setView('fixtures')">Fixtures</button>
+      <button class="vtab" data-view="control" onclick="setView('control')">Match Control</button>
+    </div>
+
+    <p id="globalMsg" class="err" hidden></p>
+
+    <!-- TEAMS -->
+    <div class="panel active" id="panel-teams">
+      <div class="card">
+        <h3>Add Team</h3>
+        <div class="row">
+          <div class="grow2"><label>Name</label><input id="tName" placeholder="e.g. FC Kuching" /></div>
+          <div><label>Group</label><input id="tGroup" placeholder="A / B / blank" maxlength="20" /></div>
+          <div><label>Colour</label><input id="tColor" type="color" value="#c8922a" /></div>
+          <div style="flex:0 0 auto"><button class="btn-primary" onclick="createTeam()">Add</button></div>
+        </div>
+        <p id="teamMsg" class="err" hidden></p>
+      </div>
+      <div id="teamList"></div>
+    </div>
+
+    <!-- FIXTURES -->
+    <div class="panel" id="panel-fixtures">
+      <div class="card">
+        <h3>Add Fixture</h3>
+        <div class="row">
+          <div><label>Stage</label><select id="fStage">
+            <option value="group">Group</option>
+            <option value="quarter">Quarter-final</option>
+            <option value="semi">Semi-final</option>
+            <option value="third">3rd Place</option>
+            <option value="final">Final</option>
+          </select></div>
+          <div><label>Group</label><input id="fGroup" placeholder="A / B / blank" maxlength="20" /></div>
+        </div>
+        <div class="row" style="margin-top:.6rem">
+          <div class="grow2"><label>Team A</label><select id="fTeamA"></select></div>
+          <div class="grow2"><label>Team B</label><select id="fTeamB"></select></div>
+        </div>
+        <div class="row" style="margin-top:.6rem">
+          <div class="grow2"><label>Kickoff (local)</label><input id="fWhen" type="datetime-local" /></div>
+          <div><label>Pitch / Court</label><input id="fLabel" placeholder="e.g. Pitch A" maxlength="80" /></div>
+          <div id="fHalfWrap"><label>Half (min)</label><input id="fHalf" type="number" value="10" min="1" max="45" /></div>
+        </div>
+        <div class="inline-actions"><button class="btn-primary" onclick="createFixture()">Create Fixture</button></div>
+        <p id="fixMsg" class="err" hidden></p>
+      </div>
+      <div id="fixtureList"></div>
+    </div>
+
+    <!-- MATCH CONTROL -->
+    <div class="panel" id="panel-control">
+      <div class="card mc-select">
+        <label for="mcSel">Match</label>
+        <select id="mcSel" onchange="renderControl()"></select>
+      </div>
+      <div id="controlBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- GOAL SHEET -->
+<div class="sheet-overlay" id="sheet">
+  <div class="sheet">
+    <h3 id="sheetTitle">Add Goal</h3>
+    <div class="picker-grid" id="pickerGrid"></div>
+    <div>
+      <label>Or type a name</label>
+      <input id="pickerFree" placeholder="Scorer name (optional)" />
+    </div>
+    <div class="toggle-line">
+      <input type="checkbox" id="ownGoalChk" />
+      <label for="ownGoalChk" style="margin:0;text-transform:none;letter-spacing:0">Own goal (credits the other team)</label>
+    </div>
+    <div class="inline-actions">
+      <button class="btn-gold" onclick="confirmGoal()" id="sheetConfirm">Confirm Goal</button>
+      <button class="btn-ghost" onclick="closeSheet()">Cancel</button>
+    </div>
+    <p id="sheetErr" class="err" hidden></p>
+  </div>
+</div>
+
+<script src="live-shared.js"></script>
+<script>
+// ── STATE ─────────────────────────────────────
+let ADMIN_KEY = '';
+let view = 'teams';
+let sport = 'football';
+let store = { teams: [], matches: [] };   // current sport data
+let sheetCtx = null;                       // { matchId, teamId, players }
+
+// ── AUTH / API ────────────────────────────────
+async function api(action, payload) {
+  const res = await fetch('/api/scores-admin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_KEY },
+    body: JSON.stringify({ action, ...payload }),
+  });
+  let json = {};
+  try { json = await res.json(); } catch {}
+  if (res.status === 401) { lock('Session expired or wrong key.'); throw new Error('Unauthorized'); }
+  if (!res.ok) throw new Error(json.error || 'Request failed');
+  return json;
+}
+
+async function unlock() {
+  const err = document.getElementById('gateErr');
+  err.hidden = true;
+  ADMIN_KEY = document.getElementById('key').value.trim();
+  if (!ADMIN_KEY) { err.textContent = 'Enter the admin key.'; err.hidden = false; return; }
+  try {
+    await api('verify', {});
+    try { sessionStorage.setItem('rentap_admin_key', ADMIN_KEY); } catch {}
+    document.getElementById('gate').hidden = true;
+    document.getElementById('app').hidden = false;
+    initApp();
+  } catch (e) {
+    ADMIN_KEY = '';
+    err.textContent = (e.message === 'Unauthorized') ? 'Incorrect admin key.' : 'Could not verify. Is the database connected?';
+    err.hidden = false;
+  }
+}
+
+function lock(msg) {
+  ADMIN_KEY = '';
+  try { sessionStorage.removeItem('rentap_admin_key'); } catch {}
+  document.getElementById('app').hidden = true;
+  document.getElementById('gate').hidden = false;
+  const err = document.getElementById('gateErr');
+  if (msg) { err.textContent = msg; err.hidden = false; }
+  document.getElementById('key').value = '';
+}
+
+// ── INIT ──────────────────────────────────────
+function initApp() {
+  // sport selector
+  const sel = document.getElementById('sportSel');
+  sel.innerHTML = SPORT_ORDER.map(s => `<option value="${s}">${esc(SPORT_CONFIG[s].name)}</option>`).join('');
+  sel.value = sport;
+  loadSport();
+}
+
+function onSportChange() {
+  sport = document.getElementById('sportSel').value;
+  loadSport();
+}
+
+async function loadSport() {
+  try {
+    const json = await fetch('/api/live?sport=' + encodeURIComponent(sport)).then(r => r.json());
+    store.teams = json.teams || [];
+    store.matches = json.matches || [];
+  } catch (e) {
+    store.teams = []; store.matches = [];
+  }
+  renderAll();
+}
+
+function renderAll() {
+  renderTeams();
+  renderFixtureForm();
+  renderFixtureList();
+  renderControlSelect();
+  renderControl();
+  // toggle half-length field for football only
+  document.getElementById('fHalfWrap').style.display = (sport === 'football') ? '' : 'none';
+}
+
+function setView(v) {
+  view = v;
+  document.querySelectorAll('.vtab').forEach(t => t.classList.toggle('active', t.dataset.view === v));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + v).classList.add('active');
+}
+
+function flash(id, msg, ok) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = ok ? 'ok' : 'err';
+  el.hidden = false;
+  if (ok) setTimeout(() => { el.hidden = true; }, 2500);
+}
+
+// ── TEAMS VIEW ────────────────────────────────
+async function createTeam() {
+  const name = document.getElementById('tName').value.trim();
+  const group_name = document.getElementById('tGroup').value.trim();
+  const color = document.getElementById('tColor').value;
+  if (!name) { flash('teamMsg', 'Team name is required.', false); return; }
+  try {
+    await api('team.create', { sport, name, group_name, color });
+    document.getElementById('tName').value = '';
+    document.getElementById('tGroup').value = '';
+    await loadSport();
+    flash('teamMsg', 'Team added.', true);
+  } catch (e) { flash('teamMsg', e.message, false); }
+}
+
+function renderTeams() {
+  const wrap = document.getElementById('teamList');
+  if (!store.teams.length) { wrap.innerHTML = '<p class="muted">No teams yet for ' + esc(SPORT_CONFIG[sport].name) + '.</p>'; return; }
+  wrap.innerHTML = store.teams.map(t => `
+    <div class="card" data-team="${t.id}">
+      <div class="list-item">
+        <span class="name">${esc(t.name)}</span>
+        ${t.group_name ? `<span class="badge">Group ${esc(t.group_name)}</span>` : ''}
+        <span class="spacer" style="margin-left:auto"></span>
+        <button class="btn-danger" onclick="deleteTeam(${t.id}, this)">Delete</button>
+      </div>
+      <div class="players" style="margin-top:.5rem">
+        ${(t.players || []).map(p => `
+          <div class="player-row">
+            <span class="num">${p.number != null ? '#' + p.number : ''}</span>
+            <span class="pname">${esc(p.name)}</span>
+            <button class="ev-del" onclick="deletePlayer(${p.id})">Remove</button>
+          </div>`).join('') || '<p class="muted">No players yet.</p>'}
+      </div>
+      <div class="row" style="margin-top:.6rem">
+        <div><label>Player name</label><input id="pn-${t.id}" placeholder="Player name" /></div>
+        <div style="flex:0 0 90px"><label>No.</label><input id="pnum-${t.id}" type="number" min="0" max="999" placeholder="#" /></div>
+        <div style="flex:0 0 auto"><button class="btn-ghost" onclick="addPlayer(${t.id})">Add Player</button></div>
+      </div>
+    </div>`).join('');
+}
+
+async function deleteTeam(id, btn) {
+  if (btn.dataset.confirm !== '1') {
+    btn.dataset.confirm = '1';
+    btn.textContent = 'Confirm?';
+    setTimeout(() => { if (btn) { btn.dataset.confirm = '0'; btn.textContent = 'Delete'; } }, 3000);
+    return;
+  }
+  try { await api('team.delete', { id }); await loadSport(); }
+  catch (e) { flash('globalMsg', e.message, false); }
+}
+
+async function addPlayer(teamId) {
+  const name = document.getElementById('pn-' + teamId).value.trim();
+  const number = document.getElementById('pnum-' + teamId).value.trim();
+  if (!name) return;
+  try { await api('player.create', { team_id: teamId, name, number: number || null }); await loadSport(); }
+  catch (e) { flash('globalMsg', e.message, false); }
+}
+async function deletePlayer(id) {
+  try { await api('player.delete', { id }); await loadSport(); }
+  catch (e) { flash('globalMsg', e.message, false); }
+}
+
+// ── FIXTURES VIEW ─────────────────────────────
+function teamOptions(selectedId) {
+  return '<option value="">— TBD —</option>' + store.teams.map(t =>
+    `<option value="${t.id}" ${String(t.id) === String(selectedId) ? 'selected' : ''}>${esc(t.name)}${t.group_name ? ' (' + esc(t.group_name) + ')' : ''}</option>`
+  ).join('');
+}
+function renderFixtureForm() {
+  document.getElementById('fTeamA').innerHTML = teamOptions();
+  document.getElementById('fTeamB').innerHTML = teamOptions();
+}
+
+async function createFixture() {
+  const stage = document.getElementById('fStage').value;
+  const group_name = document.getElementById('fGroup').value.trim();
+  const team_a_id = document.getElementById('fTeamA').value || null;
+  const team_b_id = document.getElementById('fTeamB').value || null;
+  const whenVal = document.getElementById('fWhen').value;
+  const label = document.getElementById('fLabel').value.trim();
+  const half_length = parseInt(document.getElementById('fHalf').value, 10) || 10;
+  const scheduled_at = whenVal ? new Date(whenVal).toISOString() : null;
+  try {
+    await api('match.create', { sport, stage, group_name, team_a_id, team_b_id, scheduled_at, label, half_length });
+    document.getElementById('fLabel').value = '';
+    await loadSport();
+    flash('fixMsg', 'Fixture created.', true);
+    setView('fixtures');
+  } catch (e) { flash('fixMsg', e.message, false); }
+}
+
+function renderFixtureList() {
+  const wrap = document.getElementById('fixtureList');
+  if (!store.matches.length) { wrap.innerHTML = '<p class="muted">No fixtures yet.</p>'; return; }
+  const stages = ['group', 'quarter', 'semi', 'third', 'final'];
+  const byStage = {};
+  store.matches.forEach(m => (byStage[m.stage] ||= []).push(m));
+  wrap.innerHTML = stages.filter(s => byStage[s]).map(s => `
+    <div class="stage-group">
+      <h4>${esc(stageTitle(s))}</h4>
+      ${byStage[s].map(m => `
+        <div class="card">
+          <div class="list-item">
+            <span class="name">${esc(m.team_a_name || 'TBD')} v ${esc(m.team_b_name || 'TBD')}</span>
+            <span class="badge">${esc(statusLabel(m.status))}</span>
+            <span style="margin-left:auto"></span>
+            <button class="btn-danger" onclick="deleteMatch(${m.id}, this)">Delete</button>
+          </div>
+          <p class="muted" style="margin:.3rem 0 0">
+            ${m.group_name ? 'Group ' + esc(m.group_name) + ' · ' : ''}${m.label ? esc(m.label) + ' · ' : ''}${m.scheduled_at ? esc(new Date(m.scheduled_at).toLocaleString()) : 'no time set'}
+          </p>
+        </div>`).join('')}
+    </div>`).join('');
+}
+async function deleteMatch(id, btn) {
+  if (btn.dataset.confirm !== '1') {
+    btn.dataset.confirm = '1'; btn.textContent = 'Confirm?';
+    setTimeout(() => { if (btn) { btn.dataset.confirm = '0'; btn.textContent = 'Delete'; } }, 3000);
+    return;
+  }
+  try { await api('match.delete', { id }); await loadSport(); }
+  catch (e) { flash('globalMsg', e.message, false); }
+}
+
+// ── MATCH CONTROL ─────────────────────────────
+function renderControlSelect() {
+  const sel = document.getElementById('mcSel');
+  const prev = sel.value;
+  if (!store.matches.length) { sel.innerHTML = '<option value="">No matches</option>'; return; }
+  sel.innerHTML = store.matches.map(m =>
+    `<option value="${m.id}">${esc(m.team_a_name || 'TBD')} v ${esc(m.team_b_name || 'TBD')} — ${esc(statusLabel(m.status))}</option>`
+  ).join('');
+  if (prev && store.matches.some(m => String(m.id) === prev)) sel.value = prev;
+}
+
+function currentMatch() {
+  const id = document.getElementById('mcSel').value;
+  return store.matches.find(m => String(m.id) === String(id));
+}
+
+function renderControl() {
+  const body = document.getElementById('controlBody');
+  const m = currentMatch();
+  if (!m) { body.innerHTML = '<p class="muted">Create a fixture first.</p>'; return; }
+  const cfg = SPORT_CONFIG[sport];
+  let html = '';
+
+  // status flow
+  html += `<div class="card">
+    <span class="status-now">Status: ${esc(statusLabel(m.status))}</span>
+    <div class="status-flow">${statusButtons(m, cfg)}</div>
+  </div>`;
+
+  // score area
+  const aName = esc(m.team_a_name || 'Team A');
+  const bName = esc(m.team_b_name || 'Team B');
+
+  if (cfg.scoring === 'sets') {
+    html += setsControl(m, aName, bName);
+  } else if (cfg.events) {
+    html += `<div class="card">
+      <div class="score-big"><span class="tname">${aName}</span><span class="sc">${m.score_a} – ${m.score_b}</span><span class="tname">${bName}</span></div>
+      <div class="goal-btns">
+        <button onclick="openGoalSheet(${m.id}, ${m.team_a_id || 'null'})">+ Goal ${aName}</button>
+        <button onclick="openGoalSheet(${m.id}, ${m.team_b_id || 'null'})">+ Goal ${bName}</button>
+      </div>
+      <div class="minor-btns">
+        <button onclick="quickEvent(${m.id}, ${m.team_a_id || 'null'}, 'yellow')">🟨 ${aName}</button>
+        <button onclick="quickEvent(${m.id}, ${m.team_a_id || 'null'}, 'red')">🟥 ${aName}</button>
+        <button onclick="quickEvent(${m.id}, ${m.team_b_id || 'null'}, 'yellow')">🟨 ${bName}</button>
+        <button onclick="quickEvent(${m.id}, ${m.team_b_id || 'null'}, 'red')">🟥 ${bName}</button>
+      </div>
+      ${eventList(m)}
+    </div>`;
+  } else {
+    // points sports: steppers + direct entry
+    html += `<div class="card">
+      <div class="score-big">
+        <div><div class="tname">${aName}</div><div class="stepper"><button onclick="stepScore(${m.id},'a',-1)">−</button><span class="val" id="sa">${m.score_a}</span><button onclick="stepScore(${m.id},'a',1)">+</button></div></div>
+        <span class="sc">–</span>
+        <div><div class="tname">${bName}</div><div class="stepper"><button onclick="stepScore(${m.id},'b',-1)">−</button><span class="val" id="sb">${m.score_b}</span><button onclick="stepScore(${m.id},'b',1)">+</button></div></div>
+      </div>
+      <div class="row">
+        <div><label>Score A</label><input id="dsa" type="number" min="0" value="${m.score_a}" /></div>
+        <div><label>Score B</label><input id="dsb" type="number" min="0" value="${m.score_b}" /></div>
+        <div style="flex:0 0 auto"><button class="btn-primary" onclick="saveDirectScore(${m.id})">Save Score</button></div>
+      </div>
+    </div>`;
+  }
+
+  html += `<p id="ctrlMsg" class="err" hidden></p>`;
+  body.innerHTML = html;
+}
+
+function statusButtons(m, cfg) {
+  const btns = [];
+  const B = (label, action, cls) => `<button class="${cls || 'btn-primary'}" onclick="statusAction(${m.id},'${action}')">${label}</button>`;
+  if (m.status === 'scheduled') btns.push(B('Kick Off', 'match.start'));
+  if (m.status === 'live') {
+    if (cfg.clock) btns.push(B('Half Time', 'match.halftime', 'btn-gold'));
+    btns.push(B('Full Time', 'match.finish', 'btn-ghost'));
+  }
+  if (m.status === 'halftime') btns.push(B('Second Half', 'match.second_half'));
+  if (m.status === 'finished') btns.push(B('Reopen', 'match.reopen', 'btn-ghost'));
+  return btns.join('');
+}
+
+async function statusAction(id, action) {
+  try { await api(action, { id }); await loadSport(); }
+  catch (e) { flash('ctrlMsg', e.message, false); }
+}
+
+async function stepScore(id, side, delta) {
+  const m = store.matches.find(x => x.id === id);
+  if (!m) return;
+  let a = m.score_a, b = m.score_b;
+  if (side === 'a') a = Math.max(0, a + delta); else b = Math.max(0, b + delta);
+  try { await api('match.score', { id, score_a: a, score_b: b }); await loadSport(); }
+  catch (e) { flash('ctrlMsg', e.message, false); }
+}
+async function saveDirectScore(id) {
+  const a = parseInt(document.getElementById('dsa').value, 10) || 0;
+  const b = parseInt(document.getElementById('dsb').value, 10) || 0;
+  try { await api('match.score', { id, score_a: a, score_b: b }); await loadSport(); flash('ctrlMsg', 'Saved.', true); }
+  catch (e) { flash('ctrlMsg', e.message, false); }
+}
+
+// sets control
+function setsControl(m, aName, bName) {
+  const sets = Array.isArray(m.sets) ? m.sets : [];
+  const rows = sets.map((s, i) => `
+    <div class="set-row">
+      <span class="setno">Set ${i + 1}</span>
+      <input type="number" min="0" id="set-a-${i}" value="${s[0]}" />
+      <span class="set-sep">–</span>
+      <input type="number" min="0" id="set-b-${i}" value="${s[1]}" />
+      <button class="ev-del" onclick="removeSet(${i})">✕</button>
+    </div>`).join('');
+  return `<div class="card">
+    <div class="score-big"><span class="tname">${aName}</span><span class="sc">${m.score_a} – ${m.score_b}</span><span class="tname">${bName}</span></div>
+    <p class="muted">Sets won, computed from set scores.</p>
+    <div id="setRows">${rows || '<p class="muted">No sets entered.</p>'}</div>
+    <div class="inline-actions">
+      <button class="btn-ghost" onclick="addSetRow()">+ Add Set</button>
+      <button class="btn-primary" onclick="saveSets(${m.id})">Save Sets</button>
+    </div>
+  </div>`;
+}
+let pendingSets = null;
+function readSetRows() {
+  const rows = document.querySelectorAll('#setRows .set-row');
+  const out = [];
+  rows.forEach((r, i) => {
+    const a = parseInt(document.getElementById('set-a-' + i).value, 10);
+    const b = parseInt(document.getElementById('set-b-' + i).value, 10);
+    out.push([isNaN(a) ? 0 : a, isNaN(b) ? 0 : b]);
+  });
+  return out;
+}
+function addSetRow() {
+  const m = currentMatch();
+  const cur = readSetRows();
+  cur.push([0, 0]);
+  m.sets = cur;
+  renderControl();
+}
+function removeSet(i) {
+  const m = currentMatch();
+  const cur = readSetRows();
+  cur.splice(i, 1);
+  m.sets = cur;
+  renderControl();
+}
+async function saveSets(id) {
+  const sets = readSetRows();
+  try { await api('match.sets', { id, sets }); await loadSport(); flash('ctrlMsg', 'Sets saved.', true); }
+  catch (e) { flash('ctrlMsg', e.message, false); }
+}
+
+// events
+function eventList(m) {
+  const evs = (m.events || []).slice().sort((a, b) => (b.minute || 0) - (a.minute || 0) || b.id - a.id);
+  if (!evs.length) return '<p class="muted" style="margin-top:1rem">No events logged.</p>';
+  return `<ul class="ev-list">${evs.map(e => {
+    const teamName = e.team_id === m.team_a_id ? m.team_a_name : (e.team_id === m.team_b_id ? m.team_b_name : '');
+    const label = e.player_name || evTypeLabel(e.type);
+    return `<li>
+      <span class="ev-min">${e.minute != null ? e.minute + "'" : ''}</span>
+      <span class="ev-txt">${evTypeIcon(e.type)} ${esc(label)} <span class="muted">${esc(teamName || '')}</span></span>
+      <button class="ev-del" onclick="deleteEvent(${e.id})">Undo</button>
+    </li>`;
+  }).join('')}</ul>`;
+}
+function evTypeLabel(t) { return { goal: 'Goal', penalty_goal: 'Penalty', own_goal: 'Own goal', yellow: 'Yellow', red: 'Red', sub: 'Sub', note: 'Note' }[t] || t; }
+function evTypeIcon(t) { return { goal: '⚽', penalty_goal: '⚽', own_goal: '⚽', yellow: '🟨', red: '🟥', sub: '🔁', note: '•' }[t] || '•'; }
+
+async function quickEvent(matchId, teamId, type) {
+  try { await api('event.create', { match_id: matchId, team_id: teamId, type }); await loadSport(); }
+  catch (e) { flash('ctrlMsg', e.message, false); }
+}
+async function deleteEvent(id) {
+  try { await api('event.delete', { id }); await loadSport(); }
+  catch (e) { flash('ctrlMsg', e.message, false); }
+}
+
+// goal sheet
+function openGoalSheet(matchId, teamId) {
+  const team = store.teams.find(t => t.id === teamId);
+  sheetCtx = { matchId, teamId, selectedPlayer: null };
+  document.getElementById('sheetTitle').textContent = 'Add Goal — ' + (team ? team.name : 'Team');
+  const grid = document.getElementById('pickerGrid');
+  const players = team ? (team.players || []) : [];
+  grid.innerHTML = players.length
+    ? players.map(p => `<button data-pid="${p.id}" data-pname="${esc(p.name)}" onclick="pickPlayer(this)">${p.number != null ? '#' + p.number + ' ' : ''}${esc(p.name)}</button>`).join('')
+    : '<p class="muted">No roster. Type a name below.</p>';
+  document.getElementById('pickerFree').value = '';
+  document.getElementById('ownGoalChk').checked = false;
+  document.getElementById('sheetErr').hidden = true;
+  document.getElementById('sheet').classList.add('open');
+}
+function pickPlayer(btn) {
+  document.querySelectorAll('#pickerGrid button').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  sheetCtx.selectedPlayer = { id: parseInt(btn.dataset.pid, 10), name: btn.dataset.pname };
+  document.getElementById('pickerFree').value = '';
+}
+function closeSheet() { document.getElementById('sheet').classList.remove('open'); sheetCtx = null; }
+async function confirmGoal() {
+  if (!sheetCtx) return;
+  const own = document.getElementById('ownGoalChk').checked;
+  const free = document.getElementById('pickerFree').value.trim();
+  const btn = document.getElementById('sheetConfirm');
+  const payload = {
+    match_id: sheetCtx.matchId,
+    team_id: sheetCtx.teamId,
+    type: own ? 'own_goal' : 'goal',
+  };
+  if (!own) {
+    if (sheetCtx.selectedPlayer && !free) {
+      payload.player_id = sheetCtx.selectedPlayer.id;
+      payload.player_name = sheetCtx.selectedPlayer.name;
+    } else if (free) {
+      payload.player_name = free;
+    }
+  }
+  btn.disabled = true;
+  try {
+    await api('event.create', payload);
+    closeSheet();
+    await loadSport();
+  } catch (e) {
+    const err = document.getElementById('sheetErr');
+    err.textContent = e.message; err.hidden = false;
+  } finally { btn.disabled = false; }
+}
+
+// ── LABELS ────────────────────────────────────
+function statusLabel(s) { return { scheduled: 'Scheduled', live: 'Live', halftime: 'Half Time', finished: 'Full Time' }[s] || s; }
+function stageTitle(s) { return { group: 'Group Stage', quarter: 'Quarter-finals', semi: 'Semi-finals', third: '3rd Place', final: 'Final' }[s] || s; }
+
+// ── BOOT ──────────────────────────────────────
+document.getElementById('key').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+(function restore() {
+  let saved = '';
+  try { saved = sessionStorage.getItem('rentap_admin_key') || ''; } catch {}
+  if (saved) { document.getElementById('key').value = saved; unlock(); }
+})();
+</script>
+</body>
+</html>

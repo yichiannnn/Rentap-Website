@@ -179,6 +179,7 @@
         <li><a href="index.html#about">About</a></li>
         <li><a href="index.html#sports">Sports</a></li>
         <li><a href="index.html#schedule">Schedule</a></li>
+        <li><a href="live.html">Live</a></li>
         <li><a href="index.html#register" class="nav-cta">Register</a></li>
       </ul>
     </nav>
@@ -197,6 +198,10 @@
     <h1 class="sport-title" id="sportTitle">—</h1>
     <p class="sport-subtitle" id="sportSubtitle">RENTAP XVII · Rules &amp; Regulations</p>
     <div class="sport-chips" id="sportChips"></div>
+    <a href="live.html" class="btn btn-gold" id="liveResultsLink" style="margin-top:1.5rem;display:none">
+      <span style="display:inline-block;width:.55rem;height:.55rem;border-radius:50%;background:currentColor;margin-right:.15rem"></span>
+      View Live Results
+    </a>
   </div>
 </section>
 
@@ -658,6 +663,14 @@ function renderSport() {
   document.getElementById('sportTitle').textContent    = sport.name;
   document.getElementById('sportSubtitle').textContent = sport.subtitle + ' · RENTAP XVII Rules & Regulations';
   document.getElementById('heroIcon').innerHTML        = sport.icon;
+
+  // Link to this sport's live results (only for sports tracked live)
+  const LIVE_SLUGS = ['football', 'touch-rugby', 'badminton', 'volleyball', 'basketball'];
+  const liveLink = document.getElementById('liveResultsLink');
+  if (liveLink && LIVE_SLUGS.includes(slug)) {
+    liveLink.href = 'live.html#' + slug;
+    liveLink.style.display = 'inline-flex';
+  }
 
   // Chips
   const chipsEl = document.getElementById('sportChips');
