@@ -559,6 +559,33 @@
         </ul>
         <button class="btn btn-outline reg-btn" onclick="openModal('spectator')">Spectator Registration</button>
       </div>
+
+      <div class="reg-card reg-card--vendor">
+        <div class="reg-card-top">
+          <span class="reg-tag reg-tag--vendor">Food Vendor</span>
+          <h3>Sell</h3>
+          <p>Run a food stall at the RENTAP bazaar and serve our hungry crowd all weekend.</p>
+        </div>
+        <ul class="reg-list" aria-label="Food vendor registration includes">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Your own stall at the food bazaar
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Reach the whole tournament crowd
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Both days of the event
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Details shared after sign-up
+          </li>
+        </ul>
+        <button class="btn btn-outline reg-btn" onclick="openModal('vendor')">Vendor Registration</button>
+      </div>
     </div>
   </div>
 </section>
@@ -870,6 +897,34 @@
           </select>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Register to Attend</button>
+      </form>
+    </div>
+
+    <div id="form-vendor" class="modal-pane" hidden>
+      <h2>Food Vendor Registration</h2>
+      <p>Serve your food at the RENTAP XVII bazaar. Leave your details and our team will be in touch with stall details.</p>
+      <form onsubmit="submitForm(event)" novalidate>
+        <div class="form-field">
+          <label for="fv-stall">Stall / Business Name</label>
+          <input id="fv-stall" type="text" required placeholder="Your stall or business name" />
+        </div>
+        <div class="form-field">
+          <label for="fv-name">Contact Person</label>
+          <input id="fv-name" type="text" required placeholder="Your full name" autocomplete="name" />
+        </div>
+        <div class="form-field">
+          <label for="fv-email">Email Address</label>
+          <input id="fv-email" type="email" required placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="form-field">
+          <label for="fv-phone">Phone Number</label>
+          <input id="fv-phone" type="tel" required placeholder="+49 1512 3456789" autocomplete="tel" />
+        </div>
+        <div class="form-field">
+          <label for="fv-food">What will you sell?</label>
+          <input id="fv-food" type="text" required placeholder="e.g. Nasi lemak, satay, drinks" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Submit My Interest</button>
       </form>
     </div>
 

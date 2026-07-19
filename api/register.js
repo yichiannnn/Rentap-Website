@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 
-const TYPES = ['player', 'volunteer', 'spectator'];
+const TYPES = ['player', 'volunteer', 'spectator', 'vendor'];
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   try {
     const sql = neon(process.env.DATABASE_URL);
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
-    let { type, name, email, phone, university, sport, team, role, membership } = body;
+    let { type, name, email, phone, university, sport, team, role, membership, stall, food } = body;
 
     if (!TYPES.includes(type)) {
       return res.status(400).json({ error: 'Invalid registration type' });
@@ -30,10 +30,12 @@ export default async function handler(req, res) {
     team = (team || '').toString().trim().slice(0, 120) || null;
     role = (role || '').toString().trim().slice(0, 80) || null;
     membership = (membership || '').toString().trim().slice(0, 80) || null;
+    stall = (stall || '').toString().trim().slice(0, 120) || null;
+    food = (food || '').toString().trim().slice(0, 200) || null;
 
     await sql`
-      INSERT INTO registrations (type, name, email, phone, university, sport, team, role, membership)
-      VALUES (${type}, ${name}, ${email}, ${phone}, ${university}, ${sport}, ${team}, ${role}, ${membership})
+      INSERT INTO registrations (type, name, email, phone, university, sport, team, role, membership, stall, food)
+      VALUES (${type}, ${name}, ${email}, ${phone}, ${university}, ${sport}, ${team}, ${role}, ${membership}, ${stall}, ${food})
     `;
 
     return res.status(200).json({ ok: true });

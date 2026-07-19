@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   try {
     const sql = neon(process.env.DATABASE_URL);
     const rows = await sql`
-      SELECT id, type, name, email, phone, university, sport, team, role, membership, created_at
+      SELECT id, type, name, email, phone, university, sport, team, role, membership, stall, food, created_at
       FROM registrations
       ORDER BY created_at DESC
     `;

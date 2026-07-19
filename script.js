@@ -93,7 +93,8 @@ const modalBox = document.getElementById('modalBox');
 const REG_OPEN = {
   player: false,
   volunteer: true,
-  spectator: false
+  spectator: false,
+  vendor: false
 };
 
 const COMING_SOON = {
@@ -104,11 +105,15 @@ const COMING_SOON = {
   spectator: {
     title: 'Spectator Registration Opens Soon',
     msg: 'Spectator entry is not open yet. Registration will open soon — check back nearer the event to reserve your spot and cheer the teams on.'
+  },
+  vendor: {
+    title: 'Vendor Registration Opens Soon',
+    msg: 'Food vendor sign-ups are not open just yet. Registration will open soon — check back to secure a stall at the RENTAP bazaar.'
   }
 };
 
 function openModal(type) {
-  const panes = ['form-player', 'form-volunteer', 'form-spectator', 'form-comingsoon', 'form-success'];
+  const panes = ['form-player', 'form-volunteer', 'form-spectator', 'form-vendor', 'form-comingsoon', 'form-success'];
   panes.forEach(id => { document.getElementById(id).hidden = true; });
 
   if (REG_OPEN[type]) {
@@ -169,6 +174,7 @@ function showRegSuccess() {
   document.getElementById('form-player').hidden    = true;
   document.getElementById('form-volunteer').hidden = true;
   document.getElementById('form-spectator').hidden = true;
+  document.getElementById('form-vendor').hidden    = true;
   document.getElementById('form-success').hidden   = false;
   document.getElementById('form-success').querySelector('button').focus();
 }
@@ -185,6 +191,7 @@ async function submitForm(e) {
   if (!document.getElementById('form-player').hidden)         type = 'player';
   else if (!document.getElementById('form-volunteer').hidden) type = 'volunteer';
   else if (!document.getElementById('form-spectator').hidden) type = 'spectator';
+  else if (!document.getElementById('form-vendor').hidden)    type = 'vendor';
   if (!type) return;
 
   const data = { type };
@@ -203,6 +210,12 @@ async function submitForm(e) {
     data.name = fieldVal('s-name');
     data.email = fieldVal('s-email');
     data.membership = fieldVal('s-member');
+  } else if (type === 'vendor') {
+    data.stall = fieldVal('fv-stall');
+    data.name = fieldVal('fv-name');
+    data.email = fieldVal('fv-email');
+    data.phone = fieldVal('fv-phone');
+    data.food = fieldVal('fv-food');
   }
 
   const btn = form.querySelector('button[type="submit"]');
