@@ -138,6 +138,16 @@ function openModal(type) {
   }, 50);
 }
 
+function toggleCoordSport() {
+  const role = document.getElementById('v-role').value;
+  const field = document.getElementById('v-sport-field');
+  const select = document.getElementById('v-sport');
+  const isCoord = role === 'Sports Coordinator';
+  field.hidden = !isCoord;
+  select.required = isCoord;
+  if (!isCoord) select.value = '';
+}
+
 function toggleRoleInfo(btn) {
   const panel = document.getElementById('role-info');
   const isOpen = !panel.hidden;
@@ -206,6 +216,7 @@ async function submitForm(e) {
     data.phone = fieldVal('v-phone');
     data.university = fieldVal('v-uni');
     data.role = fieldVal('v-role');
+    if (data.role === 'Sports Coordinator') data.sport = fieldVal('v-sport');
   } else if (type === 'spectator') {
     data.name = fieldVal('s-name');
     data.email = fieldVal('s-email');

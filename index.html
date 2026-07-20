@@ -846,7 +846,7 @@
         </div>
         <div class="form-field">
           <label for="v-role">Preferred Role</label>
-          <select id="v-role" required>
+          <select id="v-role" required onchange="toggleCoordSport()">
             <option value="">Select a role…</option>
             <option>Emcee</option>
             <option>Photographer</option>
@@ -854,6 +854,22 @@
             <option>Sports Coordinator</option>
             <option>Runner</option>
           </select>
+          <div class="form-field" id="v-sport-field" style="margin-top:0.75rem" hidden>
+            <label for="v-sport">Which sport?</label>
+            <select id="v-sport">
+              <option value="">Select a sport…</option>
+              <option>Badminton</option>
+              <option>Basketball</option>
+              <option>Football</option>
+              <option>Volleyball</option>
+              <option>Touch Rugby</option>
+              <option>Frisbee</option>
+              <option>Track</option>
+              <option>Table Tennis</option>
+              <option>Tug of War</option>
+              <option>No preference</option>
+            </select>
+          </div>
           <button type="button" class="info-btn" id="roleInfoBtn" aria-expanded="false" aria-controls="role-info" onclick="toggleRoleInfo(this)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
             <span class="info-btn-text">What does each role involve?</span>
