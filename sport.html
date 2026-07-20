@@ -200,7 +200,7 @@
     <div class="sport-chips" id="sportChips"></div>
     <a href="live.html" class="btn btn-gold" id="liveResultsLink" style="margin-top:1.5rem;display:none">
       <span style="display:inline-block;width:.55rem;height:.55rem;border-radius:50%;background:currentColor;margin-right:.15rem"></span>
-      View Live Results
+      Live Scores
     </a>
   </div>
 </section>
@@ -701,10 +701,9 @@ function renderSport() {
   document.getElementById('sportSubtitle').textContent = sport.subtitle + ' · RENTAP XVII Rules & Regulations';
   document.getElementById('heroIcon').innerHTML        = sport.icon;
 
-  // Link to this sport's live results (only for sports tracked live)
-  const LIVE_SLUGS = ['football', 'touch-rugby', 'badminton', 'volleyball', 'basketball'];
+  // Link to this sport's live results (shown on every sport)
   const liveLink = document.getElementById('liveResultsLink');
-  if (liveLink && LIVE_SLUGS.includes(slug)) {
+  if (liveLink) {
     liveLink.href = 'live.html#' + slug;
     liveLink.style.display = 'inline-flex';
   }
