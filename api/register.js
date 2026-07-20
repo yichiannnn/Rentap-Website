@@ -32,13 +32,26 @@ export default async function handler(req, res) {
     membership = (membership || '').toString().trim().slice(0, 80) || null;
     people = (people || '').toString().trim().slice(0, 20) || null;
     category = (category || '').toString().trim().slice(0, 80) || null;
+    const description = (food || '').toString().trim().slice(0, 200) || null;
 
-    // Columns below all exist in the database (confirmed). Vendor description
-    // ("food") is added back with its column when vendor registration opens.
-    await sql`
-      INSERT INTO registrations (type, name, email, phone, university, sport, team, role, membership, people, category)
-      VALUES (${type}, ${name}, ${email}, ${phone}, ${university}, ${sport}, ${team}, ${role}, ${membership}, ${people}, ${category})
+    // Save the vendor description only if the "food" column exists; otherwise
+    // skip it so a missing column can never break a submission.
+    const foodCol = await sql`
+      SELECT 1 FROM information_schema.columns
+      WHERE table_name = 'registrations' AND column_name = 'food'
     `;
+
+    if (foodCol.length > 0) {
+      await sql`
+        INSERT INTO registrations (type, name, email, phone, university, sport, team, role, membership, people, category, food)
+        VALUES (${type}, ${name}, ${email}, ${phone}, ${university}, ${sport}, ${team}, ${role}, ${membership}, ${people}, ${category}, ${description})
+      `;
+    } else {
+      await sql`
+        INSERT INTO registrations (type, name, email, phone, university, sport, team, role, membership, people, category)
+        VALUES (${type}, ${name}, ${email}, ${phone}, ${university}, ${sport}, ${team}, ${role}, ${membership}, ${people}, ${category})
+      `;
+    }
 
     return res.status(200).json({ ok: true });
   } catch (err) {

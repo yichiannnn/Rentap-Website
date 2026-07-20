@@ -91,10 +91,10 @@ const modalBox = document.getElementById('modalBox');
 // ── Registration availability ────────────────
 // Flip a value to true when that registration opens.
 const REG_OPEN = {
-  player: false,
+  player: true,
   volunteer: true,
-  spectator: false,
-  vendor: false
+  spectator: true,
+  vendor: true
 };
 
 const COMING_SOON = {
