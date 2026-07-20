@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   try {
     const sql = neon(process.env.DATABASE_URL);
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
-    let { type, name, email, phone, university, sport, team, role, membership, stall, food } = body;
+    let { type, name, email, phone, university, sport, team, role, membership, stall, food, people, category } = body;
 
     if (!TYPES.includes(type)) {
       return res.status(400).json({ error: 'Invalid registration type' });
@@ -32,10 +32,12 @@ export default async function handler(req, res) {
     membership = (membership || '').toString().trim().slice(0, 80) || null;
     stall = (stall || '').toString().trim().slice(0, 120) || null;
     food = (food || '').toString().trim().slice(0, 200) || null;
+    people = (people || '').toString().trim().slice(0, 20) || null;
+    category = (category || '').toString().trim().slice(0, 80) || null;
 
     await sql`
-      INSERT INTO registrations (type, name, email, phone, university, sport, team, role, membership, stall, food)
-      VALUES (${type}, ${name}, ${email}, ${phone}, ${university}, ${sport}, ${team}, ${role}, ${membership}, ${stall}, ${food})
+      INSERT INTO registrations (type, name, email, phone, university, sport, team, role, membership, stall, food, people, category)
+      VALUES (${type}, ${name}, ${email}, ${phone}, ${university}, ${sport}, ${team}, ${role}, ${membership}, ${stall}, ${food}, ${people}, ${category})
     `;
 
     return res.status(200).json({ ok: true });

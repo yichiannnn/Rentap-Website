@@ -222,11 +222,12 @@ async function submitForm(e) {
     data.email = fieldVal('s-email');
     data.membership = fieldVal('s-member');
   } else if (type === 'vendor') {
-    data.stall = fieldVal('fv-stall');
     data.name = fieldVal('fv-name');
     data.email = fieldVal('fv-email');
     data.phone = fieldVal('fv-phone');
-    data.food = fieldVal('fv-food');
+    data.people = fieldVal('fv-people');
+    data.category = fieldVal('fv-category');
+    data.food = fieldVal('fv-desc');
   }
 
   const btn = form.querySelector('button[type="submit"]');
