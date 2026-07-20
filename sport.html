@@ -179,7 +179,7 @@
         <li><a href="index.html#about">About</a></li>
         <li><a href="index.html#sports">Sports</a></li>
         <li><a href="index.html#schedule">Schedule</a></li>
-        <li><a href="live.html">Live</a></li>
+        <!-- <li><a href="live.html">Live</a></li> hidden until go-live -->
         <li><a href="index.html#register" class="nav-cta">Register</a></li>
       </ul>
     </nav>
@@ -701,9 +701,11 @@ function renderSport() {
   document.getElementById('sportSubtitle').textContent = sport.subtitle + ' · RENTAP XVII Rules & Regulations';
   document.getElementById('heroIcon').innerHTML        = sport.icon;
 
-  // Link to this sport's live results (shown on every sport)
+  // Link to this sport's live results — hidden until go-live.
+  // To re-enable: change SHOW_LIVE to true.
+  const SHOW_LIVE = false;
   const liveLink = document.getElementById('liveResultsLink');
-  if (liveLink) {
+  if (liveLink && SHOW_LIVE) {
     liveLink.href = 'live.html#' + slug;
     liveLink.style.display = 'inline-flex';
   }
