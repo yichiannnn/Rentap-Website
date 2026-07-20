@@ -907,11 +907,15 @@
         </div>
         <div class="form-field">
           <label for="s-member">MGSS Membership</label>
-          <select id="s-member" required>
+          <select id="s-member" required onchange="toggleMemberNo()">
             <option value="">Are you an MGSS member?…</option>
             <option>Yes — MGSS member (free entrance)</option>
             <option>No — non-member (entrance fee applies)</option>
           </select>
+        </div>
+        <div class="form-field" id="s-memberno-field" hidden>
+          <label for="s-memberno">MGSS Membership Number</label>
+          <input id="s-memberno" type="text" placeholder="Your membership number" />
         </div>
         <button type="submit" class="btn btn-primary btn-block">Register to Attend</button>
       </form>

@@ -138,6 +138,16 @@ function openModal(type) {
   }, 50);
 }
 
+function toggleMemberNo() {
+  const val = document.getElementById('s-member').value;
+  const field = document.getElementById('s-memberno-field');
+  const input = document.getElementById('s-memberno');
+  const isMember = val.indexOf('Yes') === 0;
+  field.hidden = !isMember;
+  input.required = isMember;
+  if (!isMember) input.value = '';
+}
+
 function toggleCoordSport() {
   const role = document.getElementById('v-role').value;
   const field = document.getElementById('v-sport-field');
@@ -221,6 +231,7 @@ async function submitForm(e) {
     data.name = fieldVal('s-name');
     data.email = fieldVal('s-email');
     data.membership = fieldVal('s-member');
+    if (data.membership.indexOf('Yes') === 0) data.memberNo = fieldVal('s-memberno');
   } else if (type === 'vendor') {
     data.name = fieldVal('fv-name');
     data.email = fieldVal('fv-email');
