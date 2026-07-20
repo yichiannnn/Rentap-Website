@@ -32,34 +32,17 @@ export default async function handler(req, res) {
     membership = (membership || '').toString().trim().slice(0, 80) || null;
     people = (people || '').toString().trim().slice(0, 20) || null;
     category = (category || '').toString().trim().slice(0, 80) || null;
-    // Vendor description ("food") stored only if the column exists — added when vendor opens.
-    const description = (food || '').toString().trim().slice(0, 200) || null;
 
-    // Discover which optional columns actually exist, so a missing column can never break an insert.
-    const colRows = await sql`
-      SELECT column_name FROM information_schema.columns WHERE table_name = 'registrations'
+    // Columns below all exist in the database (confirmed). Vendor description
+    // ("food") is added back with its column when vendor registration opens.
+    await sql`
+      INSERT INTO registrations (type, name, email, phone, university, sport, team, role, membership, people, category)
+      VALUES (${type}, ${name}, ${email}, ${phone}, ${university}, ${sport}, ${team}, ${role}, ${membership}, ${people}, ${category})
     `;
-    const cols = new Set(colRows.map(r => r.column_name));
-
-    const optional = { people, category, food: description };
-    const extraCols = [];
-    const extraVals = [];
-    for (const [col, val] of Object.entries(optional)) {
-      if (cols.has(col)) { extraCols.push(col); extraVals.push(val); }
-    }
-
-    const allCols = ['type', 'name', 'email', 'phone', 'university', 'sport', 'team', 'role', 'membership', ...extraCols];
-    const allVals = [type, name, email, phone, university, sport, team, role, membership, ...extraVals];
-    const placeholders = allVals.map((_, i) => '$' + (i + 1)).join(', ');
-
-    await sql.query(
-      `INSERT INTO registrations (${allCols.join(', ')}) VALUES (${placeholders})`,
-      allVals
-    );
 
     return res.status(200).json({ ok: true });
   } catch (err) {
     console.error('register error', err);
-    return res.status(500).json({ error: 'Could not save registration. Please try again.' });
+    return res.status(500).json({ error: 'Could not save registration.', detail: String(err && err.message || err) });
   }
 }
