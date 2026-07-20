@@ -124,6 +124,20 @@ p { max-width: 68ch; }
 }
 .btn-gold:hover { background: var(--gold-light); border-color: var(--gold-light); color: var(--ink); }
 
+.btn-light {
+  background: var(--light);
+  color: var(--ink);
+  border-color: var(--light);
+}
+.btn-light:hover { background: #fff; border-color: #fff; color: var(--ink); }
+
+.btn-green {
+  background: #0F8A4D;
+  color: #fff;
+  border-color: #0F8A4D;
+}
+.btn-green:hover { background: #12A75C; border-color: #12A75C; color: #fff; }
+
 .btn-block { width: 100%; margin-top: 1.25rem; }
 
 /* ── NAVBAR ──────────────────────────────────── */
