@@ -103,16 +103,22 @@
     if (!adminKey) { err.textContent = 'Please enter the admin key.'; err.hidden = false; return; }
 
     try {
-      const res = await fetch('/api/registrations?key=' + encodeURIComponent(adminKey));
+      const res = await fetch('/api/registrations?key=' + encodeURIComponent(adminKey), { cache: 'no-store' });
       if (res.status === 401) { err.textContent = 'Incorrect admin key.'; err.hidden = false; return; }
-      if (!res.ok) throw new Error('Request failed');
+      if (!res.ok) {
+        let detail = '';
+        try { detail = JSON.stringify(await res.json()); } catch (_) { detail = await res.text().catch(() => ''); }
+        err.textContent = 'Error ' + res.status + ': ' + detail;
+        err.hidden = false;
+        return;
+      }
       const data = await res.json();
       allRows = data.registrations || [];
       document.getElementById('gate').hidden = true;
       document.getElementById('dashboard').hidden = false;
       render();
     } catch (e) {
-      err.textContent = 'Could not load data. Is the database connected?';
+      err.textContent = 'Request failed: ' + (e && e.message ? e.message : e);
       err.hidden = false;
     }
   }
