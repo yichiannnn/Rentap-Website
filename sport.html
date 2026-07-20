@@ -236,13 +236,13 @@ const SPORTS = {
     name: 'Football',
     subtitle: 'Men\'s · Half-Field · 9v9',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
-    chips: ['Men Only', '13 Players (9+4 subs)', 'Half-Field Pitch', 'Max 10 Teams'],
+    chips: ['Men Only', '12 Players (9+3 subs)', 'Half-Field Pitch', 'Max 10 Teams'],
     pic: { name: 'Muhammad Haziq', phone: '+49 176 26791278' },
     sections: [
       {
         title: 'General Rules',
         rules: [
-          'Men-only teams. 13 players per squad: 9 field players + 4 substitutes.',
+          'Men-only teams. 12 players per squad: 9 field players + 3 substitutes.',
           'Played on a half-field grass pitch with rolling substitutions.',
           'Limited to 8 Malaysian teams + 2 International teams (Malaysians prioritised).',
           'Max. 2 international players per Malaysian-majority team; only 1 on the field at the same time.',
@@ -313,7 +313,7 @@ const SPORTS = {
         title: 'Tournament Format',
         rules: [
           'Group Stage: Teams divided into Group A and Group B. Each team plays every other team in their group (Round-Robin).',
-          'Points: Win = 2 pts, Loss = 0 pts.',
+          'Group points: straight-set (2–0) win = 3 pts; 3-set (rubber) win = 1 pt; loss = 0 pts. Point difference breaks remaining ties.',
           'Top-performing teams from each group advance to the Knockout Stage.',
           'Knockout Stage: Single-elimination until a winner is determined.',
         ]
@@ -343,7 +343,7 @@ const SPORTS = {
         rules: [
           'Mixed category (men and women). Played on a half court with a GM7 ball.',
           'Team roster: min. 3 and max. 5 players (3 field players + 2 substitutes). At any time, 3 players are on court.',
-          'No limitation on the number of international players per team.',
+          'Limit of 2 international players per team.',
           'Substitutions permitted when the ball becomes dead prior to a check-ball or free throw.',
         ]
       },
@@ -389,13 +389,13 @@ const SPORTS = {
     name: 'Volleyball',
     subtitle: 'Mixed · 6v6 · FIVB Rules',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><path d="M2 12h20"/></svg>`,
-    chips: ['Mixed Gender', 'Max 8 Teams', '6 Field + 3 Subs', 'Net: 2.40m'],
+    chips: ['Mixed Gender', 'Max 8 Teams', '6 Field + 2 Subs', 'Net: 2.40m'],
     pic: { name: 'Liq Hua Kang', phone: '+49 176 87191288' },
     sections: [
       {
         title: 'General Rules',
         rules: [
-          'Maximum 8 mixed-gender teams; min. 6 and max. 9 players per team (6 field + max. 3 substitutes).',
+          'Maximum 8 mixed-gender teams; min. 6 and max. 8 players per team (6 field + up to 2 substitutes).',
           'Teams must consist primarily of Malaysians. Max. 2 international players per team, with only 1 on the court at any time.',
           'Libero (if used) must wear a contrasting outfit. Net height: 2.40 metres.',
           'Each team is encouraged to bring their own ball.',
@@ -405,7 +405,7 @@ const SPORTS = {
       {
         title: 'Scoring System',
         rules: [
-          'Preliminary Group Stage (Day 1): Set won by first team to reach 15 points (best-of-3).',
+          'Preliminary Group Stage (Day 1): Set won by first team to reach 20 points (best-of-3).',
           'Group Stage points: 2–0 win = 3 pts, 2–1 win = 2 pts, 1–2 loss = 1 pt, 0–2 or forfeit = 0 pts.',
           'Knockout Stage (Day 2): Sets won by first team to reach 25 pts (1st & 2nd sets) or 15 pts (3rd set), best-of-3.',
           'Group placement determined by: accumulated points → win/loss ratio → number of sets won.',
@@ -492,36 +492,50 @@ const SPORTS = {
     ]
   },
 
-  netball: {
-    name: 'Netball',
-    subtitle: '3v3 Women\'s · League Format',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>`,
-    chips: ["Women's 3v3", 'Max 6 Teams', '3 Players + 2 Subs', '5–2–5 Duration', 'Open to All Nationalities'],
-    pic: { name: 'Iqma Nadhirah', phone: '+49 176 65930506' },
+  frisbee: {
+    name: 'Frisbee',
+    subtitle: 'Mixed · 5-a-side · Max 8 Teams',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="12" rx="10" ry="5"/><ellipse cx="12" cy="12" rx="5" ry="2.3"/></svg>`,
+    chips: ['Mixed Category', 'Max 8 Teams', '5 on Field (≥1 Female)', 'Max 7 per Squad', '10-Second Stall'],
+    pic: { name: 'Luqman', phone: '+49 1514 1238214' },
     sections: [
       {
         title: 'General Rules',
         rules: [
-          "3v3 Women's Category only.",
-          '3 players + maximum 2 substitutes per team (min. 3, max. 5 players).',
-          'No limitation on the number of international players.',
-          'Teams with 5 non-Malaysian players are also allowed to register.',
-          'Maximum 6 teams in total.',
+          'Mixed category. Maximum 8 teams.',
+          'Maximum 7 players per team, including a minimum of 2 female players.',
+          'On field: 5 players (with at least 1 female) + 2 substitutes. 5 players required to start.',
+          'A team short of players may request a player from the opposing team.',
+          'Rolling substitution only during a timeout or at halftime.',
         ]
       },
       {
         title: 'Scoring & Format',
         rules: [
-          'League format: all teams play each other.',
-          'Win = 3 pts, Draw = 1 pt, Loss = 0 pts.',
-          'Top 3 teams in the final league standings receive medals according to their placement.',
+          'Group stage: 8 teams drawn into Group A & B, round-robin. Win = 3 pts, Loss = 0 pts.',
+          'Bonus point (+1) for scoring 11 or more in a game.',
+          'Group duration: 12 minutes, no halftime. Semi-finals: 15 minutes. Finals: two 10-minute halves with a 5-minute halftime.',
+          'Top-performing teams advance to a knockout bracket.',
         ]
       },
       {
-        title: 'Game Duration',
+        title: 'Gameplay',
         rules: [
-          'Match format: 5-2-5 (two 5-minute halves with no more than 2 minutes interval between halves).',
-          'All games are refereed by officials appointed by the RENTAP XVII committee.',
+          'Kick-off: the receiving team lines up in its end zone; the defence throws the disc (the "pull") to start play. A disc flip decides who receives.',
+          'The disc may be moved in any direction by passing; after catching, the receiver must stop as soon as possible.',
+          'A player has 10 seconds to pass (counted by the marker). Failure to release in time is a turnover.',
+          'A goal is scored when an in-bounds player catches a pass in the attacking end zone and keeps possession through all ground contact.',
+          'After a score, the scoring team stays and pulls again; the other team takes the opposite end zone ("losers walk").',
+        ]
+      },
+      {
+        title: 'Turnovers & Stoppages',
+        rules: [
+          'Turnover on: a drop, a throw-away, a defensive block, an interception, going out-of-bounds, or a stall (no release in 10s). Play does not stop on a turnover.',
+          'Fouls result from contact between players; incidental, non-affecting contact is not a foul.',
+          'Violations (no contact): travelling, double-teaming, or picking (obstructing an opponent).',
+          'Each team may call up to 2 timeouts per game, each 70 seconds. Substitutions only during a timeout or at halftime.',
+          'Play stops for injuries; the injured player must leave and may be substituted.',
         ]
       }
     ]
@@ -575,35 +589,44 @@ const SPORTS = {
     name: 'Table Tennis',
     subtitle: 'Singles & Doubles',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="10" rx="2"/><circle cx="7" cy="12" r="2"/><circle cx="17" cy="12" r="2"/></svg>`,
-    chips: ['Singles & Doubles', 'Standard ITTF Rules', 'Best of 5 Sets'],
-    pic: null,
+    chips: ["Men's Singles (16)", "Women's Singles (16)", 'Doubles Open (16)', 'Sets to 11'],
+    pic: { name: 'Izudin', phone: '+49 162 8343280' },
     sections: [
       {
-        title: 'General Rules',
+        title: 'Categories',
         rules: [
-          'Standard ITTF (International Table Tennis Federation) rules apply.',
-          'Paddles / rackets and balls will be provided by the committee.',
-          'Players are encouraged to bring their own paddles if preferred.',
-          'Full schedule and category details to be confirmed by the Sports PIC before the event.',
+          "Men's Singles — 16 players.",
+          "Women's Singles — 16 players.",
+          "Doubles Open (Men's, Women's & Mixed Doubles) — 16 teams.",
+          'Participant / team numbers are capped as above; no extra entries once a category closes.',
+          'Players may enter both singles and doubles, but must state this on the registration form.',
         ]
       },
       {
-        title: 'Scoring',
+        title: 'Fixtures & Format',
         rules: [
-          'Each set is played to 11 points. A player must win by 2 clear points.',
-          'Matches are best-of-5 sets.',
-          'Service alternates every 2 points. At deuce (10–10), service alternates every point.',
-          'Toss determines first serve and side at the start of the match.',
+          'Group format of 4 teams per group; the top 2 from each group advance to the quarter-finals.',
+          'A set ends at 11 points, or on a 2-point lead in the case of deuce.',
+          'Each category plays at least 3 games in the group round.',
+          'Winning 2 sets = 3 pts; winning 1 set = 1 pt; winning 0 sets = 0 pts.',
         ]
       },
       {
-        title: 'Key Playing Rules',
+        title: 'Serving',
         rules: [
-          'The ball must be held in a stationary, open palm above the table level before serving.',
-          'The ball must be tossed vertically at least 16cm before being struck.',
-          'The ball must first bounce on the server\'s side, then clear the net and bounce on the receiver\'s side.',
-          'Players must not touch the table surface with the free hand during a rally.',
-          'A let is called if the ball touches the net on a valid serve and still lands in the correct area.',
+          'Singles: 2 serves each before switching; during extra play, service switches every point. Serve may be diagonal or straight.',
+          "Doubles: serve must be diagonal, from the server's right half-court to the opponent's right half-court.",
+          "On a serve, the ball must be visible and above the table, behind the end line, and bounce on the server's side then the opponent's side.",
+          'A serve that clips the net and lands in is a "let" and is retaken; if it hits the net and does not go over, the point goes to the opponent.',
+        ]
+      },
+      {
+        title: 'Rally & Umpire',
+        rules: [
+          'The white edge line is in play; the side of the table is not.',
+          'Touching the table with the free hand loses the point.',
+          'Officials are participants not currently playing; a player who refuses to referee when appointed causes their team to be disqualified.',
+          'Balls are provided; players bring their own paddle (a good-quality ball is recommended).',
         ]
       }
     ]
@@ -611,36 +634,50 @@ const SPORTS = {
 
   'tug-of-war': {
     name: 'Tug of War',
-    subtitle: 'Team · Mixed Category',
+    subtitle: 'Team · 3 Categories · Weigh-in',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12h16M4 12l4-4M4 12l4 4M20 12l-4-4M20 12l-4 4"/></svg>`,
-    chips: ['Mixed Teams', 'Knockout Format', 'Team Event'],
-    pic: null,
+    chips: ['Men / Women / Mixed', '4–5 Pullers', 'Bare Hands Only', 'Best of 3 Pulls', 'Weigh-in Required'],
+    pic: { name: 'Haris', phone: '+49 1575 0443560' },
     sections: [
       {
         title: 'General Rules',
         rules: [
-          'Mixed-gender teams. Full team composition details to be confirmed by the Sports PIC.',
-          'Standard tug-of-war rules apply. Both teams pull a rope in opposite directions.',
-          'The team that pulls the opposing team\'s marker past the centre line wins the bout.',
-          'Three bouts per match; best-of-three wins the match.',
+          'Three categories: Men vs Men, Women vs Women, and Mixed. Team weight is the combined body weight of all pullers, verified at weigh-in.',
+          'A team may register 4 or 5 players per pull, provided the combined weight of those pulling stays within the category limit.',
+          'The rope must be gripped with bare hands only — no gloves, tape, resin, or grip aids.',
+          'The rope may not be wrapped, looped, or knotted around the waist, body, or any limb; hold it in the hands only.',
+          'Played outdoors on the field. Running or indoor sports shoes required; football boots, cleats, or studs are not allowed.',
+          "All players' feet must stay on the ground. Grounding (digging in a foot as an anchor) or sitting/lying down is not allowed.",
         ]
       },
       {
-        title: 'Fouls & Conduct',
+        title: 'Weight Categories',
+        table: {
+          headers: ['Category', 'Combined Team Weight'],
+          rows: [
+            ['Men vs Men', '400 kg – 500 kg'],
+            ['Women vs Women', '300 kg – 400 kg'],
+            ['Mixed', 'Up to 400 kg'],
+          ]
+        }
+      },
+      {
+        title: 'Fixtures & Format',
         rules: [
-          'No player may loop, knot, or wrap the rope around any part of their body.',
-          'Sitting or lying down during a pull is not permitted.',
-          'Anchor position (last puller) must maintain legal grip at all times.',
-          'Any foul results in a warning; repeated fouls may result in disqualification of the bout.',
+          'All players are weighed individually, in full competition attire, no more than 60 minutes before their first pull.',
+          'A team over its category limit must withdraw a player and reweigh before competing.',
+          'Best of 3 pulls; first team to win 2 pulls wins the match. Teams switch sides after each pull.',
+          'Each pull lasts a maximum of 3 minutes; if undecided, officials call "No Pull" and it is retaken after a short rest.',
+          'A pull is won when the rope marker crosses the winning line on the opposing side, or the opponent commits a disqualifying foul.',
         ]
       },
       {
-        title: 'Safety',
+        title: 'Fouls & Umpire',
         rules: [
-          'Proper footwear must be worn. Metal-studded boots are not permitted.',
-          'Gloves are permitted but not mandatory.',
-          'In the event of injury, the bout is paused and may be replayed at the referee\'s discretion.',
-          'The referee\'s decision is final.',
+          'Violations include: wrapping / locking the rope around the body, grounding, sitting or lying down, illegal footwear, grip aids, exceeding team weight, or unsportsmanlike conduct.',
+          'First violation = warning (and restart where applicable); a second violation in the same match awards that pull to the opponent. Severe violations = immediate disqualification.',
+          'Each pull is supervised by one head referee and at least two line judges watching footwork and rope handling.',
+          "The head referee's decision is final. Each team must provide players to help as line judges.",
         ]
       }
     ]
