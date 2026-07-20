@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   try {
     const sql = neon(process.env.DATABASE_URL);
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
-    let { type, name, email, phone, university, sport, team, role, membership, stall, food, people, category } = body;
+    let { type, name, email, phone, university, sport, team, role, membership, food, people, category } = body;
 
     if (!TYPES.includes(type)) {
       return res.status(400).json({ error: 'Invalid registration type' });
@@ -30,15 +30,32 @@ export default async function handler(req, res) {
     team = (team || '').toString().trim().slice(0, 120) || null;
     role = (role || '').toString().trim().slice(0, 80) || null;
     membership = (membership || '').toString().trim().slice(0, 80) || null;
-    stall = (stall || '').toString().trim().slice(0, 120) || null;
-    food = (food || '').toString().trim().slice(0, 200) || null;
     people = (people || '').toString().trim().slice(0, 20) || null;
     category = (category || '').toString().trim().slice(0, 80) || null;
+    // Vendor description ("food") stored only if the column exists — added when vendor opens.
+    const description = (food || '').toString().trim().slice(0, 200) || null;
 
-    await sql`
-      INSERT INTO registrations (type, name, email, phone, university, sport, team, role, membership, stall, food, people, category)
-      VALUES (${type}, ${name}, ${email}, ${phone}, ${university}, ${sport}, ${team}, ${role}, ${membership}, ${stall}, ${food}, ${people}, ${category})
+    // Discover which optional columns actually exist, so a missing column can never break an insert.
+    const colRows = await sql`
+      SELECT column_name FROM information_schema.columns WHERE table_name = 'registrations'
     `;
+    const cols = new Set(colRows.map(r => r.column_name));
+
+    const optional = { people, category, food: description };
+    const extraCols = [];
+    const extraVals = [];
+    for (const [col, val] of Object.entries(optional)) {
+      if (cols.has(col)) { extraCols.push(col); extraVals.push(val); }
+    }
+
+    const allCols = ['type', 'name', 'email', 'phone', 'university', 'sport', 'team', 'role', 'membership', ...extraCols];
+    const allVals = [type, name, email, phone, university, sport, team, role, membership, ...extraVals];
+    const placeholders = allVals.map((_, i) => '$' + (i + 1)).join(', ');
+
+    await sql.query(
+      `INSERT INTO registrations (${allCols.join(', ')}) VALUES (${placeholders})`,
+      allVals
+    );
 
     return res.status(200).json({ ok: true });
   } catch (err) {
