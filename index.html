@@ -803,7 +803,7 @@
         </div>
         <div class="form-field">
           <label for="p-sport">Sport Category</label>
-          <select id="p-sport" required>
+          <select id="p-sport" required onchange="updatePlayerFields()">
             <option value="">Select a sport…</option>
             <option>Badminton</option>
             <option>Basketball</option>
@@ -816,10 +816,31 @@
             <option>Tug of War</option>
           </select>
         </div>
-        <div class="form-field">
-          <label for="p-team">Team Name <span class="optional">(optional)</span></label>
+
+        <!-- Individual sports: event / category -->
+        <div class="form-field" id="p-category-field" hidden>
+          <label for="p-category">Event / Category</label>
+          <select id="p-category" onchange="updatePartnerField()">
+            <option value="">Select a category…</option>
+          </select>
+        </div>
+
+        <!-- Doubles / relay: partner -->
+        <div class="form-field" id="p-partner-field" hidden>
+          <label for="p-partner" id="p-partner-label">Partner's Name</label>
+          <input id="p-partner" type="text" placeholder="Your partner's full name" />
+        </div>
+
+        <!-- Team sports: team name + members -->
+        <div class="form-field" id="p-team-field" hidden>
+          <label for="p-team">Team Name</label>
           <input id="p-team" type="text" placeholder="Your team name" />
         </div>
+        <div class="form-field" id="p-members-field" hidden>
+          <label for="p-members">Team Members <span class="optional">(one name per line)</span></label>
+          <textarea id="p-members" rows="4" placeholder="Ali bin Ahmad&#10;Siti Nurhaliza&#10;…"></textarea>
+        </div>
+
         <button type="submit" class="btn btn-primary btn-block">Notify Me When Registration Opens</button>
       </form>
     </div>

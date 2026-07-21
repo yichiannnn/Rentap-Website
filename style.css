@@ -1255,6 +1255,7 @@ p { max-width: 68ch; }
 }
 
 .form-field input,
+.form-field textarea,
 .form-field select {
   background: rgba(0,0,0,0.3);
   border: 1px solid var(--border);
@@ -1268,9 +1269,12 @@ p { max-width: 68ch; }
   -webkit-appearance: none;
 }
 
-.form-field input::placeholder { color: var(--text-muted); }
+.form-field input::placeholder,
+.form-field textarea::placeholder { color: var(--text-muted); }
 .form-field input:focus,
+.form-field textarea:focus,
 .form-field select:focus { border-color: var(--gold); }
+.form-field textarea { resize: vertical; min-height: 5rem; }
 
 .form-field select option { background: var(--ink); color: var(--light); }
 

@@ -81,7 +81,7 @@
         <thead>
           <tr>
             <th>#</th><th>Type</th><th>Name</th><th>Email</th><th>Phone</th><th>University</th>
-            <th>Sport</th><th>Team</th><th>Role</th><th>Membership</th><th>Member No.</th><th>People</th><th>Category</th><th>Stall</th><th>Description</th><th>Registered</th>
+            <th>Sport</th><th>Category</th><th>Team</th><th>Members / Partner</th><th>Role</th><th>Membership</th><th>Member No.</th><th>People</th><th>Description</th><th>Registered</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -154,13 +154,13 @@
         <td>${esc(r.phone)}</td>
         <td>${esc(r.university)}</td>
         <td>${esc(r.sport)}</td>
+        <td>${esc(r.category)}</td>
         <td>${esc(r.team)}</td>
+        <td style="white-space:pre-wrap">${esc(r.members)}</td>
         <td>${esc(r.role)}</td>
         <td>${esc(r.membership)}</td>
         <td>${esc(r.member_no)}</td>
         <td>${esc(r.people)}</td>
-        <td>${esc(r.category)}</td>
-        <td>${esc(r.stall)}</td>
         <td>${esc(r.food)}</td>
         <td>${esc(when)}</td>
       </tr>`;
@@ -169,7 +169,7 @@
 
   function downloadCSV() {
     const rows = visibleRows();
-    const headers = ['id', 'type', 'name', 'email', 'phone', 'university', 'sport', 'team', 'role', 'membership', 'member_no', 'people', 'category', 'stall', 'food', 'created_at'];
+    const headers = ['id', 'type', 'name', 'email', 'phone', 'university', 'sport', 'category', 'team', 'members', 'role', 'membership', 'member_no', 'people', 'food', 'created_at'];
     const csvCell = v => '"' + (v == null ? '' : String(v)).replace(/"/g, '""') + '"';
     const lines = [headers.join(',')];
     rows.forEach(r => lines.push(headers.map(h => csvCell(r[h])).join(',')));

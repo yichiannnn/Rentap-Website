@@ -138,6 +138,63 @@ function openModal(type) {
   }, 50);
 }
 
+// ── Player form: sport-dependent fields ──────
+const TEAM_SPORTS = ['Football', 'Basketball', 'Volleyball', 'Touch Rugby', 'Frisbee', 'Tug of War'];
+
+const SPORT_CATEGORIES = {
+  'Badminton':     ["Women's Singles", "Men's Singles", "Women's Doubles", "Men's Doubles", "Mixed Doubles"],
+  'Table Tennis':  ["Men's Singles", "Women's Singles", "Men's Doubles", "Women's Doubles", "Mixed Doubles"],
+  'Track':         ['100m', '200m', '400m', '4×100m Relay']
+};
+
+function updatePlayerFields() {
+  const sport = document.getElementById('p-sport').value;
+  const isTeam = TEAM_SPORTS.indexOf(sport) !== -1;
+  const cats = SPORT_CATEGORIES[sport];
+
+  // Team sports → team name (required) + members
+  const teamField = document.getElementById('p-team-field');
+  const teamInput = document.getElementById('p-team');
+  const membersField = document.getElementById('p-members-field');
+  teamField.hidden = !isTeam;
+  teamInput.required = isTeam;
+  membersField.hidden = !isTeam;
+  if (!isTeam) { teamInput.value = ''; document.getElementById('p-members').value = ''; }
+
+  // Individual sports → category select
+  const catField = document.getElementById('p-category-field');
+  const catSelect = document.getElementById('p-category');
+  if (cats) {
+    catSelect.innerHTML = '<option value="">Select a category…</option>' +
+      cats.map(c => '<option>' + c + '</option>').join('');
+    catField.hidden = false;
+    catSelect.required = true;
+  } else {
+    catSelect.innerHTML = '<option value="">Select a category…</option>';
+    catSelect.value = '';
+    catField.hidden = true;
+    catSelect.required = false;
+  }
+
+  updatePartnerField();
+}
+
+function updatePartnerField() {
+  const cat = document.getElementById('p-category').value;
+  const field = document.getElementById('p-partner-field');
+  const input = document.getElementById('p-partner');
+  const label = document.getElementById('p-partner-label');
+  const isRelay = /Relay/i.test(cat);
+  const needs = /Doubles/i.test(cat) || isRelay;
+
+  field.hidden = !needs;
+  input.required = needs;
+  if (!needs) { input.value = ''; return; }
+
+  label.textContent = isRelay ? 'Relay Teammates' : "Partner's Name";
+  input.placeholder = isRelay ? 'Names of your 3 teammates' : "Your partner's full name";
+}
+
 function toggleMemberNo() {
   const val = document.getElementById('s-member').value;
   const field = document.getElementById('s-memberno-field');
@@ -219,7 +276,14 @@ async function submitForm(e) {
     data.name = fieldVal('p-name');
     data.email = fieldVal('p-email');
     data.sport = fieldVal('p-sport');
-    data.team = fieldVal('p-team');
+    if (TEAM_SPORTS.indexOf(data.sport) !== -1) {
+      data.team = fieldVal('p-team');
+      data.members = fieldVal('p-members');
+    } else {
+      data.category = fieldVal('p-category');
+      // Partner / relay teammates are stored alongside team members
+      data.members = fieldVal('p-partner');
+    }
   } else if (type === 'volunteer') {
     data.name = fieldVal('v-name');
     data.email = fieldVal('v-email');
