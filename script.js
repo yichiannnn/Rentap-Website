@@ -275,6 +275,7 @@ async function submitForm(e) {
   if (type === 'player') {
     data.name = fieldVal('p-name');
     data.email = fieldVal('p-email');
+    data.phone = fieldVal('p-phone');
     data.sport = fieldVal('p-sport');
     if (TEAM_SPORTS.indexOf(data.sport) !== -1) {
       data.team = fieldVal('p-team');
@@ -294,6 +295,7 @@ async function submitForm(e) {
   } else if (type === 'spectator') {
     data.name = fieldVal('s-name');
     data.email = fieldVal('s-email');
+    data.phone = fieldVal('s-phone');
     data.membership = fieldVal('s-member');
     if (data.membership.indexOf('Yes') === 0) data.memberNo = fieldVal('s-memberno');
   } else if (type === 'vendor') {
