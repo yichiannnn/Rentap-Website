@@ -1276,6 +1276,24 @@ p { max-width: 68ch; }
 .form-field select:focus { border-color: var(--gold); }
 .form-field textarea { resize: vertical; min-height: 5rem; }
 
+.gate-error {
+  margin: 0.75rem 0 0;
+  padding: 0.6rem 0.8rem;
+  background: rgba(168,32,13,0.12);
+  border: 1px solid rgba(168,32,13,0.4);
+  border-radius: var(--radius);
+  color: #ff8a78;
+  font-size: 0.85rem;
+}
+
+.gate-note {
+  margin-top: 1.25rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+.gate-note a { color: var(--gold); }
+
 .form-field select option { background: var(--ink); color: var(--light); }
 
 .modal-success {

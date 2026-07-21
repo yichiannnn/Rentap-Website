@@ -97,6 +97,13 @@ const REG_OPEN = {
   vendor: true
 };
 
+// Members-only early access for player registration.
+// Set to false when player registration opens to everyone.
+const PLAYER_EARLY_ACCESS = true;
+
+// Set once a membership code has been verified in this session.
+let verifiedMemberCode = null;
+
 const COMING_SOON = {
   player: {
     title: 'Player Registration Opens Soon',
@@ -113,11 +120,17 @@ const COMING_SOON = {
 };
 
 function openModal(type) {
-  const panes = ['form-player', 'form-volunteer', 'form-spectator', 'form-vendor', 'form-comingsoon', 'form-success'];
+  const panes = ['form-player-gate', 'form-player', 'form-volunteer', 'form-spectator', 'form-vendor', 'form-comingsoon', 'form-success'];
   panes.forEach(id => { document.getElementById(id).hidden = true; });
 
   if (REG_OPEN[type]) {
-    document.getElementById('form-' + type).hidden = false;
+    // Players must verify an MGSS membership code during early access.
+    if (type === 'player' && PLAYER_EARLY_ACCESS && !verifiedMemberCode) {
+      document.getElementById('pg-error').hidden = true;
+      document.getElementById('form-player-gate').hidden = false;
+    } else {
+      document.getElementById('form-' + type).hidden = false;
+    }
   } else {
     const info = COMING_SOON[type] || {
       title: 'Registration Opening Soon',
@@ -136,6 +149,53 @@ function openModal(type) {
     const first = modalBox.querySelector('input, select, button');
     if (first) first.focus();
   }, 50);
+}
+
+// ── Members' early-access gate ───────────────
+async function verifyMemberCode(e) {
+  e.preventDefault();
+  const form = e.target;
+  if (!form.checkValidity()) { form.reportValidity(); return; }
+
+  const input = document.getElementById('pg-code');
+  const errEl = document.getElementById('pg-error');
+  const btn = document.getElementById('pg-submit');
+  const code = input.value.trim();
+
+  errEl.hidden = true;
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Verifying…';
+
+  try {
+    const res = await fetch('/api/verify-member', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+    const data = await res.json();
+
+    if (data && data.valid) {
+      verifiedMemberCode = data.code;
+      document.getElementById('form-player-gate').hidden = true;
+      document.getElementById('form-player').hidden = false;
+      setTimeout(() => {
+        const first = document.querySelector('#form-player input');
+        if (first) first.focus();
+      }, 50);
+    } else {
+      errEl.textContent = (data && data.error) || 'That membership code was not found.';
+      errEl.hidden = false;
+      input.focus();
+      input.select();
+    }
+  } catch (err) {
+    errEl.textContent = 'Could not verify right now. Please check your connection and try again.';
+    errEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = original;
+  }
 }
 
 // ── Player form: sport-dependent fields ──────
@@ -277,6 +337,7 @@ async function submitForm(e) {
     data.email = fieldVal('p-email');
     data.phone = fieldVal('p-phone');
     data.sport = fieldVal('p-sport');
+    if (verifiedMemberCode) data.memberNo = verifiedMemberCode;
     if (TEAM_SPORTS.indexOf(data.sport) !== -1) {
       data.team = fieldVal('p-team');
       data.members = fieldVal('p-members');

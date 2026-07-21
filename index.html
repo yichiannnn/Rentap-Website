@@ -789,6 +789,23 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
 
+    <div id="form-player-gate" class="modal-pane" hidden>
+      <h2>Members' Early Access</h2>
+      <p>Player registration is open to MGSS members first. Enter your membership code to continue.</p>
+      <form onsubmit="verifyMemberCode(event)" novalidate>
+        <div class="form-field">
+          <label for="pg-code">MGSS Membership Code</label>
+          <input id="pg-code" type="text" required placeholder="e.g. MGSS26001" autocomplete="off" spellcheck="false" />
+        </div>
+        <p id="pg-error" class="gate-error" hidden></p>
+        <button type="submit" class="btn btn-primary btn-block" id="pg-submit">Verify &amp; Continue</button>
+      </form>
+      <p class="gate-note">
+        Not a member yet? Player registration opens to everyone next week —
+        or <a href="mailto:malaysiangermanstudentssociety@gmail.com">contact us</a> to join MGSS.
+      </p>
+    </div>
+
     <div id="form-player" class="modal-pane">
       <h2>Player Registration</h2>
       <p>Sign up to compete at RENTAP XVII. Choose your sport and register yourself or your team.</p>
