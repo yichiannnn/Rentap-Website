@@ -710,6 +710,19 @@ function renderSport() {
     liveLink.style.display = 'inline-flex';
   }
 
+  // Rules/details visibility. Set SHOW_RULES to true to publish the full rules.
+  const SHOW_RULES = false;
+  if (!SHOW_RULES) {
+    const content = document.getElementById('rulesContent');
+    content.innerHTML =
+      '<div style="text-align:center;padding:3rem 0;">' +
+      '<h2 style="font-family:var(--display);font-size:2rem;letter-spacing:.06em;color:var(--light);margin-bottom:.75rem;">Details Coming Soon</h2>' +
+      '<p style="color:var(--text-muted);max-width:42ch;margin:0 auto;line-height:1.7;">' +
+      'Full rules and regulations for ' + sport.name + ' will be published here soon. ' +
+      'Check back closer to the event.</p></div>';
+    return;
+  }
+
   // Chips
   const chipsEl = document.getElementById('sportChips');
   sport.chips.forEach(c => {
