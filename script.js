@@ -91,10 +91,10 @@ const modalBox = document.getElementById('modalBox');
 // ── Registration availability ────────────────
 // Flip a value to true when that registration opens.
 const REG_OPEN = {
-  player: true,
+  player: false,
   volunteer: true,
-  spectator: true,
-  vendor: true
+  spectator: false,
+  vendor: false
 };
 
 // Members-only early access. Set a type to false when it opens to everyone.
