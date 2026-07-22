@@ -27,8 +27,24 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
+  const sql = neon(process.env.DATABASE_URL);
+
+  // Delete a single registration by id.
+  if (req.method === 'DELETE') {
+    const id = parseInt(req.query.id, 10);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ error: 'A valid id is required' });
+    }
+    try {
+      const deleted = await sql`DELETE FROM registrations WHERE id = ${id} RETURNING id`;
+      return res.status(200).json({ ok: true, deleted: deleted.length });
+    } catch (err) {
+      console.error('delete error', err);
+      return res.status(500).json({ error: 'Could not delete registration' });
+    }
+  }
+
   try {
-    const sql = neon(process.env.DATABASE_URL);
     const rows = await sql`
       SELECT * FROM registrations
       ORDER BY created_at DESC
