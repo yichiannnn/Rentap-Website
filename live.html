@@ -312,7 +312,7 @@
 
 <script src="live-shared.js"></script>
 <script>
-// ── STATE ─────────────────────────────────────
+// ── STATE ��────────────────────────────────────
 let activeSport = 'football';
 let data = null;              // last payload for the active sport
 let lastStamp = '';          // generated_at of last payload (for since probe)
@@ -824,5 +824,9 @@ function init() {
 }
 init();
 </script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
