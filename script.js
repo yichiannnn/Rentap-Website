@@ -97,12 +97,16 @@ const REG_OPEN = {
   vendor: true
 };
 
-// Members-only early access for player registration.
-// Set to false when player registration opens to everyone.
-const PLAYER_EARLY_ACCESS = true;
+// Members-only early access. Set a type to false when it opens to everyone.
+const EARLY_ACCESS = {
+  player: true,
+  volunteer: true
+};
 
 // Set once a membership code has been verified in this session.
 let verifiedMemberCode = null;
+// Which form to open after the gate is passed.
+let pendingGateType = null;
 
 const COMING_SOON = {
   player: {
@@ -124,9 +128,15 @@ function openModal(type) {
   panes.forEach(id => { document.getElementById(id).hidden = true; });
 
   if (REG_OPEN[type]) {
-    // Players must verify an MGSS membership code during early access.
-    if (type === 'player' && PLAYER_EARLY_ACCESS && !verifiedMemberCode) {
+    // Members-only early access: require a verified MGSS code first.
+    if (EARLY_ACCESS[type] && !verifiedMemberCode) {
+      pendingGateType = type;
       document.getElementById('pg-error').hidden = true;
+      const desc = document.getElementById('pg-desc');
+      if (desc) {
+        const label = type === 'volunteer' ? 'Volunteer sign-up' : 'Player registration';
+        desc.textContent = label + ' is open to MGSS members first. Enter your membership code to continue.';
+      }
       document.getElementById('form-player-gate').hidden = false;
     } else {
       document.getElementById('form-' + type).hidden = false;
@@ -177,10 +187,11 @@ async function verifyMemberCode(e) {
 
     if (data && data.valid) {
       verifiedMemberCode = data.code;
+      const openType = pendingGateType || 'player';
       document.getElementById('form-player-gate').hidden = true;
-      document.getElementById('form-player').hidden = false;
+      document.getElementById('form-' + openType).hidden = false;
       setTimeout(() => {
-        const first = document.querySelector('#form-player input');
+        const first = document.querySelector('#form-' + openType + ' input, #form-' + openType + ' select');
         if (first) first.focus();
       }, 50);
     } else {
@@ -353,6 +364,7 @@ async function submitForm(e) {
     data.university = fieldVal('v-uni');
     data.role = fieldVal('v-role');
     if (data.role === 'Sports Coordinator') data.sport = fieldVal('v-sport');
+    if (verifiedMemberCode) data.memberNo = verifiedMemberCode;
   } else if (type === 'spectator') {
     data.name = fieldVal('s-name');
     data.email = fieldVal('s-email');
