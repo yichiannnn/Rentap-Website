@@ -135,7 +135,7 @@ function openModal(type) {
       const desc = document.getElementById('pg-desc');
       if (desc) {
         const label = type === 'volunteer' ? 'Volunteer sign-up' : 'Player registration';
-        desc.textContent = label + ' is open to MGSS members first. Enter your membership code to continue.';
+        desc.textContent = label + ' is open to MGSS & MAK members first. Enter your membership code to continue.';
       }
       document.getElementById('form-player-gate').hidden = false;
     } else {
