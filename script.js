@@ -100,7 +100,7 @@ const REG_OPEN = {
 // Members-only early access. Set a type to false when it opens to everyone.
 const EARLY_ACCESS = {
   player: true,
-  volunteer: true
+  volunteer: false
 };
 
 // Set once a membership code has been verified in this session.
