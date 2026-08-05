@@ -1,5 +1,68 @@
 /* RENTAP XVII — script.js */
 
+// ── ANNOUNCEMENT BANNER (shared, phase 2) ─────
+// Fetches the newest pinned/published/non-expired announcement and injects a
+// slim banner under the navbar. Fails silently. Dismiss is per-page-view only
+// (no persistence). Exposed as window.mountAnnouncementBanner so pages that do
+// not load script.js can call the same logic inline.
+(function () {
+  function escHtml(s) {
+    return (s == null ? '' : String(s)).replace(/[&<>"']/g, c => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+  }
+  const ICON = {
+    urgent: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    important: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+  };
+  const CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+  async function mount(opts) {
+    opts = opts || {};
+    const navbar = document.getElementById('navbar');
+    if (!navbar) return;
+    let ann;
+    try {
+      const res = await fetch('/api/content?type=announcements', { headers: { Accept: 'application/json' } });
+      if (!res.ok) return;
+      const data = await res.json();
+      const list = (data && data.announcements) || [];
+      ann = list.find(a => a.pinned); // newest-first from the API
+    } catch (_) { return; }
+    if (!ann) return;
+
+    const level = ['info', 'important', 'urgent'].includes(ann.level) ? ann.level : 'info';
+    const body = (ann.body || '').toString();
+    const short = body.length <= 140;
+    const bodyHtml = short
+      ? `<span class="ann-banner-body"> — ${escHtml(body)}</span>`
+      : ` <a class="ann-banner-more" href="live.html#announcements">Read more</a>`;
+
+    const el = document.createElement('div');
+    el.className = 'ann-banner ann-banner--' + level + (opts.inline ? ' ann-banner--inline' : '');
+    el.setAttribute('role', 'status');
+    el.innerHTML =
+      '<div class="ann-banner-inner">' +
+      '<span class="ann-banner-icon">' + ICON[level] + '</span>' +
+      '<span class="ann-banner-text"><span class="ann-banner-title">' + escHtml(ann.title) + '</span>' + bodyHtml + '</span>' +
+      '<button class="ann-banner-close" aria-label="Dismiss announcement">' + CLOSE + '</button>' +
+      '</div>';
+
+    // insert directly after the navbar
+    navbar.insertAdjacentElement('afterend', el);
+    el.querySelector('.ann-banner-close').addEventListener('click', () => el.remove());
+  }
+
+  window.mountAnnouncementBanner = mount;
+  // auto-run on pages that load script.js (index.html, sport.html)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => mount());
+  } else {
+    mount();
+  }
+})();
+
 // ── NAVBAR SCROLL ─────────────────────────────
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {
@@ -8,7 +71,7 @@ window.addEventListener('scroll', () => {
 
 // ── MOBILE NAV TOGGLE ─────────────────────────
 const navToggle = document.getElementById('navToggle');
-const navLinks  = document.getElementById('navLinks');
+const navLinks = document.getElementById('navLinks');
 
 navToggle.addEventListener('click', () => {
   const isOpen = navLinks.classList.toggle('open');
@@ -28,27 +91,27 @@ navLinks.querySelectorAll('a').forEach(link => {
 // ── COUNTDOWN ─────────────────────────────────
 function updateCountdown() {
   const target = new Date('2026-09-26T08:00:00');
-  const now    = new Date();
-  const diff   = target - now;
+  const now = new Date();
+  const diff = target - now;
 
   if (diff <= 0) {
-    document.getElementById('cd-days').textContent  = '00';
+    document.getElementById('cd-days').textContent = '00';
     document.getElementById('cd-hours').textContent = '00';
-    document.getElementById('cd-mins').textContent  = '00';
-    document.getElementById('cd-secs').textContent  = '00';
+    document.getElementById('cd-mins').textContent = '00';
+    document.getElementById('cd-secs').textContent = '00';
     return;
   }
 
-  const days  = Math.floor(diff / 86400000);
+  const days = Math.floor(diff / 86400000);
   const hours = Math.floor((diff % 86400000) / 3600000);
-  const mins  = Math.floor((diff % 3600000)  / 60000);
-  const secs  = Math.floor((diff % 60000)    / 1000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+  const secs = Math.floor((diff % 60000) / 1000);
 
   const pad = n => String(n).padStart(2, '0');
-  document.getElementById('cd-days').textContent  = pad(days);
+  document.getElementById('cd-days').textContent = pad(days);
   document.getElementById('cd-hours').textContent = pad(hours);
-  document.getElementById('cd-mins').textContent  = pad(mins);
-  document.getElementById('cd-secs').textContent  = pad(secs);
+  document.getElementById('cd-mins').textContent = pad(mins);
+  document.getElementById('cd-secs').textContent = pad(secs);
 }
 
 updateCountdown();
@@ -69,7 +132,7 @@ function switchTab(day, btn) {
 
 // ── FAQ ACCORDION ─────────────────────────────
 function toggleFaq(btn) {
-  const answer   = btn.closest('.faq-item').querySelector('.faq-answer');
+  const answer = btn.closest('.faq-item').querySelector('.faq-answer');
   const expanded = btn.getAttribute('aria-expanded') === 'true';
 
   // Close all others
@@ -85,7 +148,7 @@ function toggleFaq(btn) {
 }
 
 // ── REGISTRATION MODAL ────────────────────────
-const overlay  = document.getElementById('modalOverlay');
+const overlay = document.getElementById('modalOverlay');
 const modalBox = document.getElementById('modalBox');
 
 // ── Registration availability ────────────────
@@ -213,9 +276,9 @@ async function verifyMemberCode(e) {
 const TEAM_SPORTS = ['Football', 'Basketball', 'Volleyball', 'Touch Rugby', 'Frisbee', 'Tug of War'];
 
 const SPORT_CATEGORIES = {
-  'Badminton':     ["Women's Singles", "Men's Singles", "Women's Doubles", "Men's Doubles", "Mixed Doubles"],
-  'Table Tennis':  ["Men's Singles", "Women's Singles", "Men's Doubles", "Women's Doubles", "Mixed Doubles"],
-  'Track':         ['100m', '200m', '400m', '4×100m Relay']
+  'Badminton': ["Women's Singles", "Men's Singles", "Women's Doubles", "Men's Doubles", "Mixed Doubles"],
+  'Table Tennis': ["Men's Singles", "Women's Singles", "Men's Doubles", "Women's Doubles", "Mixed Doubles"],
+  'Track': ['100m', '200m', '400m', '4×100m Relay']
 };
 
 function updatePlayerFields() {
@@ -319,11 +382,11 @@ function fieldVal(id) {
 }
 
 function showRegSuccess() {
-  document.getElementById('form-player').hidden    = true;
+  document.getElementById('form-player').hidden = true;
   document.getElementById('form-volunteer').hidden = true;
   document.getElementById('form-spectator').hidden = true;
-  document.getElementById('form-vendor').hidden    = true;
-  document.getElementById('form-success').hidden   = false;
+  document.getElementById('form-vendor').hidden = true;
+  document.getElementById('form-success').hidden = false;
   document.getElementById('form-success').querySelector('button').focus();
 }
 
@@ -336,10 +399,10 @@ async function submitForm(e) {
 
   // Which registration pane is active?
   let type = null;
-  if (!document.getElementById('form-player').hidden)         type = 'player';
+  if (!document.getElementById('form-player').hidden) type = 'player';
   else if (!document.getElementById('form-volunteer').hidden) type = 'volunteer';
   else if (!document.getElementById('form-spectator').hidden) type = 'spectator';
-  else if (!document.getElementById('form-vendor').hidden)    type = 'vendor';
+  else if (!document.getElementById('form-vendor').hidden) type = 'vendor';
   if (!type) return;
 
   const data = { type };

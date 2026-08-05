@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Content Console — RENTAP XVII Admin</title>
+    <style>
+        :root {
+            --ink: #0D1209;
+            --surface: #111810;
+            --surface-2: #192218;
+            --red: #A8200D;
+            --red-hover: #C2260F;
+            --gold: #C8922A;
+            --gold-light: #DDA83A;
+            --light: #EDE8DE;
+            --text: #D4CFBF;
+            --muted: #7A8572;
+            --border: #283021;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--ink);
+            color: var(--text);
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 1.25rem 1rem 4rem;
+            line-height: 1.5;
+        }
+
+        .wrap {
+            max-width: 920px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--light);
+            font-size: 1.4rem;
+            margin: 0 0 .2rem;
+        }
+
+        .sub {
+            color: var(--muted);
+            margin: 0 0 1.5rem;
+            font-size: .88rem;
+        }
+
+        a {
+            color: var(--gold);
+        }
+
+        label {
+            display: block;
+            font-size: .72rem;
+            color: var(--muted);
+            margin-bottom: .3rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: .7rem .85rem;
+            background: var(--ink);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--light);
+            font-size: 1rem;
+            min-height: 44px;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: .9rem;
+            min-height: 44px;
+            padding: .6rem 1rem;
+            transition: opacity 150ms, background 150ms;
+        }
+
+        button:hover {
+            opacity: .9;
+        }
+
+        button:disabled {
+            opacity: .5;
+            cursor: default;
+        }
+
+        .btn-primary {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .btn-gold {
+            background: var(--gold);
+            color: var(--ink);
+        }
+
+        .btn-ghost {
+            background: var(--surface-2);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: #ff8a78;
+            border: 1px solid rgba(168, 32, 13, .5);
+        }
+
+        .err {
+            color: #ff8a78;
+            margin-top: .6rem;
+            font-size: .88rem;
+        }
+
+        .ok {
+            color: var(--gold);
+            font-size: .82rem;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: .85rem;
+        }
+
+        .gate {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            max-width: 420px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .topbar .spacer {
+            margin-left: auto;
+        }
+
+        .vtabs {
+            display: flex;
+            gap: .4rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+            position: sticky;
+            top: 0;
+            background: var(--ink);
+            padding: .5rem 0;
+            z-index: 10;
+        }
+
+        .vtab {
+            background: var(--surface-2);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: .5rem .9rem;
+            border-radius: 999px;
+            font-size: .85rem;
+        }
+
+        .vtab.active {
+            background: var(--gold);
+            color: var(--ink);
+            border-color: var(--gold);
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            color: var(--light);
+            font-size: 1rem;
+            margin: 0 0 .75rem;
+        }
+
+        .row {
+            display: flex;
+            gap: .6rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .row>div {
+            flex: 1 1 140px;
+        }
+
+        .row .grow2 {
+            flex: 2 1 220px;
+        }
+
+        .inline-actions {
+            display: flex;
+            gap: .4rem;
+            flex-wrap: wrap;
+            margin-top: .75rem;
+        }
+
+        .field {
+            margin-bottom: .7rem;
+        }
+
+        .toggle-line {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            margin: .4rem 0;
+        }
+
+        .toggle-line input {
+            width: auto;
+            min-height: auto;
+        }
+
+        .toggle-line label {
+            margin: 0;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--text);
+            font-size: .9rem;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            padding: .55rem 0;
+        }
+
+        .badge {
+            font-size: .7rem;
+            color: var(--muted);
+            background: var(--surface-2);
+            padding: .1rem .45rem;
+            border-radius: 999px;
+        }
+
+        .badge.warn {
+            color: var(--ink);
+            background: var(--gold);
+        }
+
+        .badge.off {
+            color: #ff8a78;
+            border: 1px solid rgba(168, 32, 13, .4);
+            background: transparent;
+        }
+
+        .name {
+            color: var(--light);
+            font-weight: 600;
+        }
+
+        .sortnum {
+            width: 64px;
+        }
+
+        /* image uploader */
+        .img-drop {
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: .8rem;
+            text-align: center;
+        }
+
+        .img-preview {
+            max-width: 160px;
+            max-height: 120px;
+            border-radius: 6px;
+            margin-top: .6rem;
+            display: none;
+        }
+
+        .img-size {
+            font-size: .78rem;
+            color: var(--muted);
+            margin-top: .4rem;
+        }
+
+        .img-err {
+            color: #ff8a78;
+            font-size: .82rem;
+            margin-top: .4rem;
+        }
+
+        /* announcement preview */
+        .ann-prev {
+            border-radius: 8px;
+            padding: .7rem .9rem;
+            margin-top: .6rem;
+            font-size: .9rem;
+        }
+
+        .ann-prev.info {
+            background: var(--surface-2);
+            color: var(--gold);
+            border: 1px solid var(--border);
+        }
+
+        .ann-prev.important {
+            background: var(--gold);
+            color: var(--ink);
+        }
+
+        .ann-prev.urgent {
+            background: var(--red);
+            color: var(--light);
+        }
+
+        .ann-prev .t {
+            font-weight: 700;
+        }
+
+        .item-block {
+            border-top: 1px solid var(--border);
+            padding-top: .8rem;
+            margin-top: .8rem;
+        }
+
+        .thumb {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: var(--ink);
+        }
+
+        details.stall>summary {
+            cursor: pointer;
+            color: var(--gold);
+            font-weight: 600;
+            list-style: none;
+            padding: .3rem 0;
+        }
+
+        details.stall>summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <h1>RENTAP XVII — Content Console</h1>
+        <p class="sub">Super admin only. Announcements, bazaar stalls and merchandise. Public pages: <a href="live.html"
+                target="_blank" rel="noopener">Results</a> · <a href="bazaar.html" target="_blank"
+                rel="noopener">Bazaar</a>.</p>
+
+        <!-- GATE -->
+        <div id="gate" class="gate">
+            <label for="key">Admin Key</label>
+            <input type="password" id="key" placeholder="Enter admin key" autocomplete="off" />
+            <button class="btn-primary" style="margin-top:1rem;width:100%" onclick="unlock()">Unlock Console</button>
+            <p id="gateErr" class="err" hidden></p>
+        </div>
+
+        <!-- APP -->
+        <div id="app" hidden>
+            <div class="topbar">
+                <strong style="color:var(--light)">Content</strong>
+                <div class="spacer"></div>
+                <button class="btn-ghost" onclick="lock()">Lock</button>
+            </div>
+
+            <div class="vtabs">
+                <button class="vtab active" data-view="ann" onclick="setView('ann')">Announcements</button>
+                <button class="vtab" data-view="stalls" onclick="setView('stalls')">Stalls</button>
+                <button class="vtab" data-view="merch" onclick="setView('merch')">Merch</button>
+            </div>
+
+            <p id="globalMsg" class="err" hidden></p>
+
+            <!-- ANNOUNCEMENTS -->
+            <div class="panel active" id="panel-ann">
+                <div class="card">
+                    <h3>New announcement</h3>
+                    <div class="field"><label>Title</label><input id="aTitle" maxlength="160" oninput="previewAnn()" />
+                    </div>
+                    <div class="field"><label>Body</label><textarea id="aBody" maxlength="4000"
+                            oninput="previewAnn()"></textarea></div>
+                    <div class="row">
+                        <div><label>Level</label><select id="aLevel" onchange="previewAnn()">
+                                <option value="info">Info</option>
+                                <option value="important">Important</option>
+                                <option value="urgent">Urgent</option>
+                            </select></div>
+                        <div><label>Expiry (optional)</label><input id="aExpiry" type="datetime-local" /></div>
+                    </div>
+                    <div class="toggle-line"><input type="checkbox" id="aPinned" onchange="previewAnn()" /><label
+                            for="aPinned">Pinned (shows in the sitewide banner)</label></div>
+                    <div class="toggle-line"><input type="checkbox" id="aPublished" checked /><label
+                            for="aPublished">Published</label></div>
+                    <div id="annPreviewWrap" hidden><label style="margin-top:.6rem">Banner preview</label>
+                        <div class="ann-prev info" id="annPreview"></div>
+                    </div>
+                    <div class="inline-actions"><button class="btn-primary" id="aCreateBtn" onclick="createAnn()">Create
+                            announcement</button></div>
+                    <p id="annMsg" class="err" hidden></p>
+                </div>
+                <div id="annList"></div>
+            </div>
+
+            <!-- STALLS -->
+            <div class="panel" id="panel-stalls">
+                <div class="card">
+                    <h3>New stall</h3>
+                    <div class="field"><label>Name</label><input id="sName" maxlength="160" /></div>
+                    <div class="row">
+                        <div><label>Category</label><select id="sCategory">
+                                <option value="food">Food</option>
+                                <option value="drinks">Drinks</option>
+                                <option value="carboot">Carboot</option>
+                            </select></div>
+                        <div class="grow2"><label>Location</label><input id="sLocation" maxlength="160"
+                                placeholder="e.g. Stall 4, main field" /></div>
+                    </div>
+                    <div class="field"><label>Description</label><textarea id="sDesc" maxlength="2000"></textarea></div>
+                    <div class="field"><label>Banner image (optional)</label>
+                        <div class="img-drop" id="sImgDrop">
+                            <input type="file" accept="image/*" id="sImgFile" onchange="onPickImage('stall')" />
+                            <img class="img-preview" id="sImgPreview" alt="preview" />
+                            <div class="img-size" id="sImgSize"></div>
+                            <div class="img-err" id="sImgErr" hidden></div>
+                        </div>
+                    </div>
+                    <div class="inline-actions"><button class="btn-primary" id="sCreateBtn"
+                            onclick="createStall()">Create stall</button></div>
+                    <p id="stallMsg" class="err" hidden></p>
+                </div>
+                <div id="stallList"></div>
+            </div>
+
+            <!-- MERCH -->
+            <div class="panel" id="panel-merch">
+                <div class="card">
+                    <h3>New merch product</h3>
+                    <div class="field"><label>Name</label><input id="mName" maxlength="160" /></div>
+                    <div class="row">
+                        <div><label>Price (EUR)</label><input id="mPrice" type="number" step="0.01" min="0"
+                                placeholder="e.g. 15.00" /></div>
+                        <div class="grow2"><label>Sizes</label><input id="mSizes" maxlength="120"
+                                placeholder="S / M / L / XL" /></div>
+                    </div>
+                    <div class="field"><label>Description</label><textarea id="mDesc" maxlength="2000"></textarea></div>
+                    <div class="field"><label>Image (optional)</label>
+                        <div class="img-drop">
+                            <input type="file" accept="image/*" id="mImgFile" onchange="onPickImage('merch')" />
+                            <img class="img-preview" id="mImgPreview" alt="preview" />
+                            <div class="img-size" id="mImgSize"></div>
+                            <div class="img-err" id="mImgErr" hidden></div>
+                        </div>
+                    </div>
+                    <div class="toggle-line"><input type="checkbox" id="mAvailable" checked /><label
+                            for="mAvailable">Available</label></div>
+                    <div class="inline-actions"><button class="btn-primary" id="mCreateBtn"
+                            onclick="createMerch()">Create product</button></div>
+                    <p id="merchMsg" class="err" hidden></p>
+                </div>
+                <div id="merchList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="live-shared.js"></script>
+    <script>
+        // ── STATE ─────────────────────────────────────
+        let ADMIN_KEY = '';
+        let view = 'ann';
+        let cache = { announcements: [], stalls: [], merch: [] };
+        // staged uploads keyed by context ('stall','merch','item-<id>')
+        let staged = {};
+
+        // ── API ───────────────────────────────────────
+        async function api(action, payload) {
+            const res = await fetch('/api/content', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_KEY },
+                body: JSON.stringify({ action, ...payload }),
+            });
+            let json = {};
+            try { json = await res.json(); } catch { }
+            if (res.status === 401) { lock('Session expired or wrong key.'); throw new Error('Unauthorized'); }
+            if (!res.ok) throw new Error(json.error || 'Request failed');
+            return json;
+        }
+        async function loadAll() {
+            const res = await fetch('/api/content?type=all', { headers: { 'x-admin-key': ADMIN_KEY } });
+            if (!res.ok) throw new Error('Load failed');
+            const data = await res.json();
+            cache.announcements = data.announcements || [];
+            cache.stalls = data.stalls || [];
+            cache.merch = data.merch || [];
+        }
+
+        async function unlock() {
+            const err = document.getElementById('gateErr');
+            err.hidden = true;
+            ADMIN_KEY = document.getElementById('key').value.trim();
+            if (!ADMIN_KEY) { err.textContent = 'Enter the admin key.'; err.hidden = false; return; }
+            try {
+                await api('verify', {});
+                try { sessionStorage.setItem('rentap_content_key', ADMIN_KEY); } catch { }
+                document.getElementById('gate').hidden = true;
+                document.getElementById('app').hidden = false;
+                await refresh();
+            } catch (e) {
+                ADMIN_KEY = '';
+                err.textContent = (e.message === 'Unauthorized') ? 'Incorrect admin key.' : 'Could not verify. Is the database connected?';
+                err.hidden = false;
+            }
+        }
+        function lock(msg) {
+            ADMIN_KEY = '';
+            try { sessionStorage.removeItem('rentap_content_key'); } catch { }
+            document.getElementById('app').hidden = true;
+            document.getElementById('gate').hidden = false;
+            const err = document.getElementById('gateErr');
+            if (msg) { err.textContent = msg; err.hidden = false; }
+            document.getElementById('key').value = '';
+        }
+
+        async function refresh() {
+            try { await loadAll(); }
+            catch (e) { flash('globalMsg', e.message, false); return; }
+            renderAnn();
+            renderStalls();
+            renderMerch();
+        }
+
+        function setView(v) {
+            view = v;
+            document.querySelectorAll('.vtab').forEach(t => t.classList.toggle('active', t.dataset.view === v));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel-' + v).classList.add('active');
+        }
+
+        function flash(id, msg, ok) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = msg; el.className = ok ? 'ok' : 'err'; el.hidden = false;
+            if (ok) setTimeout(() => { el.hidden = true; }, 2500);
+        }
+        function imgUrl(id) { return '/api/content?image=' + encodeURIComponent(id); }
+
+        // ── IMAGE COMPRESSION (client side) ───────────
+        // Longest side ≤1200px; jpeg/webp; retry q0.8 → 0.65 → 0.5; cap 400 KB decoded.
+        const MAX_BYTES = 400000;
+        function supportsWebp() {
+            try { return document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') === 0; }
+            catch { return false; }
+        }
+        async function compressImage(file) {
+            let bitmap;
+            try { bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+            catch {
+                bitmap = await new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                    img.src = URL.createObjectURL(file);
+                });
+            }
+            const w = bitmap.width, h = bitmap.height;
+            const scale = Math.min(1, 1200 / Math.max(w, h));
+            const cw = Math.round(w * scale), ch = Math.round(h * scale);
+            const canvas = document.createElement('canvas');
+            canvas.width = cw; canvas.height = ch;
+            canvas.getContext('2d').drawImage(bitmap, 0, 0, cw, ch);
+            const mime = supportsWebp() ? 'image/webp' : 'image/jpeg';
+            for (const q of [0.8, 0.65, 0.5]) {
+                const blob = await new Promise(r => canvas.toBlob(r, mime, q));
+                if (!blob) continue;
+                if (blob.size <= MAX_BYTES) {
+                    const data = await blobToBase64(blob);
+                    return { mime, data, bytes: blob.size };
+                }
+            }
+            throw new Error('Image too large even after compression, pick a smaller photo');
+        }
+        function blobToBase64(blob) {
+            return new Promise((resolve, reject) => {
+                const fr = new FileReader();
+                fr.onload = () => resolve(String(fr.result).split(',')[1]);
+                fr.onerror = reject;
+                fr.readAsDataURL(blob);
+            });
+        }
+
+        // generic file-pick handler for the two top-level forms (stall, merch)
+        async function onPickImage(ctx) {
+            const map = {
+                stall: { file: 'sImgFile', prev: 'sImgPreview', size: 'sImgSize', err: 'sImgErr', btn: 'sCreateBtn' },
+                merch: { file: 'mImgFile', prev: 'mImgPreview', size: 'mImgSize', err: 'mImgErr', btn: 'mCreateBtn' },
+            };
+            const ids = map[ctx];
+            const file = document.getElementById(ids.file).files[0];
+            const errEl = document.getElementById(ids.err);
+            const sizeEl = document.getElementById(ids.size);
+            const prev = document.getElementById(ids.prev);
+            errEl.hidden = true; sizeEl.textContent = '';
+            delete staged[ctx];
+            if (!file) { prev.style.display = 'none'; return; }
+            sizeEl.textContent = 'Compressing…';
+            try {
+                const out = await compressImage(file);
+                staged[ctx] = out;
+                prev.src = 'data:' + out.mime + ';base64,' + out.data;
+                prev.style.display = 'block';
+                sizeEl.textContent = Math.round(out.bytes / 1024) + ' KB · ' + out.mime;
+            } catch (e) {
+                errEl.textContent = e.message; errEl.hidden = false;
+                sizeEl.textContent = '';
+                prev.style.display = 'none';
+            }
+        }
+
+        // upload a staged image, return its new id (or null)
+        async function uploadStaged(ctx) {
+            const s = staged[ctx];
+            if (!s) return null;
+            const res = await api('image.upload', { mime: s.mime, data: s.data });
+            return res.id;
+        }
+
+        // ── ANNOUNCEMENTS ─────────────────────────────
+        function previewAnn() {
+            const level = document.getElementById('aLevel').value;
+            const pinned = document.getElementById('aPinned').checked;
+            const title = document.getElementById('aTitle').value.trim();
+            const body = document.getElementById('aBody').value.trim();
+            const wrap = document.getElementById('annPreviewWrap');
+            const prev = document.getElementById('annPreview');
+            if (!pinned || (!title && !body)) { wrap.hidden = true; return; }
+            wrap.hidden = false;
+            prev.className = 'ann-prev ' + level;
+            prev.innerHTML = '<span class="t">' + esc(title || 'Untitled') + '</span>' + (body ? ' — ' + esc(body.slice(0, 140)) : '');
+        }
+
+        async function createAnn() {
+            const btn = document.getElementById('aCreateBtn');
+            const title = document.getElementById('aTitle').value.trim();
+            const body = document.getElementById('aBody').value.trim();
+            if (!title) { flash('annMsg', 'Title is required.', false); return; }
+            if (!body) { flash('annMsg', 'Body is required.', false); return; }
+            const payload = {
+                title, body,
+                level: document.getElementById('aLevel').value,
+                pinned: document.getElementById('aPinned').checked,
+                published: document.getElementById('aPublished').checked,
+                expires_at: toIso(document.getElementById('aExpiry').value),
+            };
+            btn.disabled = true;
+            try {
+                await api('announcement.create', payload);
+                document.getElementById('aTitle').value = '';
+                document.getElementById('aBody').value = '';
+                document.getElementById('aExpiry').value = '';
+                document.getElementById('aPinned').checked = false;
+                previewAnn();
+                await refresh();
+                flash('annMsg', 'Announcement created.', true);
+            } catch (e) { flash('annMsg', e.message, false); }
+            finally { btn.disabled = false; }
+        }
+
+        function renderAnn() {
+            const wrap = document.getElementById('annList');
+            const list = cache.announcements;
+            if (!list.length) { wrap.innerHTML = '<p class="muted">No announcements yet.</p>'; return; }
+            wrap.innerHTML = list.map(a => {
+                const expired = a.expires_at && new Date(a.expires_at) <= new Date();
+                const flags = [];
+                if (a.pinned) flags.push('<span class="badge warn">Pinned</span>');
+                if (!a.published) flags.push('<span class="badge off">Unpublished</span>');
+                if (expired) flags.push('<span class="badge off">Expired</span>');
+                flags.push('<span class="badge">' + esc(a.level) + '</span>');
+                return `<div class="card" data-ann="${a.id}">
+      <div class="list-item">
+        <span class="name">${esc(a.title)}</span>
+        ${flags.join(' ')}
+        <span style="margin-left:auto"></span>
+      </div>
+      <p class="muted" style="white-space:pre-line;margin:.4rem 0">${esc(a.body)}</p>
+      <div class="inline-actions">
+        <button class="btn-ghost" onclick="toggleAnn(${a.id},'published',${!a.published})">${a.published ? 'Unpublish' : 'Publish'}</button>
+        <button class="btn-ghost" onclick="toggleAnn(${a.id},'pinned',${!a.pinned})">${a.pinned ? 'Unpin' : 'Pin'}</button>
+        <button class="btn-ghost" onclick="editAnn(${a.id})">Edit</button>
+        <button class="btn-danger" onclick="deleteAnn(${a.id}, this)">Delete</button>
+      </div>
+      <div id="annEdit-${a.id}"></div>
+    </div>`;
+            }).join('');
+        }
+        async function toggleAnn(id, field, val) {
+            try { await api('announcement.update', { id, [field]: val }); await refresh(); }
+            catch (e) { flash('globalMsg', e.message, false); }
+        }
+        function editAnn(id) {
+            const a = cache.announcements.find(x => x.id === id);
+            if (!a) return;
+            const box = document.getElementById('annEdit-' + id);
+            box.innerHTML = `<div class="item-block">
+    <div class="field"><label>Title</label><input id="ae-t-${id}" maxlength="160" value="${esc(a.title)}" /></div>
+    <div class="field"><label>Body</label><textarea id="ae-b-${id}" maxlength="4000">${esc(a.body)}</textarea></div>
+    <div class="row">
+      <div><label>Level</label><select id="ae-l-${id}">
+        ${['info', 'important', 'urgent'].map(l => `<option value="${l}" ${a.level === l ? 'selected' : ''}>${l}</option>`).join('')}
+      </select></div>
+      <div><label>Expiry</label><input id="ae-e-${id}" type="datetime-local" value="${a.expires_at ? toLocalInput(a.expires_at) : ''}" /></div>
+    </div>
+    <div class="inline-actions">
+      <button class="btn-primary" onclick="saveAnn(${id}, this)">Save</button>
+      <button class="btn-ghost" onclick="document.getElementById('annEdit-${id}').innerHTML=''">Cancel</button>
+    </div>
+  </div>`;
+        }
+        async function saveAnn(id, btn) {
+            btn.disabled = true;
+            try {
+                await api('announcement.update', {
+                    id,
+                    title: document.getElementById('ae-t-' + id).value.trim(),
+                    body: document.getElementById('ae-b-' + id).value.trim(),
+                    level: document.getElementById('ae-l-' + id).value,
+                    expires_at: toIso(document.getElementById('ae-e-' + id).value),
+                });
+                await refresh();
+            } catch (e) { flash('globalMsg', e.message, false); btn.disabled = false; }
+        }
+        async function deleteAnn(id, btn) {
+            if (!confirmBtn(btn)) return;
+            try { await api('announcement.delete', { id }); await refresh(); }
+            catch (e) { flash('globalMsg', e.message, false); }
+        }
+
+        // ── STALLS ────────────────────────────────────
+        async function createStall() {
+            const btn = document.getElementById('sCreateBtn');
+            const name = document.getElementById('sName').value.trim();
+            if (!name) { flash('stallMsg', 'Stall name is required.', false); return; }
+            btn.disabled = true;
+            try {
+                let image_id = null;
+                try { image_id = await uploadStaged('stall'); }
+                catch (e) { throw new Error('Image upload failed: ' + e.message); }
+                await api('stall.create', {
+                    name,
+                    category: document.getElementById('sCategory').value,
+                    location: document.getElementById('sLocation').value.trim(),
+                    description: document.getElementById('sDesc').value.trim(),
+                    image_id,
+                });
+                ['sName', 'sLocation', 'sDesc'].forEach(i => document.getElementById(i).value = '');
+                document.getElementById('sImgFile').value = '';
+                document.getElementById('sImgPreview').style.display = 'none';
+                document.getElementById('sImgSize').textContent = '';
+                delete staged.stall;
+                await refresh();
+                flash('stallMsg', 'Stall created.', true);
+            } catch (e) { flash('stallMsg', e.message, false); }
+            finally { btn.disabled = false; }
+        }
+
+        function renderStalls() {
+            const wrap = document.getElementById('stallList');
+            const list = cache.stalls;
+            if (!list.length) { wrap.innerHTML = '<p class="muted">No stalls yet.</p>'; return; }
+            wrap.innerHTML = list.map(s => {
+                const items = (s.items || []);
+                const banner = s.image_id ? `<img class="thumb" src="${imgUrl(s.image_id)}" alt="" style="width:64px;height:40px" />` : '';
+                return `<div class="card" data-stall="${s.id}">
+      <div class="list-item">
+        ${banner}
+        <span class="name">${esc(s.name)}</span>
+        <span class="badge">${esc(s.category)}</span>
+        ${s.published ? '' : '<span class="badge off">Unpublished</span>'}
+        <span style="margin-left:auto"></span>
+        <label style="margin:0">Sort</label>
+        <input class="sortnum" type="number" value="${s.sort != null ? s.sort : 0}" onchange="setStallSort(${s.id}, this.value)" />
+      </div>
+      ${s.location ? `<p class="muted" style="margin:.2rem 0">${esc(s.location)}</p>` : ''}
+      <div class="inline-actions">
+        <button class="btn-ghost" onclick="toggleStall(${s.id}, ${!s.published})">${s.published ? 'Unpublish' : 'Publish'}</button>
+        <button class="btn-danger" onclick="deleteStall(${s.id}, ${items.length}, this)">Delete</button>
+      </div>
+      <details class="stall">
+        <summary>Items (${items.length})</summary>
+        <div id="itemList-${s.id}">${renderItems(s)}</div>
+        <div class="item-block">
+          <h3 style="font-size:.9rem">Add item</h3>
+          <div class="row">
+            <div class="grow2"><label>Name</label><input id="in-${s.id}" maxlength="160" /></div>
+            <div><label>Price (EUR)</label><input id="ip-${s.id}" type="number" step="0.01" min="0" placeholder="blank = ask at stall" /></div>
+          </div>
+          <div class="field"><label>Description</label><input id="id-${s.id}" maxlength="1000" /></div>
+          <div class="field"><label>Image (optional)</label>
+            <input type="file" accept="image/*" id="if-${s.id}" onchange="onPickItemImage(${s.id})" />
+            <div class="img-size" id="is-${s.id}"></div>
+            <div class="img-err" id="ie-${s.id}" hidden></div>
+          </div>
+          <div class="inline-actions"><button class="btn-gold" id="ib-${s.id}" onclick="createItem(${s.id})">Add item</button></div>
+        </div>
+      </details>
+    </div>`;
+            }).join('');
+        }
+        function renderItems(s) {
+            const items = (s.items || []);
+            if (!items.length) return '<p class="muted">No items yet.</p>';
+            return items.map(it => `
+    <div class="list-item" data-item="${it.id}">
+      ${it.image_id ? `<img class="thumb" src="${imgUrl(it.image_id)}" alt="" />` : ''}
+      <span class="name">${esc(it.name)}</span>
+      <span class="badge">${esc(fmtPrice(it.price_cents))}</span>
+      ${it.available ? '' : '<span class="badge off">Sold out</span>'}
+      <span style="margin-left:auto"></span>
+      <button class="btn-ghost" onclick="toggleItem(${it.id}, ${!it.available})">${it.available ? 'Mark sold' : 'Mark available'}</button>
+      <button class="btn-danger" onclick="deleteItem(${it.id}, this)">Del</button>
+    </div>`).join('');
+        }
+        async function setStallSort(id, val) {
+            try { await api('stall.update', { id, sort: parseInt(val, 10) || 0 }); await refresh(); }
+            catch (e) { flash('globalMsg', e.message, false); }
+        }
+        async function toggleStall(id, val) {
+            try { await api('stall.update', { id, published: val }); await refresh(); }
+            catch (e) { flash('globalMsg', e.message, false); }
+        }
+        async function deleteStall(id, n, btn) {
+            if (btn.dataset.confirm !== '1') {
+                btn.dataset.confirm = '1';
+                btn.textContent = 'Confirm (also deletes ' + n + ' items)?';
+                setTimeout(() => { if (btn) { btn.dataset.confirm = '0'; btn.textContent = 'Delete'; } }, 4000);
+                return;
+            }
+            try { await api('stall.delete', { id }); await refresh(); }
+            catch (e) { flash('globalMsg', e.message, false); }
+        }
+
+        async function onPickItemImage(stallId) {
+            const file = document.getElementById('if-' + stallId).files[0];
+            const sizeEl = document.getElementById('is-' + stallId);
+            const errEl = document.getElementById('ie-' + stallId);
+            errEl.hidden = true; delete staged['item-' + stallId];
+            if (!file) { sizeEl.textContent = ''; return; }
+            sizeEl.textContent = 'Compressing…';
+            try {
+                const out = await compressImage(file);
+                staged['item-' + stallId] = out;
+                sizeEl.textContent = Math.round(out.bytes / 1024) + ' KB · ' + out.mime;
+            } catch (e) { errEl.textContent = e.message; errEl.hidden = false; sizeEl.textContent = ''; }
+        }
+        async function createItem(stallId) {
+            const btn = document.getElementById('ib-' + stallId);
+            const name = document.getElementById('in-' + stallId).value.trim();
+            if (!name) { flash('globalMsg', 'Item name is required.', false); return; }
+            btn.disabled = true;
+            try {
+                let image_id = null;
+                try { image_id = await uploadStaged('item-' + stallId); }
+                catch (e) { throw new Error('Image upload failed: ' + e.message); }
+                await api('item.create', {
+                    stall_id: stallId, name,
+                    description: document.getElementById('id-' + stallId).value.trim(),
+                    price_cents: eurToCents(document.getElementById('ip-' + stallId).value),
+                    image_id,
+                });
+                delete staged['item-' + stallId];
+                await refresh();
+                flash('globalMsg', 'Item added.', true);
+            } catch (e) { flash('globalMsg', e.message, false); }
+            finally { btn.disabled = false; }
+        }
+        async function toggleItem(id, val) {
+            try { await api('item.update', { id, available: val }); await refresh(); }
+            catch (e) { flash('globalMsg', e.message, false); }
+        }
+        async function deleteItem(id, btn) {
+            if (!confirmBtn(btn)) return;
+            try { await api('item.delete', { id }); await refresh(); }
+            catch (e) { flash('globalMsg', e.message, false); }
+        }
+
+        // ── MERCH ─────────────────────────────────────
+        async function createMerch() {
+            const btn = document.getElementById('mCreateBtn');
+            const name = document.getElementById('mName').value.trim();
+            if (!name) { flash('merchMsg', 'Product name is required.', false); return; }
+            btn.disabled = true;
+            try {
+                let image_id = null;
+                try { image_id = await uploadStaged('merch'); }
+                catch (e) { throw new Error('Image upload failed: ' + e.message); }
+                await api('merch.create', {
+                    name,
+                    price_cents: eurToCents(document.getElementById('mPrice').value),
+                    sizes: document.getElementById('mSizes').value.trim(),
+                    description: document.getElementById('mDesc').value.trim(),
+                    available: document.getElementById('mAvailable').checked,
+                    image_id,
+                });
+                ['mName', 'mPrice', 'mSizes', 'mDesc'].forEach(i => document.getElementById(i).value = '');
+                document.getElementById('mImgFile').value = '';
+                document.getElementById('mImgPreview').style.display = 'none';
+                document.getElementById('mImgSize').textContent = '';
+                delete staged.merch;
+                await refresh();
+                flash('merchMsg', 'Product created.', true);
+            } catch (e) { flash('merchMsg', e.message, false); }
+            finally { btn.disabled = false; }
+        }
+        function renderMerch() {
+            const wrap = document.getElementById('merchList');
+            const list = cache.merch;
+            if (!list.length) { wrap.innerHTML = '<p class="muted">No products yet.</p>'; return; }
+            wrap.innerHTML = list.map(m => `
+    <div class="card" data-merch="${m.id}">
+      <div class="list-item">
+        ${m.image_id ? `<img class="thumb" src="${imgUrl(m.image_id)}" alt="" />` : ''}
+        <span class="name">${esc(m.name)}</span>
+        <span class="badge">${esc(fmtPrice(m.price_cents))}</span>
+        ${m.available ? '' : '<span class="badge off">Sold out</span>'}
+        <span style="margin-left:auto"></span>
+        <label style="margin:0">Sort</label>
+        <input class="sortnum" type="number" value="${m.sort != null ? m.sort : 0}" onchange="setMerchSort(${m.id}, this.value)" />
+      </div>
+      ${m.sizes ? `<p class="muted" style="margin:.2rem 0">Sizes: ${esc(m.sizes)}</p>` : ''}
+      ${m.description ? `<p class="muted" style="margin:.2rem 0">${esc(m.description)}</p>` : ''}
+      <div class="inline-actions">
+        <button class="btn-ghost" onclick="toggleMerch(${m.id}, ${!m.available})">${m.available ? 'Mark sold out' : 'Mark available'}</button>
+        <button class="btn-ghost" onclick="editMerch(${m.id})">Edit</button>
+        <button class="btn-danger" onclick="deleteMerch(${m.id}, this)">Delete</button>
+      </div>
+      <div id="merchEdit-${m.id}"></div>
+    </div>`).join('');
+        }
+        function editMerch(id) {
+            const m = cache.merch.find(x => x.id === id);
+            if (!m) return;
+            document.getElementById('merchEdit-' + id).innerHTML = `<div class="item-block">
+    <div class="field"><label>Name</label><input id="me-n-${id}" maxlength="160" value="${esc(m.name)}" /></div>
+    <div class="row">
+      <div><label>Price (EUR)</label><input id="me-p-${id}" type="number" step="0.01" min="0" value="${m.price_cents != null ? (m.price_cents / 100).toFixed(2) : ''}" /></div>
+      <div class="grow2"><label>Sizes</label><input id="me-s-${id}" maxlength="120" value="${esc(m.sizes || '')}" /></div>
+    </div>
+    <div class="field"><label>Description</label><textarea id="me-d-${id}" maxlength="2000">${esc(m.description || '')}</textarea></div>
+    <div class="inline-actions">
+      <button class="btn-primary" onclick="saveMerch(${id}, this)">Save</button>
+      <button class="btn-ghost" onclick="document.getElementById('merchEdit-${id}').innerHTML=''">Cancel</button>
+    </div>
+  </div>`;
+        }
+        async function saveMerch(id, btn) {
+            btn.disabled = true;
+            try {
+                await api('merch.update', {
+                    id,
+                    name: document.getElementById('me-n-' + id).value.trim(),
+                    price_cents: eurToCents(document.getElementById('me-p-' + id).value),
+                    sizes: document.getElementById('me-s-' + id).value.trim(),
+                    description: document.getElementById('me-d-' + id).value.trim(),
+                });
+                await refresh();
+            } catch (e) { flash('globalMsg', e.message, false); btn.disabled = false; }
+        }
+        async function setMerchSort(id, val) {
+            try { await api('merch.update', { id, sort: parseInt(val, 10) || 0 }); await refresh(); }
+            catch (e) { flash('globalMsg', e.message, false); }
+        }
+        async function toggleMerch(id, val) {
+            try { await api('merch.update', { id, available: val }); await refresh(); }
+            catch (e) { flash('globalMsg', e.message, false); }
+        }
+        async function deleteMerch(id, btn) {
+            if (!confirmBtn(btn)) return;
+            try { await api('merch.delete', { id }); await refresh(); }
+            catch (e) { flash('globalMsg', e.message, false); }
+        }
+
+        // ── HELPERS ───────────────────────────────────
+        function eurToCents(v) {
+            if (v == null || String(v).trim() === '') return null;
+            const n = Math.round(parseFloat(v) * 100);
+            return Number.isFinite(n) ? n : null;
+        }
+        function toIso(localVal) { return localVal ? new Date(localVal).toISOString() : null; }
+        function toLocalInput(iso) {
+            const d = new Date(iso);
+            if (isNaN(d)) return '';
+            const pad = n => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
+        function confirmBtn(btn) {
+            if (btn.dataset.confirm !== '1') {
+                btn.dataset.confirm = '1';
+                const orig = btn.textContent;
+                btn.textContent = 'Confirm?';
+                setTimeout(() => { if (btn) { btn.dataset.confirm = '0'; btn.textContent = orig; } }, 3000);
+                return false;
+            }
+            return true;
+        }
+
+        // ── BOOT ──────────────────────────────────────
+        document.getElementById('key').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+        (function restore() {
+            let saved = '';
+            try { saved = sessionStorage.getItem('rentap_content_key') || ''; } catch { }
+            if (saved) { document.getElementById('key').value = saved; unlock(); }
+        })();
+    </script>
+</body>
+
+</html>
