@@ -376,7 +376,6 @@ async function submitForm(e) {
     data.email = fieldVal('fv-email');
     data.phone = fieldVal('fv-phone');
     data.people = fieldVal('fv-people');
-    data.category = fieldVal('fv-category');
     data.food = fieldVal('fv-desc');
   }
 
