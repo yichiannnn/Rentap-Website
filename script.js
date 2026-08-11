@@ -94,7 +94,7 @@ const REG_OPEN = {
   player: false,
   volunteer: true,
   spectator: false,
-  vendor: false
+  vendor: true
 };
 
 // Members-only early access. Set a type to false when it opens to everyone.
