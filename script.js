@@ -94,7 +94,7 @@ const REG_OPEN = {
   player: false,
   volunteer: true,
   spectator: false,
-  vendor: true
+  vendor: false
 };
 
 // Members-only early access. Set a type to false when it opens to everyone.
@@ -118,8 +118,8 @@ const COMING_SOON = {
     msg: 'Spectator entry is not open yet. Registration will open soon — check back nearer the event to reserve your spot and cheer the teams on.'
   },
   vendor: {
-    title: 'Vendor Registration Opens Soon',
-    msg: 'Food vendor sign-ups are not open just yet. Registration will open soon — check back to secure a stall at the RENTAP bazaar.'
+    title: 'Vendor Registration Full',
+    msg: 'All bazaar stalls have been filled — vendor registration is now closed. Thank you for your interest! If you have any questions, please contact us.'
   }
 };
 
