@@ -711,7 +711,7 @@ function renderSport() {
   }
 
   // Rules/details visibility. Set SHOW_RULES to true to publish the full rules.
-  const SHOW_RULES = false;
+  const SHOW_RULES = true;
   if (!SHOW_RULES) {
     const content = document.getElementById('rulesContent');
     content.innerHTML =
@@ -783,8 +783,9 @@ function renderSport() {
     content.appendChild(div);
   });
 
-  // PIC card
-  if (sport.pic) {
+  // PIC card — hidden for now (set SHOW_PIC to true to re-enable per-sport PIC).
+  const SHOW_PIC = false;
+  if (SHOW_PIC && sport.pic) {
     const card = document.createElement('div');
     card.className = 'pic-card';
     card.innerHTML = `
