@@ -1202,6 +1202,15 @@ p { max-width: 68ch; }
 
 .optional { font-weight: 400; color: var(--text-muted); }
 
+.field-hint {
+  margin: -0.1rem 0 0.15rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.field-hint em { color: var(--gold); font-style: italic; }
+.field-hint strong { color: var(--light); }
+
 .info-btn {
   display: inline-flex;
   align-items: center;
