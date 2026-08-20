@@ -1493,3 +1493,24 @@ p { max-width: 68ch; }
     font-size: 0.84rem;
   }
 }
+/* ── HOMEPAGE ANNOUNCEMENTS SECTION ── */
+.home-ann { padding-block: clamp(2.5rem, 5vw, 3.5rem); background: var(--surface); }
+.home-ann-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+.home-ann-all { color: var(--gold); font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
+.home-ann-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+.home-ann-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.25rem;
+}
+.home-ann-card.lvl-important { border-left-color: var(--gold); }
+.home-ann-card.lvl-urgent { border-left-color: var(--red); }
+.home-ann-card-head { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+.home-ann-card-title { font-weight: 700; color: var(--light); font-size: 1rem; letter-spacing: 0.01em; }
+.home-ann-badge { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.1rem 0.45rem; border-radius: 999px; }
+.home-ann-badge.important { background: var(--gold); color: var(--ink); }
+.home-ann-badge.urgent { background: var(--red); color: var(--light); }
+.home-ann-date { color: var(--text-muted); font-size: 0.76rem; margin-left: auto; white-space: nowrap; }
+.home-ann-body { color: var(--text); font-size: 0.9rem; line-height: 1.6; white-space: pre-wrap; }

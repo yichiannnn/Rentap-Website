@@ -55,11 +55,52 @@
   }
 
   window.mountAnnouncementBanner = mount;
+
+  // ── Homepage "Latest Updates" section (index.html only) ──
+  function fmtDate(s) {
+    const d = new Date(s);
+    if (isNaN(d)) return '';
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) +
+      ', ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  }
+  async function mountHomeAnnouncements() {
+    const section = document.getElementById('homeAnn');
+    const list = document.getElementById('homeAnnList');
+    if (!section || !list) return;
+    let items = [];
+    try {
+      const res = await fetch('/api/content?type=announcements', { headers: { Accept: 'application/json' } });
+      if (!res.ok) return;
+      const data = await res.json();
+      items = (data && data.announcements) || [];
+    } catch (_) { return; }
+    if (!items.length) return; // stay hidden when there is nothing
+
+    // Pinned first, then newest — show up to 3.
+    items.sort((a, b) => (b.pinned === true) - (a.pinned === true));
+    const top = items.slice(0, 3);
+    list.innerHTML = top.map(a => {
+      const lvl = ['info', 'important', 'urgent'].includes(a.level) ? a.level : 'info';
+      let badge = '';
+      if (lvl === 'urgent') badge = '<span class="home-ann-badge urgent">Urgent</span>';
+      else if (lvl === 'important') badge = '<span class="home-ann-badge important">Important</span>';
+      const body = (a.body || '').toString();
+      const shortBody = body.length > 180 ? escHtml(body.slice(0, 177)) + '…' : escHtml(body);
+      return '<div class="home-ann-card lvl-' + lvl + '">' +
+        '<div class="home-ann-card-head">' +
+        '<span class="home-ann-card-title">' + escHtml(a.title) + '</span>' + badge +
+        '<span class="home-ann-date">' + escHtml(fmtDate(a.created_at)) + '</span>' +
+        '</div><div class="home-ann-body">' + shortBody + '</div></div>';
+    }).join('');
+    section.hidden = false;
+  }
+
   // auto-run on pages that load script.js (index.html, sport.html)
+  function start() { mount(); mountHomeAnnouncements(); }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => mount());
+    document.addEventListener('DOMContentLoaded', start);
   } else {
-    mount();
+    start();
   }
 })();
 
