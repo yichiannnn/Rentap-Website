@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Announcements — RENTAP XVII</title>
+    <meta name="description"
+        content="Latest announcements and updates for RENTAP XVII — 26–27 September 2026, Nürnberg." />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet" />
+    <style>
+        .an-hero {
+            padding-top: calc(var(--nav-h) + 2.5rem);
+            padding-bottom: 1.5rem;
+            background: var(--ink);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .an-hero-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cpolygon points='30,4 56,30 30,56 4,30' stroke='%23A8200D' stroke-width='0.8' opacity='0.2'/%3E%3Cpolygon points='30,14 46,30 30,46 14,30' stroke='%23C8922A' stroke-width='0.5' opacity='0.15'/%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .an-hero-pattern::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 90% at 50% 30%, transparent 20%, var(--ink) 88%);
+        }
+
+        .an-hero-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .an-title {
+            font-family: var(--display);
+            font-size: clamp(3rem, 9vw, 5.5rem);
+            letter-spacing: .05em;
+            color: var(--light);
+            line-height: 1;
+        }
+
+        .an-subtitle {
+            color: var(--text-muted);
+            font-size: .95rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-top: .4rem;
+        }
+
+        .an-panel {
+            padding-block: clamp(2rem, 5vw, 3.5rem);
+            background: var(--surface);
+            min-height: 60vh;
+        }
+
+        .an-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+            max-width: 760px;
+        }
+
+        .an-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.2rem 1.35rem;
+        }
+
+        .an-card.lvl-important { border-left-color: var(--gold); }
+        .an-card.lvl-urgent { border-left-color: var(--red); }
+
+        .an-card-head {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            flex-wrap: wrap;
+            margin-bottom: .5rem;
+        }
+
+        .an-card-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--light);
+            letter-spacing: .01em;
+        }
+
+        .an-badge {
+            font-size: .62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: .12rem .5rem;
+            border-radius: 999px;
+        }
+
+        .an-badge.important { background: var(--gold); color: var(--ink); }
+        .an-badge.urgent { background: var(--red); color: var(--light); }
+        .an-badge.pinned { background: rgba(200,146,42,.15); color: var(--gold); border: 1px solid rgba(200,146,42,.4); }
+
+        .an-date {
+            color: var(--text-muted);
+            font-size: .8rem;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+        .an-body {
+            color: var(--text);
+            font-size: .95rem;
+            line-height: 1.65;
+            white-space: pre-wrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius-lg);
+            max-width: 760px;
+        }
+
+        .empty-state svg {
+            width: 2.5rem;
+            height: 2.5rem;
+            color: var(--border);
+            margin-bottom: .8rem;
+        }
+
+        .retry-note {
+            color: var(--text-muted);
+            font-size: .82rem;
+            margin-top: .8rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="navbar scrolled" id="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">RENTAP<span>XVII</span></a>
+            <nav aria-label="Main navigation">
+                <ul class="nav-links">
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#sports">Sports</a></li>
+                    <li><a href="index.html#schedule">Schedule</a></li>
+                    <li><a href="bazaar.html">Bazaar</a></li>
+                    <li><a href="announcements.html" class="nav-cta">News</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="an-hero">
+        <div class="an-hero-pattern" aria-hidden="true"></div>
+        <div class="container an-hero-inner">
+            <h1 class="an-title">ANNOUNCEMENTS</h1>
+            <p class="an-subtitle">Latest news &amp; updates</p>
+        </div>
+    </section>
+
+    <main class="an-panel">
+        <div class="container">
+            <div id="panel-ann"></div>
+        </div>
+    </main>
+
+    <footer class="footer" style="margin-top:0;">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;padding-top:0;">
+                <p>© 2026 RENTAP XVII. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="impressum.html">Impressum</a>
+                    <a href="datenschutz.html">Datenschutz</a>
+                    <a href="agb.html">AGB</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="live-shared.js"></script>
+    <script>
+        let anns = null;
+
+        function loading(msg) {
+            return `<div class="empty-state"><p>${esc(msg)}</p></div>`;
+        }
+        function emptyState(msg) {
+            return `<div class="empty-state">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+    <p>${esc(msg)}</p></div>`;
+        }
+
+        function fmtDate(s) {
+            const d = new Date(s);
+            if (isNaN(d)) return '';
+            return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) +
+                ', ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function render() {
+            const panel = document.getElementById('panel-ann');
+            if (anns === null) { panel.innerHTML = loading('Loading announcements…'); return; }
+            if (!anns.length) { panel.innerHTML = emptyState('No announcements yet. Check back here for updates during the event.'); return; }
+
+            const cards = anns.map(a => {
+                const lvl = ['info', 'important', 'urgent'].includes(a.level) ? a.level : 'info';
+                const badges = [];
+                if (lvl === 'urgent') badges.push('<span class="an-badge urgent">Urgent</span>');
+                else if (lvl === 'important') badges.push('<span class="an-badge important">Important</span>');
+                if (a.pinned) badges.push('<span class="an-badge pinned">Pinned</span>');
+                return `<div class="an-card lvl-${lvl}">
+      <div class="an-card-head">
+        <span class="an-card-title">${esc(a.title)}</span>
+        ${badges.join(' ')}
+        <span class="an-date">${esc(fmtDate(a.created_at))}</span>
+      </div>
+      <div class="an-body">${esc(a.body)}</div>
+    </div>`;
+            }).join('');
+            panel.innerHTML = `<div class="an-list">${cards}</div>`;
+        }
+
+        async function loadAnns() {
+            try {
+                const res = await fetch('/api/content?type=announcements', { headers: { Accept: 'application/json' } });
+                if (!res.ok) throw new Error('bad');
+                const data = await res.json();
+                anns = data.announcements || [];
+            } catch (_) {
+                if (anns === null) anns = [];
+                document.getElementById('panel-ann').innerHTML =
+                    emptyState('No announcements yet. Check back here for updates during the event.') +
+                    '<p class="retry-note">(Could not reach the server — retrying shortly.)</p>';
+                return;
+            }
+            render();
+        }
+
+        // pinned-announcement banner (inline)
+        function mountBanner() {
+            const ICON = {
+                urgent: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+                important: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+                info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+            };
+            const CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+            const navbar = document.getElementById('navbar');
+            if (!navbar) return;
+            fetch('/api/content?type=announcements', { headers: { Accept: 'application/json' } })
+                .then(r => r.ok ? r.json() : null)
+                .then(d => {
+                    const ann = ((d && d.announcements) || []).find(a => a.pinned);
+                    if (!ann) return;
+                    const lvl = ['info', 'important', 'urgent'].includes(ann.level) ? ann.level : 'info';
+                    const body = (ann.body || '').toString();
+                    const bodyHtml = body.length <= 140
+                        ? '<span class="ann-banner-body"> — ' + esc(body) + '</span>'
+                        : '';
+                    const el = document.createElement('div');
+                    el.className = 'ann-banner ann-banner--' + lvl;
+                    el.setAttribute('role', 'status');
+                    el.innerHTML = '<div class="ann-banner-inner"><span class="ann-banner-icon">' + ICON[lvl] + '</span>' +
+                        '<span class="ann-banner-text"><span class="ann-banner-title">' + esc(ann.title) + '</span>' + bodyHtml + '</span>' +
+                        '<button class="ann-banner-close" aria-label="Dismiss announcement">' + CLOSE + '</button></div>';
+                    navbar.insertAdjacentElement('afterend', el);
+                    el.querySelector('.ann-banner-close').addEventListener('click', () => el.remove());
+                })
+                .catch(() => { });
+        }
+
+        function init() {
+            document.getElementById('panel-ann').innerHTML = loading('Loading announcements…');
+            loadAnns();
+            mountBanner();
+        }
+        init();
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+</body>
+
+</html>
