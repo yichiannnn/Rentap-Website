@@ -46,10 +46,12 @@
       '<div class="ann-banner-inner">' +
       '<span class="ann-banner-icon">' + ICON[level] + '</span>' +
       '<span class="ann-banner-text"><span class="ann-banner-title">' + escHtml(ann.title) + '</span>' + bodyHtml + '</span>' +
+      '<button class="ann-banner-close" aria-label="Dismiss announcement">' + CLOSE + '</button>' +
       '</div>';
 
-    // insert directly after the navbar (always shown, not dismissible)
+    // insert directly after the navbar
     navbar.insertAdjacentElement('afterend', el);
+    el.querySelector('.ann-banner-close').addEventListener('click', () => el.remove());
   }
 
   window.mountAnnouncementBanner = mount;
@@ -93,8 +95,15 @@
     section.hidden = false;
   }
 
-  // auto-run on pages that load script.js (index.html, sport.html)
-  function start() { mount(); mountHomeAnnouncements(); }
+  // Banner shows on the main landing page only; sport pages skip it.
+  function isLandingPage() {
+    const p = location.pathname;
+    return p === '/' || /\/index\.html$/.test(p);
+  }
+  function start() {
+    if (isLandingPage()) mount();
+    mountHomeAnnouncements();
+  }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start);
   } else {
