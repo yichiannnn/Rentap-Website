@@ -294,7 +294,7 @@
                     const body = (ann.body || '').toString();
                     const bodyHtml = body.length <= 140
                         ? '<span class="ann-banner-body"> — ' + esc(body) + '</span>'
-                        : ' <a class="ann-banner-more" href="live.html#announcements">Read more</a>';
+                        : ' <a class="ann-banner-more" href="announcements.html">Read more</a>';
                     const el = document.createElement('div');
                     el.className = 'ann-banner ann-banner--' + lvl;
                     el.setAttribute('role', 'status');

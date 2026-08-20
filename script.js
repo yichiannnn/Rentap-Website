@@ -37,7 +37,7 @@
     const short = body.length <= 140;
     const bodyHtml = short
       ? `<span class="ann-banner-body"> — ${escHtml(body)}</span>`
-      : ` <a class="ann-banner-more" href="live.html#announcements">Read more</a>`;
+      : ` <a class="ann-banner-more" href="announcements.html">Read more</a>`;
 
     const el = document.createElement('div');
     el.className = 'ann-banner ann-banner--' + level + (opts.inline ? ' ann-banner--inline' : '');
