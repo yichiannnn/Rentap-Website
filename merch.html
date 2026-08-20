@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bazaar — RENTAP XVII</title>
+    <title>Merchandise — RENTAP XVII</title>
     <meta name="description"
-        content="Food, drinks and official merchandise at RENTAP XVII — 26–27 September 2026, Nürnberg." />
+        content="Official RENTAP XVII merchandise — 26–27 September 2026, Nürnberg." />
     <link rel="stylesheet" href="style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -63,41 +63,6 @@
             margin-top: .6rem;
         }
 
-        /* tabs (reuse schedule-tab pattern, gold active) */
-        .bz-tabs-wrap {
-            position: sticky;
-            top: var(--nav-h);
-            z-index: 30;
-            background: var(--surface);
-            border-bottom: 2px solid var(--border);
-        }
-
-        .bz-tabs {
-            display: flex;
-            gap: .5rem;
-            max-width: 1200px;
-            margin-inline: auto;
-            padding: .8rem clamp(1.25rem, 5vw, 3rem);
-        }
-
-        .bz-tab {
-            background: var(--surface-2);
-            color: var(--text);
-            border: 1px solid var(--border);
-            padding: .55rem 1.2rem;
-            border-radius: 999px;
-            font-size: .9rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: var(--body);
-        }
-
-        .bz-tab.active {
-            background: var(--gold);
-            color: var(--ink);
-            border-color: var(--gold);
-        }
-
         .bz-panel {
             padding-block: clamp(2rem, 5vw, 3.5rem);
             background: var(--surface);
@@ -110,129 +75,6 @@
             margin-bottom: 1.5rem;
             max-width: 60ch;
             line-height: 1.6;
-        }
-
-        /* stalls */
-        .stall-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .stall-card {
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-        }
-
-        .stall-banner {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            object-fit: cover;
-            display: block;
-            background: var(--ink);
-        }
-
-        .stall-head {
-            padding: 1.1rem 1.25rem .6rem;
-        }
-
-        .stall-name {
-            font-family: var(--display);
-            font-size: 1.6rem;
-            letter-spacing: .03em;
-            color: var(--light);
-        }
-
-        .stall-meta {
-            display: flex;
-            align-items: center;
-            gap: .6rem;
-            flex-wrap: wrap;
-            margin-top: .3rem;
-        }
-
-        .cat-chip {
-            font-size: .68rem;
-            font-weight: 700;
-            letter-spacing: .05em;
-            text-transform: uppercase;
-            padding: .12rem .55rem;
-            border-radius: 999px;
-            color: var(--gold);
-            border: 1px solid var(--border);
-            background: rgba(200, 146, 42, .08);
-        }
-
-        .stall-loc {
-            color: var(--text-muted);
-            font-size: .82rem;
-        }
-
-        .stall-desc {
-            color: var(--text);
-            font-size: .9rem;
-            line-height: 1.6;
-            padding: 0 1.25rem 1rem;
-        }
-
-        .item-list {
-            list-style: none;
-            border-top: 1px solid var(--border);
-        }
-
-        .item-row {
-            display: grid;
-            grid-template-columns: 64px 1fr auto;
-            gap: .9rem;
-            align-items: center;
-            padding: .8rem 1.25rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .item-row:last-child {
-            border-bottom: none;
-        }
-
-        .item-thumb {
-            width: 64px;
-            height: 64px;
-            object-fit: cover;
-            border-radius: var(--radius);
-            background: var(--ink);
-        }
-
-        .item-noimg {
-            width: 64px;
-            height: 64px;
-            border-radius: var(--radius);
-            background: var(--ink);
-            border: 1px dashed var(--border);
-        }
-
-        .item-name {
-            color: var(--light);
-            font-weight: 600;
-            font-size: .95rem;
-        }
-
-        .item-desc {
-            color: var(--text-muted);
-            font-size: .82rem;
-            line-height: 1.4;
-            margin-top: .15rem;
-        }
-
-        .item-price {
-            color: var(--gold);
-            font-weight: 700;
-            font-variant-numeric: tabular-nums;
-            white-space: nowrap;
-        }
-
-        .item-row.sold {
-            opacity: .5;
         }
 
         .sold-chip {
@@ -330,20 +172,6 @@
             font-size: .82rem;
             margin-top: .8rem;
         }
-
-        @media (max-width: 560px) {
-            .item-row {
-                grid-template-columns: 52px 1fr auto;
-                gap: .7rem;
-                padding: .7rem 1rem;
-            }
-
-            .item-thumb,
-            .item-noimg {
-                width: 52px;
-                height: 52px;
-            }
-        }
     </style>
 </head>
 
@@ -357,8 +185,8 @@
                     <li><a href="index.html#about">About</a></li>
                     <li><a href="index.html#sports">Sports</a></li>
                     <li><a href="index.html#schedule">Schedule</a></li>
-                    <li><a href="merch.html">Merch</a></li>
-                    <li><a href="bazaar.html" class="nav-cta">Bazaar</a></li>
+                    <li><a href="bazaar.html">Bazaar</a></li>
+                    <li><a href="merch.html" class="nav-cta">Merch</a></li>
                 </ul>
             </nav>
         </div>
@@ -367,15 +195,15 @@
     <section class="bz-hero">
         <div class="bz-hero-pattern" aria-hidden="true"></div>
         <div class="container bz-hero-inner">
-            <h1 class="bz-title">BAZAAR</h1>
-            <p class="bz-subtitle">Food &amp; Drinks</p>
-            <p class="bz-strip">Nasi lemak, satay, teh tarik and more, all weekend long.</p>
+            <h1 class="bz-title">MERCHANDISE</h1>
+            <p class="bz-subtitle">Official RENTAP XVII Merch</p>
+            <p class="bz-strip">Take home a piece of RENTAP XVII.</p>
         </div>
     </section>
 
     <main class="bz-panel">
         <div class="container">
-            <div id="panel-food"></div>
+            <div id="panel-merch"></div>
         </div>
     </main>
 
@@ -394,9 +222,7 @@
 
     <script src="live-shared.js"></script>
     <script>
-        let stalls = null;
-
-        const CAT_LABEL = { food: 'Food', drinks: 'Drinks', carboot: 'Carboot' };
+        let merch = null;
 
         function imgUrl(id) { return '/api/content?image=' + encodeURIComponent(id); }
 
@@ -409,61 +235,44 @@
     <p>${esc(msg)}</p></div>`;
         }
 
-        // ── Food & Drinks ──
-        function renderStalls() {
-            const panel = document.getElementById('panel-food');
-            if (stalls === null) { panel.innerHTML = loading('Loading stalls…'); return; }
-            if (!stalls.length) { panel.innerHTML = emptyState('Stalls are being confirmed. Check back soon.'); return; }
-
-            const html = stalls.map(s => {
-                const banner = s.image_id
-                    ? `<img class="stall-banner" src="${imgUrl(s.image_id)}" alt="${esc(s.name)}" loading="lazy" width="800" height="450" />`
-                    : '';
-                const items = (s.items || []).map(it => {
-                    const thumb = it.image_id
-                        ? `<img class="item-thumb" src="${imgUrl(it.image_id)}" alt="${esc(it.name)}" loading="lazy" width="64" height="64" />`
-                        : `<span class="item-noimg" aria-hidden="true"></span>`;
-                    const sold = !it.available ? '<span class="sold-chip">Sold out</span>' : '';
-                    const desc = it.description ? `<div class="item-desc">${esc(it.description)}</div>` : '';
-                    return `<li class="item-row ${it.available ? '' : 'sold'}">
-        ${thumb}
-        <div><div class="item-name">${esc(it.name)}${sold}</div>${desc}</div>
-        <div class="item-price">${esc(fmtPrice(it.price_cents))}</div>
-      </li>`;
-                }).join('');
-                const itemList = items
-                    ? `<ul class="item-list">${items}</ul>`
-                    : `<p class="stall-desc" style="color:var(--text-muted);font-style:italic">Menu coming soon.</p>`;
-                return `<div class="stall-card">
-      ${banner}
-      <div class="stall-head">
-        <div class="stall-name">${esc(s.name)}</div>
-        <div class="stall-meta">
-          <span class="cat-chip">${esc(CAT_LABEL[s.category] || s.category)}</span>
-          ${s.location ? `<span class="stall-loc">${esc(s.location)}</span>` : ''}
-        </div>
+        function renderMerch() {
+            const panel = document.getElementById('panel-merch');
+            if (merch === null) { panel.innerHTML = loading('Loading merchandise…'); return; }
+            const intro = `<p class="bz-intro">Official RENTAP XVII merchandise, sold at the info desk during the event.</p>`;
+            if (!merch.length) { panel.innerHTML = intro + emptyState('Merch drop coming soon.'); return; }
+            const cards = merch.map(m => {
+                const img = m.image_id
+                    ? `<img class="merch-img" src="${imgUrl(m.image_id)}" alt="${esc(m.name)}" loading="lazy" width="400" height="400" />`
+                    : `<div class="merch-noimg" aria-hidden="true"></div>`;
+                const sold = !m.available ? '<span class="sold-chip">Sold out</span>' : '';
+                return `<div class="merch-card ${m.available ? '' : 'sold'}">
+      ${img}
+      <div class="merch-body">
+        <div class="merch-name">${esc(m.name)}${sold}</div>
+        <div class="merch-price">${esc(fmtPrice(m.price_cents))}</div>
+        ${m.sizes ? `<div class="merch-sizes">Sizes: ${esc(m.sizes)}</div>` : ''}
+        ${m.description ? `<div class="merch-desc">${esc(m.description)}</div>` : ''}
       </div>
-      ${s.description ? `<p class="stall-desc">${esc(s.description)}</p>` : ''}
-      ${itemList}
     </div>`;
             }).join('');
-            panel.innerHTML = `<div class="stall-list">${html}</div>`;
+            panel.innerHTML = intro + `<div class="merch-grid">${cards}</div>`;
         }
 
-        async function loadBazaar() {
+        async function loadMerch() {
             try {
-                const res = await fetch('/api/content?type=bazaar', { headers: { Accept: 'application/json' } });
+                const res = await fetch('/api/content?type=merch', { headers: { Accept: 'application/json' } });
                 if (!res.ok) throw new Error('bad');
                 const data = await res.json();
-                stalls = data.stalls || [];
+                merch = data.merch || [];
             } catch (_) {
-                if (stalls === null) stalls = [];
-                document.getElementById('panel-food').innerHTML =
-                    emptyState('Stalls are being confirmed. Check back soon.') +
+                if (merch === null) merch = [];
+                document.getElementById('panel-merch').innerHTML =
+                    `<p class="bz-intro">Official RENTAP XVII merchandise, sold at the info desk during the event.</p>` +
+                    emptyState('Merch drop coming soon.') +
                     '<p class="retry-note">(Could not reach the server — retrying shortly.)</p>';
                 return;
             }
-            renderStalls();
+            renderMerch();
         }
 
         // pinned-announcement banner (inline)
@@ -499,8 +308,8 @@
         }
 
         function init() {
-            document.getElementById('panel-food').innerHTML = loading('Loading stalls…');
-            loadBazaar();
+            document.getElementById('panel-merch').innerHTML = loading('Loading merchandise…');
+            loadMerch();
             mountBanner();
         }
         init();
