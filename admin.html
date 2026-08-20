@@ -35,6 +35,8 @@
     .btn-gold { background: var(--gold); color: var(--ink); }
     .toolbar { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.25rem; }
     .toolbar .count { color: var(--gold); font-weight: 700; }
+    .sort-ctl { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--muted); }
+    .sort-ctl select { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.6rem; font-size: 0.82rem; }
     .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .tab { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); padding: 0.45rem 0.9rem; border-radius: 999px; font-size: 0.85rem; }
     .tab.active { background: var(--gold); color: var(--ink); border-color: var(--gold); }
@@ -76,7 +78,17 @@
         <button class="tab" data-type="spectator" onclick="setFilter('spectator', this)">Spectators</button>
         <button class="tab" data-type="vendor" onclick="setFilter('vendor', this)">Vendors</button>
       </div>
-      <button class="btn-gold" style="margin-left:auto" onclick="downloadCSV()">Download CSV</button>
+      <label class="sort-ctl" style="margin-left:auto">
+        <span>Sort by</span>
+        <select id="sortBy" onchange="setSort(this.value)">
+          <option value="created_desc">Registered (newest)</option>
+          <option value="created_asc">Registered (oldest)</option>
+          <option value="sport">Sport (A–Z)</option>
+          <option value="name">Name (A–Z)</option>
+          <option value="type">Type</option>
+        </select>
+      </label>
+      <button class="btn-gold" onclick="downloadCSV()">Download CSV</button>
     </div>
     <div class="table-wrap">
       <table id="table">
@@ -96,6 +108,7 @@
 <script>
   let allRows = [];
   let filter = 'all';
+  let sortMode = 'created_desc';
   let adminKey = '';
 
   async function loadData() {
@@ -132,8 +145,37 @@
     render();
   }
 
+  function setSort(mode) {
+    sortMode = mode;
+    render();
+  }
+
+  function sortRows(rows) {
+    const out = rows.slice();
+    const txt = v => (v == null ? '' : String(v)).toLowerCase();
+    const time = r => { const d = new Date(r.created_at); return isNaN(d) ? 0 : d.getTime(); };
+    // Blank values always sort to the bottom for text sorts.
+    const cmpText = key => (a, b) => {
+      const av = txt(a[key]), bv = txt(b[key]);
+      if (!av && !bv) return time(b) - time(a);
+      if (!av) return 1;
+      if (!bv) return -1;
+      return av.localeCompare(bv) || (time(b) - time(a));
+    };
+    switch (sortMode) {
+      case 'created_asc':  out.sort((a, b) => time(a) - time(b)); break;
+      case 'sport':        out.sort(cmpText('sport')); break;
+      case 'name':         out.sort(cmpText('name')); break;
+      case 'type':         out.sort(cmpText('type')); break;
+      case 'created_desc':
+      default:             out.sort((a, b) => time(b) - time(a)); break;
+    }
+    return out;
+  }
+
   function visibleRows() {
-    return filter === 'all' ? allRows : allRows.filter(r => r.type === filter);
+    const filtered = filter === 'all' ? allRows : allRows.filter(r => r.type === filter);
+    return sortRows(filtered);
   }
 
   function esc(s) {
