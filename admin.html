@@ -40,6 +40,10 @@
     .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .tab { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); padding: 0.45rem 0.9rem; border-radius: 999px; font-size: 0.85rem; }
     .tab.active { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+    .sport-tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0 0 1.25rem; padding-left: 0.1rem; }
+    .sport-tab { background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 0.35rem 0.75rem; border-radius: 999px; font-size: 0.8rem; cursor: pointer; }
+    .sport-tab:hover { color: var(--text); border-color: var(--gold); }
+    .sport-tab.active { background: rgba(200,146,42,0.18); color: var(--gold); border-color: var(--gold); }
     table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
     th, td { text-align: left; padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
     th { color: var(--muted); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.06em; position: sticky; top: 0; background: var(--ink); }
@@ -78,7 +82,7 @@
         <button class="tab" data-type="spectator" onclick="setFilter('spectator', this)">Spectators</button>
         <button class="tab" data-type="vendor" onclick="setFilter('vendor', this)">Vendors</button>
       </div>
-      <label class="sort-ctl" style="margin-left:auto">
+      <label class="sort-ctl" style="margin-left:auto" id="sortWrap">
         <span>Sort by</span>
         <select id="sortBy" onchange="setSort(this.value)">
           <option value="created_desc">Registered (newest)</option>
@@ -90,6 +94,7 @@
       </label>
       <button class="btn-gold" onclick="downloadCSV()">Download CSV</button>
     </div>
+    <div class="sport-tabs" id="sportTabs" hidden></div>
     <div class="table-wrap">
       <table id="table">
         <thead>
@@ -108,8 +113,12 @@
 <script>
   let allRows = [];
   let filter = 'all';
+  let sportFilter = 'all';
   let sortMode = 'created_desc';
   let adminKey = '';
+
+  // Tournament sport order (for the sub-tabs and grouping).
+  const SPORT_ORDER = ['Badminton', 'Basketball', 'Football', 'Volleyball', 'Touch Rugby', 'Frisbee', 'Track', 'Table Tennis', 'Tug of War'];
 
   async function loadData() {
     adminKey = document.getElementById('key').value.trim();
@@ -140,7 +149,36 @@
 
   function setFilter(type, btn) {
     filter = type;
+    sportFilter = 'all';
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    buildSportTabs();
+    render();
+  }
+
+  // Build the per-sport sub-tabs; only shown when viewing Players.
+  function buildSportTabs() {
+    const wrap = document.getElementById('sportTabs');
+    if (filter !== 'player') { wrap.hidden = true; wrap.innerHTML = ''; return; }
+
+    // Which sports actually have player registrations, in tournament order.
+    const present = SPORT_ORDER.filter(s =>
+      allRows.some(r => r.type === 'player' && (r.sport || '') === s));
+    const counts = {};
+    allRows.forEach(r => { if (r.type === 'player' && r.sport) counts[r.sport] = (counts[r.sport] || 0) + 1; });
+
+    let html = '<button class="sport-tab active" data-sport="all" onclick="setSportFilter(\'all\', this)">All Sports</button>';
+    present.forEach(s => {
+      html += '<button class="sport-tab" data-sport="' + esc(s) + '" onclick="setSportFilter(\'' + esc(s).replace(/'/g, "\\'") + '\', this)">' +
+        esc(s) + ' (' + (counts[s] || 0) + ')</button>';
+    });
+    wrap.innerHTML = html;
+    wrap.hidden = false;
+  }
+
+  function setSportFilter(sport, btn) {
+    sportFilter = sport;
+    document.querySelectorAll('.sport-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
     render();
   }
@@ -174,7 +212,10 @@
   }
 
   function visibleRows() {
-    const filtered = filter === 'all' ? allRows : allRows.filter(r => r.type === filter);
+    let filtered = filter === 'all' ? allRows : allRows.filter(r => r.type === filter);
+    if (filter === 'player' && sportFilter !== 'all') {
+      filtered = filtered.filter(r => (r.sport || '') === sportFilter);
+    }
     return sortRows(filtered);
   }
 
