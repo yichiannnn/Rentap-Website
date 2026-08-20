@@ -491,9 +491,8 @@
                     el.setAttribute('role', 'status');
                     el.innerHTML = '<div class="ann-banner-inner"><span class="ann-banner-icon">' + ICON[lvl] + '</span>' +
                         '<span class="ann-banner-text"><span class="ann-banner-title">' + esc(ann.title) + '</span>' + bodyHtml + '</span>' +
-                        '<button class="ann-banner-close" aria-label="Dismiss announcement">' + CLOSE + '</button></div>';
+                        '</div>';
                     navbar.insertAdjacentElement('afterend', el);
-                    el.querySelector('.ann-banner-close').addEventListener('click', () => el.remove());
                 })
                 .catch(() => { });
         }

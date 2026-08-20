@@ -46,12 +46,10 @@
       '<div class="ann-banner-inner">' +
       '<span class="ann-banner-icon">' + ICON[level] + '</span>' +
       '<span class="ann-banner-text"><span class="ann-banner-title">' + escHtml(ann.title) + '</span>' + bodyHtml + '</span>' +
-      '<button class="ann-banner-close" aria-label="Dismiss announcement">' + CLOSE + '</button>' +
       '</div>';
 
-    // insert directly after the navbar
+    // insert directly after the navbar (always shown, not dismissible)
     navbar.insertAdjacentElement('afterend', el);
-    el.querySelector('.ann-banner-close').addEventListener('click', () => el.remove());
   }
 
   window.mountAnnouncementBanner = mount;
