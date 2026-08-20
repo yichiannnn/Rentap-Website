@@ -1,5 +1,68 @@
 /* RENTAP XVII — script.js */
 
+// ── ANNOUNCEMENT BANNER (shared, phase 2) ─────
+// Fetches the newest pinned/published/non-expired announcement and injects a
+// slim banner under the navbar. Fails silently. Dismiss is per-page-view only
+// (no persistence). Exposed as window.mountAnnouncementBanner so pages that do
+// not load script.js can call the same logic inline.
+(function () {
+  function escHtml(s) {
+    return (s == null ? '' : String(s)).replace(/[&<>"']/g, c => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+  }
+  const ICON = {
+    urgent: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    important: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+  };
+  const CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+  async function mount(opts) {
+    opts = opts || {};
+    const navbar = document.getElementById('navbar');
+    if (!navbar) return;
+    let ann;
+    try {
+      const res = await fetch('/api/content?type=announcements', { headers: { Accept: 'application/json' } });
+      if (!res.ok) return;
+      const data = await res.json();
+      const list = (data && data.announcements) || [];
+      ann = list.find(a => a.pinned); // newest-first from the API
+    } catch (_) { return; }
+    if (!ann) return;
+
+    const level = ['info', 'important', 'urgent'].includes(ann.level) ? ann.level : 'info';
+    const body = (ann.body || '').toString();
+    const short = body.length <= 140;
+    const bodyHtml = short
+      ? `<span class="ann-banner-body"> — ${escHtml(body)}</span>`
+      : ` <a class="ann-banner-more" href="live.html#announcements">Read more</a>`;
+
+    const el = document.createElement('div');
+    el.className = 'ann-banner ann-banner--' + level + (opts.inline ? ' ann-banner--inline' : '');
+    el.setAttribute('role', 'status');
+    el.innerHTML =
+      '<div class="ann-banner-inner">' +
+      '<span class="ann-banner-icon">' + ICON[level] + '</span>' +
+      '<span class="ann-banner-text"><span class="ann-banner-title">' + escHtml(ann.title) + '</span>' + bodyHtml + '</span>' +
+      '<button class="ann-banner-close" aria-label="Dismiss announcement">' + CLOSE + '</button>' +
+      '</div>';
+
+    // insert directly after the navbar
+    navbar.insertAdjacentElement('afterend', el);
+    el.querySelector('.ann-banner-close').addEventListener('click', () => el.remove());
+  }
+
+  window.mountAnnouncementBanner = mount;
+  // auto-run on pages that load script.js (index.html, sport.html)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => mount());
+  } else {
+    mount();
+  }
+})();
+
 // ── NAVBAR SCROLL ─────────────────────────────
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {

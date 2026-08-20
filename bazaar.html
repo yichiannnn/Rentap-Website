@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bazaar — RENTAP XVII</title>
+    <meta name="description"
+        content="Food, drinks and official merchandise at RENTAP XVII — 26–27 September 2026, Nürnberg." />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet" />
+    <style>
+        .bz-hero {
+            padding-top: calc(var(--nav-h) + 2.5rem);
+            padding-bottom: 1.5rem;
+            background: var(--ink);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bz-hero-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cpolygon points='30,4 56,30 30,56 4,30' stroke='%23A8200D' stroke-width='0.8' opacity='0.2'/%3E%3Cpolygon points='30,14 46,30 30,46 14,30' stroke='%23C8922A' stroke-width='0.5' opacity='0.15'/%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .bz-hero-pattern::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 90% at 50% 30%, transparent 20%, var(--ink) 88%);
+        }
+
+        .bz-hero-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .bz-title {
+            font-family: var(--display);
+            font-size: clamp(3rem, 9vw, 5.5rem);
+            letter-spacing: .05em;
+            color: var(--light);
+            line-height: 1;
+        }
+
+        .bz-subtitle {
+            color: var(--text-muted);
+            font-size: .95rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-top: .4rem;
+        }
+
+        .bz-strip {
+            color: var(--gold);
+            font-size: .88rem;
+            margin-top: .6rem;
+        }
+
+        /* tabs (reuse schedule-tab pattern, gold active) */
+        .bz-tabs-wrap {
+            position: sticky;
+            top: var(--nav-h);
+            z-index: 30;
+            background: var(--surface);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .bz-tabs {
+            display: flex;
+            gap: .5rem;
+            max-width: 1200px;
+            margin-inline: auto;
+            padding: .8rem clamp(1.25rem, 5vw, 3rem);
+        }
+
+        .bz-tab {
+            background: var(--surface-2);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: .55rem 1.2rem;
+            border-radius: 999px;
+            font-size: .9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: var(--body);
+        }
+
+        .bz-tab.active {
+            background: var(--gold);
+            color: var(--ink);
+            border-color: var(--gold);
+        }
+
+        .bz-panel {
+            padding-block: clamp(2rem, 5vw, 3.5rem);
+            background: var(--surface);
+            min-height: 60vh;
+        }
+
+        .bz-intro {
+            color: var(--text-muted);
+            font-size: .95rem;
+            margin-bottom: 1.5rem;
+            max-width: 60ch;
+            line-height: 1.6;
+        }
+
+        /* stalls */
+        .stall-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .stall-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .stall-banner {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            display: block;
+            background: var(--ink);
+        }
+
+        .stall-head {
+            padding: 1.1rem 1.25rem .6rem;
+        }
+
+        .stall-name {
+            font-family: var(--display);
+            font-size: 1.6rem;
+            letter-spacing: .03em;
+            color: var(--light);
+        }
+
+        .stall-meta {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            flex-wrap: wrap;
+            margin-top: .3rem;
+        }
+
+        .cat-chip {
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            padding: .12rem .55rem;
+            border-radius: 999px;
+            color: var(--gold);
+            border: 1px solid var(--border);
+            background: rgba(200, 146, 42, .08);
+        }
+
+        .stall-loc {
+            color: var(--text-muted);
+            font-size: .82rem;
+        }
+
+        .stall-desc {
+            color: var(--text);
+            font-size: .9rem;
+            line-height: 1.6;
+            padding: 0 1.25rem 1rem;
+        }
+
+        .item-list {
+            list-style: none;
+            border-top: 1px solid var(--border);
+        }
+
+        .item-row {
+            display: grid;
+            grid-template-columns: 64px 1fr auto;
+            gap: .9rem;
+            align-items: center;
+            padding: .8rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-thumb {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: var(--radius);
+            background: var(--ink);
+        }
+
+        .item-noimg {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--radius);
+            background: var(--ink);
+            border: 1px dashed var(--border);
+        }
+
+        .item-name {
+            color: var(--light);
+            font-weight: 600;
+            font-size: .95rem;
+        }
+
+        .item-desc {
+            color: var(--text-muted);
+            font-size: .82rem;
+            line-height: 1.4;
+            margin-top: .15rem;
+        }
+
+        .item-price {
+            color: var(--gold);
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .item-row.sold {
+            opacity: .5;
+        }
+
+        .sold-chip {
+            font-size: .62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--light);
+            background: var(--red);
+            padding: .08rem .4rem;
+            border-radius: 999px;
+            margin-left: .4rem;
+        }
+
+        /* merch grid */
+        .merch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .merch-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .merch-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            background: var(--ink);
+        }
+
+        .merch-noimg {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: var(--ink);
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .merch-body {
+            padding: 1rem 1.1rem 1.2rem;
+        }
+
+        .merch-name {
+            color: var(--light);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .merch-price {
+            color: var(--gold);
+            font-weight: 700;
+            margin-top: .3rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .merch-sizes {
+            color: var(--text-muted);
+            font-size: .8rem;
+            margin-top: .25rem;
+        }
+
+        .merch-desc {
+            color: var(--text);
+            font-size: .85rem;
+            line-height: 1.5;
+            margin-top: .5rem;
+        }
+
+        .merch-card.sold {
+            opacity: .55;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius-lg);
+        }
+
+        .empty-state svg {
+            width: 2.5rem;
+            height: 2.5rem;
+            color: var(--border);
+            margin-bottom: .8rem;
+        }
+
+        .retry-note {
+            color: var(--text-muted);
+            font-size: .82rem;
+            margin-top: .8rem;
+        }
+
+        @media (max-width: 560px) {
+            .item-row {
+                grid-template-columns: 52px 1fr auto;
+                gap: .7rem;
+                padding: .7rem 1rem;
+            }
+
+            .item-thumb,
+            .item-noimg {
+                width: 52px;
+                height: 52px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="navbar scrolled" id="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">RENTAP<span>XVII</span></a>
+            <nav aria-label="Main navigation">
+                <ul class="nav-links">
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#sports">Sports</a></li>
+                    <li><a href="index.html#schedule">Schedule</a></li>
+                    <li><a href="live.html">Results</a></li>
+                    <li><a href="bazaar.html" class="nav-cta">Bazaar</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="bz-hero">
+        <div class="bz-hero-pattern" aria-hidden="true"></div>
+        <div class="container bz-hero-inner">
+            <h1 class="bz-title">BAZAAR</h1>
+            <p class="bz-subtitle">Food · Drinks · Merchandise</p>
+            <p class="bz-strip">Nasi lemak, satay, teh tarik and more — plus official RENTAP XVII merch.</p>
+        </div>
+    </section>
+
+    <div class="bz-tabs-wrap">
+        <div class="bz-tabs" role="tablist" aria-label="Bazaar sections">
+            <button class="bz-tab active" id="tab-food" role="tab" aria-selected="true" onclick="showTab('food')">Food
+                &amp; Drinks</button>
+            <button class="bz-tab" id="tab-merch" role="tab" aria-selected="false"
+                onclick="showTab('merch')">Merchandise</button>
+        </div>
+    </div>
+
+    <main class="bz-panel">
+        <div class="container">
+            <div id="panel-food"></div>
+            <div id="panel-merch" hidden></div>
+        </div>
+    </main>
+
+    <footer class="footer" style="margin-top:0;">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;padding-top:0;">
+                <p>© 2026 RENTAP XVII. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="impressum.html">Impressum</a>
+                    <a href="datenschutz.html">Datenschutz</a>
+                    <a href="agb.html">AGB</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="live-shared.js"></script>
+    <script>
+        let stalls = null;
+        let merch = null;
+
+        const CAT_LABEL = { food: 'Food', drinks: 'Drinks', carboot: 'Carboot' };
+
+        function imgUrl(id) { return '/api/content?image=' + encodeURIComponent(id); }
+
+        function loading(msg) {
+            return `<div class="empty-state"><p>${esc(msg)}</p></div>`;
+        }
+        function emptyState(msg) {
+            return `<div class="empty-state">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+    <p>${esc(msg)}</p></div>`;
+        }
+
+        function showTab(which) {
+            document.getElementById('tab-food').classList.toggle('active', which === 'food');
+            document.getElementById('tab-merch').classList.toggle('active', which === 'merch');
+            document.getElementById('tab-food').setAttribute('aria-selected', which === 'food' ? 'true' : 'false');
+            document.getElementById('tab-merch').setAttribute('aria-selected', which === 'merch' ? 'true' : 'false');
+            document.getElementById('panel-food').hidden = which !== 'food';
+            document.getElementById('panel-merch').hidden = which !== 'merch';
+            history.replaceState(null, '', '#' + which);
+        }
+
+        // ── Food & Drinks ──
+        function renderStalls() {
+            const panel = document.getElementById('panel-food');
+            if (stalls === null) { panel.innerHTML = loading('Loading stalls…'); return; }
+            if (!stalls.length) { panel.innerHTML = emptyState('Stalls are being confirmed. Check back soon.'); return; }
+
+            const html = stalls.map(s => {
+                const banner = s.image_id
+                    ? `<img class="stall-banner" src="${imgUrl(s.image_id)}" alt="${esc(s.name)}" loading="lazy" width="800" height="450" />`
+                    : '';
+                const items = (s.items || []).map(it => {
+                    const thumb = it.image_id
+                        ? `<img class="item-thumb" src="${imgUrl(it.image_id)}" alt="${esc(it.name)}" loading="lazy" width="64" height="64" />`
+                        : `<span class="item-noimg" aria-hidden="true"></span>`;
+                    const sold = !it.available ? '<span class="sold-chip">Sold out</span>' : '';
+                    const desc = it.description ? `<div class="item-desc">${esc(it.description)}</div>` : '';
+                    return `<li class="item-row ${it.available ? '' : 'sold'}">
+        ${thumb}
+        <div><div class="item-name">${esc(it.name)}${sold}</div>${desc}</div>
+        <div class="item-price">${esc(fmtPrice(it.price_cents))}</div>
+      </li>`;
+                }).join('');
+                const itemList = items
+                    ? `<ul class="item-list">${items}</ul>`
+                    : `<p class="stall-desc" style="color:var(--text-muted);font-style:italic">Menu coming soon.</p>`;
+                return `<div class="stall-card">
+      ${banner}
+      <div class="stall-head">
+        <div class="stall-name">${esc(s.name)}</div>
+        <div class="stall-meta">
+          <span class="cat-chip">${esc(CAT_LABEL[s.category] || s.category)}</span>
+          ${s.location ? `<span class="stall-loc">${esc(s.location)}</span>` : ''}
+        </div>
+      </div>
+      ${s.description ? `<p class="stall-desc">${esc(s.description)}</p>` : ''}
+      ${itemList}
+    </div>`;
+            }).join('');
+            panel.innerHTML = `<div class="stall-list">${html}</div>`;
+        }
+
+        // ── Merch ──
+        function renderMerch() {
+            const panel = document.getElementById('panel-merch');
+            if (merch === null) { panel.innerHTML = loading('Loading merchandise…'); return; }
+            const intro = `<p class="bz-intro">Official RENTAP XVII merchandise, sold at the info desk during the event.</p>`;
+            if (!merch.length) { panel.innerHTML = intro + emptyState('Merch drop coming soon.'); return; }
+            const cards = merch.map(m => {
+                const img = m.image_id
+                    ? `<img class="merch-img" src="${imgUrl(m.image_id)}" alt="${esc(m.name)}" loading="lazy" width="400" height="400" />`
+                    : `<div class="merch-noimg" aria-hidden="true"></div>`;
+                const sold = !m.available ? '<span class="sold-chip">Sold out</span>' : '';
+                return `<div class="merch-card ${m.available ? '' : 'sold'}">
+      ${img}
+      <div class="merch-body">
+        <div class="merch-name">${esc(m.name)}${sold}</div>
+        <div class="merch-price">${esc(fmtPrice(m.price_cents))}</div>
+        ${m.sizes ? `<div class="merch-sizes">Sizes: ${esc(m.sizes)}</div>` : ''}
+        ${m.description ? `<div class="merch-desc">${esc(m.description)}</div>` : ''}
+      </div>
+    </div>`;
+            }).join('');
+            panel.innerHTML = intro + `<div class="merch-grid">${cards}</div>`;
+        }
+
+        async function loadBazaar() {
+            try {
+                const res = await fetch('/api/content?type=bazaar', { headers: { Accept: 'application/json' } });
+                if (!res.ok) throw new Error('bad');
+                const data = await res.json();
+                stalls = data.stalls || [];
+            } catch (_) {
+                if (stalls === null) stalls = [];
+                document.getElementById('panel-food').innerHTML =
+                    emptyState('Stalls are being confirmed. Check back soon.') +
+                    '<p class="retry-note">(Could not reach the server — retrying shortly.)</p>';
+                return;
+            }
+            renderStalls();
+        }
+        async function loadMerch() {
+            try {
+                const res = await fetch('/api/content?type=merch', { headers: { Accept: 'application/json' } });
+                if (!res.ok) throw new Error('bad');
+                const data = await res.json();
+                merch = data.merch || [];
+            } catch (_) {
+                if (merch === null) merch = [];
+                document.getElementById('panel-merch').innerHTML =
+                    `<p class="bz-intro">Official RENTAP XVII merchandise, sold at the info desk during the event.</p>` +
+                    emptyState('Merch drop coming soon.') +
+                    '<p class="retry-note">(Could not reach the server — retrying shortly.)</p>';
+                return;
+            }
+            renderMerch();
+        }
+
+        // pinned-announcement banner (inline)
+        function mountBanner() {
+            const ICON = {
+                urgent: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+                important: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+                info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+            };
+            const CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+            const navbar = document.getElementById('navbar');
+            if (!navbar) return;
+            fetch('/api/content?type=announcements', { headers: { Accept: 'application/json' } })
+                .then(r => r.ok ? r.json() : null)
+                .then(d => {
+                    const ann = ((d && d.announcements) || []).find(a => a.pinned);
+                    if (!ann) return;
+                    const lvl = ['info', 'important', 'urgent'].includes(ann.level) ? ann.level : 'info';
+                    const body = (ann.body || '').toString();
+                    const bodyHtml = body.length <= 140
+                        ? '<span class="ann-banner-body"> — ' + esc(body) + '</span>'
+                        : ' <a class="ann-banner-more" href="live.html#announcements">Read more</a>';
+                    const el = document.createElement('div');
+                    el.className = 'ann-banner ann-banner--' + lvl;
+                    el.setAttribute('role', 'status');
+                    el.innerHTML = '<div class="ann-banner-inner"><span class="ann-banner-icon">' + ICON[lvl] + '</span>' +
+                        '<span class="ann-banner-text"><span class="ann-banner-title">' + esc(ann.title) + '</span>' + bodyHtml + '</span>' +
+                        '<button class="ann-banner-close" aria-label="Dismiss announcement">' + CLOSE + '</button></div>';
+                    navbar.insertAdjacentElement('afterend', el);
+                    el.querySelector('.ann-banner-close').addEventListener('click', () => el.remove());
+                })
+                .catch(() => { });
+        }
+
+        function init() {
+            if ((location.hash || '') === '#merch') showTab('merch');
+            document.getElementById('panel-food').innerHTML = loading('Loading stalls…');
+            document.getElementById('panel-merch').innerHTML = loading('Loading merchandise…');
+            loadBazaar();
+            loadMerch();
+            mountBanner();
+        }
+        init();
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+</body>
+
+</html>
