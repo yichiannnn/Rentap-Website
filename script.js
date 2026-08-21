@@ -366,6 +366,7 @@ function updatePartnerField() {
   const field = document.getElementById('p-partner-field');
   const input = document.getElementById('p-partner');
   const label = document.getElementById('p-partner-label');
+  const hint = document.getElementById('p-partner-hint');
   const isRelay = /Relay/i.test(cat);
   const needs = /Doubles/i.test(cat) || isRelay;
 
@@ -373,8 +374,17 @@ function updatePartnerField() {
   input.required = needs;
   if (!needs) { input.value = ''; return; }
 
-  label.textContent = isRelay ? 'Relay Teammates' : "Partner's Name";
-  input.placeholder = isRelay ? 'Names of your 3 teammates' : "Your partner's full name";
+  if (isRelay) {
+    label.textContent = 'Relay Teammates';
+    hint.innerHTML = 'Enter the <strong>full name</strong> of your 3 teammates, one per line. If a teammate is an MGSS or MAK member, add their membership code beside the name (e.g. <em>Ali bin Ahmad — MGSS26001</em>).';
+    input.placeholder = 'Ali bin Ahmad — MGSS26001\nSiti Nurhaliza binti Ahmad\nChan Wei Ming — MK0008';
+    input.rows = 4;
+  } else {
+    label.textContent = "Partner's Name";
+    hint.innerHTML = "Enter your partner's <strong>full name</strong>. If they are an MGSS or MAK member, add their membership code beside the name (e.g. <em>Ali bin Ahmad — MGSS26001</em>).";
+    input.placeholder = 'Ali bin Ahmad — MGSS26001';
+    input.rows = 2;
+  }
 }
 
 function toggleMemberNo() {
