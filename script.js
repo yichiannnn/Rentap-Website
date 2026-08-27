@@ -210,7 +210,7 @@ const REG_OPEN = {
 
 // Members-only early access. Set a type to false when it opens to everyone.
 const EARLY_ACCESS = {
-  player: true,
+  player: false,
   volunteer: false
 };
 
