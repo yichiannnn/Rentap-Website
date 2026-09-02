@@ -203,7 +203,7 @@ const modalBox = document.getElementById('modalBox');
 // Flip a value to true when that registration opens.
 const REG_OPEN = {
   player: true,
-  volunteer: true,
+  volunteer: false,
   spectator: true,
   vendor: false
 };
@@ -223,6 +223,10 @@ const COMING_SOON = {
   player: {
     title: 'Player Registration Opens Soon',
     msg: 'Sport sign-ups are not open just yet. Registration will open soon — check back closer to the event to pick your sport and build your team.'
+  },
+  volunteer: {
+    title: 'Volunteer Registration Full',
+    msg: 'All volunteer spots have been filled — volunteer registration is now closed. Thank you for your interest! If you have any questions, please contact us.'
   },
   spectator: {
     title: 'Spectator Registration Opens Soon',
