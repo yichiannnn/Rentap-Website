@@ -942,16 +942,17 @@
           <p class="field-hint">Please ensure the phone number is reachable (WhatsApp preferred).</p>
         </div>
         <div class="form-field">
-          <label for="s-member">MGSS Membership</label>
+          <label for="s-member">Membership</label>
           <select id="s-member" required onchange="toggleMemberNo()">
-            <option value="">Are you an MGSS member?…</option>
+            <option value="">Are you an MGSS or MAK member?…</option>
             <option>Yes — MGSS member (free entrance)</option>
+            <option>Yes — MAK member (free entrance)</option>
             <option>No — non-member (entrance fee applies)</option>
           </select>
         </div>
         <div class="form-field" id="s-memberno-field" hidden>
-          <label for="s-memberno">MGSS Membership Number</label>
-          <input id="s-memberno" type="text" placeholder="Your membership number" />
+          <label for="s-memberno">Membership Number (MGSS or MAK)</label>
+          <input id="s-memberno" type="text" placeholder="e.g. MGSS26001 or MK0008" />
         </div>
         <div id="s-bank-info" class="bank-box" hidden>
           <p class="bank-title">€2 Entrance Fee — Bank Transfer</p>
