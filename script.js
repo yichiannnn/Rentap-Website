@@ -438,6 +438,7 @@ function compressImage(file, cb) {
 
 function handleProofUpload(input) {
   const status = document.getElementById('s-proof-status');
+  status.style.color = '';
   spectatorProof = null;
   const file = input.files && input.files[0];
   status.hidden = false;
@@ -562,7 +563,14 @@ async function submitForm(e) {
     data.membership = fieldVal('s-member');
     if (data.membership.indexOf('Yes') === 0) data.memberNo = fieldVal('s-memberno');
     if (data.membership.indexOf('No') === 0) {
-      if (!spectatorProof) { alert('Please upload your payment proof before submitting.'); return; }
+      if (!spectatorProof) {
+        const st = document.getElementById('s-proof-status');
+        st.hidden = false;
+        st.style.color = 'var(--red)';
+        st.textContent = 'Payment proof is required — please upload your transfer screenshot or PDF before submitting.';
+        document.getElementById('s-proof').focus();
+        return;
+      }
       data.paymentProof = spectatorProof;
     }
   } else if (type === 'vendor') {
