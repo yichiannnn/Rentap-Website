@@ -387,14 +387,83 @@ function updatePartnerField() {
   }
 }
 
+let spectatorProof = null; // base64 data URL of the uploaded payment proof
+
 function toggleMemberNo() {
   const val = document.getElementById('s-member').value;
-  const field = document.getElementById('s-memberno-field');
-  const input = document.getElementById('s-memberno');
+  const memberField = document.getElementById('s-memberno-field');
+  const memberInput = document.getElementById('s-memberno');
+  const bank = document.getElementById('s-bank-info');
+  const proofField = document.getElementById('s-proof-field');
+  const proofInput = document.getElementById('s-proof');
   const isMember = val.indexOf('Yes') === 0;
-  field.hidden = !isMember;
-  input.required = isMember;
-  if (!isMember) input.value = '';
+  const isNonMember = val.indexOf('No') === 0;
+
+  memberField.hidden = !isMember;
+  memberInput.required = isMember;
+  if (!isMember) memberInput.value = '';
+
+  bank.hidden = !isNonMember;
+  proofField.hidden = !isNonMember;
+  proofInput.required = isNonMember;
+  if (!isNonMember) {
+    proofInput.value = '';
+    spectatorProof = null;
+    document.getElementById('s-proof-status').hidden = true;
+  }
+}
+
+function compressImage(file, cb) {
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = function () {
+    URL.revokeObjectURL(url);
+    let w = img.width, h = img.height;
+    const max = 1400;
+    if (w > max || h > max) {
+      if (w >= h) { h = Math.round(h * max / w); w = max; }
+      else { w = Math.round(w * max / h); h = max; }
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    let q = 0.85;
+    let out = canvas.toDataURL('image/jpeg', q);
+    while (out.length > 900000 && q > 0.4) { q -= 0.1; out = canvas.toDataURL('image/jpeg', q); }
+    cb(out);
+  };
+  img.onerror = function () { URL.revokeObjectURL(url); cb(null); };
+  img.src = url;
+}
+
+function handleProofUpload(input) {
+  const status = document.getElementById('s-proof-status');
+  spectatorProof = null;
+  const file = input.files && input.files[0];
+  status.hidden = false;
+  if (!file) { status.hidden = true; return; }
+  status.textContent = 'Processing…';
+
+  if (file.type === 'application/pdf') {
+    if (file.size > 2 * 1024 * 1024) {
+      status.textContent = 'PDF too large (max 2 MB). Please upload a smaller file.';
+      input.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function () { spectatorProof = reader.result; status.textContent = 'Attached: ' + file.name; };
+    reader.onerror = function () { status.textContent = 'Could not read the file. Please try again.'; };
+    reader.readAsDataURL(file);
+  } else if (file.type.indexOf('image/') === 0) {
+    compressImage(file, function (dataUrl) {
+      if (!dataUrl) { status.textContent = 'Could not process the image. Please try another file.'; input.value = ''; return; }
+      spectatorProof = dataUrl;
+      status.textContent = 'Attached: ' + file.name + ' (' + Math.round(dataUrl.length / 1024) + ' KB)';
+    });
+  } else {
+    status.textContent = 'Unsupported file type. Please use JPG, PNG or PDF.';
+    input.value = '';
+  }
 }
 
 function toggleCoordSport() {
@@ -492,6 +561,10 @@ async function submitForm(e) {
     data.phone = fieldVal('s-phone');
     data.membership = fieldVal('s-member');
     if (data.membership.indexOf('Yes') === 0) data.memberNo = fieldVal('s-memberno');
+    if (data.membership.indexOf('No') === 0) {
+      if (!spectatorProof) { alert('Please upload your payment proof before submitting.'); return; }
+      data.paymentProof = spectatorProof;
+    }
   } else if (type === 'vendor') {
     data.name = fieldVal('fv-name');
     data.email = fieldVal('fv-email');

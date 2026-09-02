@@ -953,6 +953,21 @@
           <label for="s-memberno">MGSS Membership Number</label>
           <input id="s-memberno" type="text" placeholder="Your membership number" />
         </div>
+        <div id="s-bank-info" class="bank-box" hidden>
+          <p class="bank-title">Entrance Fee — Bank Transfer</p>
+          <p class="bank-note">Please transfer the entrance fee to the account below, then upload your payment proof.</p>
+          <dl class="bank-details">
+            <dt>Name</dt><dd>Shaquille Daniel</dd>
+            <dt>IBAN</dt><dd>DE78 1001 2345 0961 0717 01</dd>
+            <dt>BIC</dt><dd>TRBKDEBBXXX</dd>
+          </dl>
+        </div>
+        <div class="form-field" id="s-proof-field" hidden>
+          <label for="s-proof">Payment Proof</label>
+          <p class="field-hint">Upload a screenshot or photo of your transfer (JPG, PNG or PDF, max ~2 MB).</p>
+          <input id="s-proof" type="file" accept="image/*,application/pdf" onchange="handleProofUpload(this)" />
+          <p class="field-hint" id="s-proof-status" hidden></p>
+        </div>
         <button type="submit" class="btn btn-primary btn-block">Register to Attend</button>
       </form>
     </div>

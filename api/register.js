@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   try {
     const sql = neon(process.env.DATABASE_URL);
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
-    let { type, name, email, phone, university, sport, team, role, membership, food, people, category, memberNo, members } = body;
+    let { type, name, email, phone, university, sport, team, role, membership, food, people, category, memberNo, members, paymentProof } = body;
 
     if (!TYPES.includes(type)) {
       return res.status(400).json({ error: 'Invalid registration type' });
@@ -35,6 +35,9 @@ export default async function handler(req, res) {
     const description = (food || '').toString().trim().slice(0, 200) || null;
     const member_no = (memberNo || '').toString().trim().slice(0, 60) || null;
     const memberList = (members || '').toString().trim().slice(0, 1000) || null;
+    // Payment proof: base64 data URL, capped at ~3 MB to protect the row/database.
+    let payment_proof = (paymentProof || '').toString();
+    payment_proof = (payment_proof.startsWith('data:') && payment_proof.length <= 3000000) ? payment_proof : null;
 
     // Core insert uses only columns that are known to exist.
     const inserted = await sql`
@@ -48,7 +51,7 @@ export default async function handler(req, res) {
     // missing column can never break a submission.
     const optRows = await sql`
       SELECT column_name FROM information_schema.columns
-      WHERE table_name = 'registrations' AND column_name IN ('food', 'member_no', 'members')
+      WHERE table_name = 'registrations' AND column_name IN ('food', 'member_no', 'members', 'payment_proof')
     `;
     const has = new Set(optRows.map(r => r.column_name));
 
@@ -60,6 +63,9 @@ export default async function handler(req, res) {
     }
     if (memberList !== null && has.has('members')) {
       await sql`UPDATE registrations SET members = ${memberList} WHERE id = ${id}`;
+    }
+    if (payment_proof !== null && has.has('payment_proof')) {
+      await sql`UPDATE registrations SET payment_proof = ${payment_proof} WHERE id = ${id}`;
     }
 
     return res.status(200).json({ ok: true });
