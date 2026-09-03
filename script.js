@@ -381,28 +381,50 @@ function applyTeamMode() {
 
 function updatePartnerField() {
   const cat = document.getElementById('p-category').value;
-  const field = document.getElementById('p-partner-field');
   const input = document.getElementById('p-partner');
   const label = document.getElementById('p-partner-label');
   const hint = document.getElementById('p-partner-hint');
   const isRelay = /Relay/i.test(cat);
   const needs = /Doubles/i.test(cat) || isRelay;
 
-  field.hidden = !needs;
-  input.required = needs;
-  if (!needs) { input.value = ''; return; }
+  // Solo (pair-me) checkbox — for doubles / relay
+  const soloField = document.getElementById('p-partner-solo-field');
+  const solo = document.getElementById('p-partner-solo');
+  soloField.hidden = !needs;
+  solo.checked = false; // reset when the category changes
+  document.getElementById('p-partner-solo-label').textContent = isRelay
+    ? "I don't have a full relay team — pair me with others."
+    : "I don't have a partner — pair me with someone.";
 
-  if (isRelay) {
-    label.textContent = 'Relay Teammates';
-    hint.innerHTML = 'Enter the <strong>full name</strong> of your 3 teammates, one per line. If a teammate is an MGSS or MAK member, add their membership code beside the name (e.g. <em>Ali bin Ahmad — MGSS26001</em>).';
-    input.placeholder = 'Ali bin Ahmad — MGSS26001\nSiti Nurhaliza binti Ahmad\nChan Wei Ming — MK0008';
-    input.rows = 4;
-  } else {
-    label.textContent = "Partner's Name";
-    hint.innerHTML = "Enter your partner's <strong>full name</strong>. If they are an MGSS or MAK member, add their membership code beside the name (e.g. <em>Ali bin Ahmad — MGSS26001</em>).";
-    input.placeholder = 'Ali bin Ahmad — MGSS26001';
-    input.rows = 2;
+  if (needs) {
+    if (isRelay) {
+      label.textContent = 'Relay Teammates';
+      hint.innerHTML = 'Enter the <strong>full name</strong> of your 3 teammates, one per line. If a teammate is an MGSS or MAK member, add their membership code beside the name (e.g. <em>Ali bin Ahmad — MGSS26001</em>).';
+      input.placeholder = 'Ali bin Ahmad — MGSS26001\nSiti Nurhaliza binti Ahmad\nChan Wei Ming — MK0008';
+      input.rows = 4;
+    } else {
+      label.textContent = "Partner's Name";
+      hint.innerHTML = "Enter your partner's <strong>full name</strong>. If they are an MGSS or MAK member, add their membership code beside the name (e.g. <em>Ali bin Ahmad — MGSS26001</em>).";
+      input.placeholder = 'Ali bin Ahmad — MGSS26001';
+      input.rows = 2;
+    }
   }
+
+  applyPartnerMode();
+}
+
+function togglePartnerSolo() { applyPartnerMode(); }
+
+function applyPartnerMode() {
+  const cat = document.getElementById('p-category').value;
+  const needs = /Doubles/i.test(cat) || /Relay/i.test(cat);
+  const solo = document.getElementById('p-partner-solo').checked;
+  const field = document.getElementById('p-partner-field');
+  const input = document.getElementById('p-partner');
+  const show = needs && !solo;
+  field.hidden = !show;
+  input.required = show;
+  if (!show) input.value = '';
 }
 
 let spectatorProof = null; // base64 data URL of the uploaded payment proof
@@ -567,8 +589,14 @@ async function submitForm(e) {
       }
     } else {
       data.category = fieldVal('p-category');
+      const pcat = data.category || '';
+      const needsPartner = /Doubles/i.test(pcat) || /Relay/i.test(pcat);
       // Partner / relay teammates are stored alongside team members
-      data.members = fieldVal('p-partner');
+      if (needsPartner && document.getElementById('p-partner-solo').checked) {
+        data.members = /Relay/i.test(pcat) ? 'SOLO — pair me for a relay team' : 'SOLO — pair me with a partner';
+      } else {
+        data.members = fieldVal('p-partner');
+      }
     }
   } else if (type === 'volunteer') {
     data.name = fieldVal('v-name');

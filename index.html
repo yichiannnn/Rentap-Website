@@ -833,6 +833,12 @@
         </div>
 
         <!-- Doubles / relay: partner -->
+        <div class="form-field" id="p-partner-solo-field" hidden>
+          <label class="checkbox-row">
+            <input type="checkbox" id="p-partner-solo" onchange="togglePartnerSolo()" />
+            <span id="p-partner-solo-label">I don't have a partner — pair me with someone.</span>
+          </label>
+        </div>
         <div class="form-field" id="p-partner-field" hidden>
           <label for="p-partner" id="p-partner-label">Partner's Name</label>
           <p class="field-hint" id="p-partner-hint">Enter your partner's <strong>full name</strong>. If they are an MGSS or MAK member, add their membership code beside the name (e.g. <em>Ali bin Ahmad — MGSS26001</em>).</p>
