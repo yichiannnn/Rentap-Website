@@ -96,6 +96,7 @@
       <button class="btn-gold" onclick="downloadCSV()">Download CSV</button>
     </div>
     <div class="sport-tabs" id="sportTabs" hidden></div>
+    <div class="sport-tabs cat-tabs" id="catTabs" hidden></div>
     <div class="table-wrap">
       <table id="table">
         <thead>
@@ -115,11 +116,19 @@
   let allRows = [];
   let filter = 'all';
   let sportFilter = 'all';
+  let categoryFilter = 'all';
   let sortMode = 'created_desc';
   let adminKey = '';
 
   // Tournament sport order (for the sub-tabs and grouping).
   const SPORT_ORDER = ['Badminton', 'Basketball', 'Football', 'Volleyball', 'Touch Rugby', 'Frisbee', 'Track', 'Table Tennis', 'Tug of War'];
+
+  // Preferred category order per sport (any unlisted values are appended).
+  const CATEGORY_ORDER = {
+    'Badminton':    ["Women's Singles", "Men's Singles", "Women's Doubles", "Men's Doubles", "Mixed Doubles"],
+    'Table Tennis': ["Men's Singles", "Women's Singles", "Men's Doubles", "Women's Doubles", "Mixed Doubles"],
+    'Track':        ['100m', '200m', '400m', '4×100m Relay']
+  };
 
   async function loadData() {
     adminKey = document.getElementById('key').value.trim();
@@ -151,9 +160,11 @@
   function setFilter(type, btn) {
     filter = type;
     sportFilter = 'all';
+    categoryFilter = 'all';
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
     buildSportTabs();
+    document.getElementById('catTabs').hidden = true;
     render();
   }
 
@@ -179,7 +190,42 @@
 
   function setSportFilter(sport, btn) {
     sportFilter = sport;
-    document.querySelectorAll('.sport-tab').forEach(t => t.classList.remove('active'));
+    categoryFilter = 'all';
+    document.querySelectorAll('#sportTabs .sport-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    buildCategoryTabs();
+    render();
+  }
+
+  // Category sub-tabs — shown when a single sport that uses categories is selected.
+  function buildCategoryTabs() {
+    const wrap = document.getElementById('catTabs');
+    if (filter !== 'player' || sportFilter === 'all') { wrap.hidden = true; wrap.innerHTML = ''; return; }
+
+    // Distinct categories present for this sport, in preferred order.
+    const rows = allRows.filter(r => r.type === 'player' && (r.sport || '') === sportFilter && r.category);
+    if (!rows.length) { wrap.hidden = true; wrap.innerHTML = ''; return; }
+
+    const counts = {};
+    rows.forEach(r => { counts[r.category] = (counts[r.category] || 0) + 1; });
+    const order = CATEGORY_ORDER[sportFilter] || [];
+    const present = Object.keys(counts).sort((a, b) => {
+      const ia = order.indexOf(a), ib = order.indexOf(b);
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.localeCompare(b);
+    });
+
+    let html = '<button class="sport-tab active" data-cat="all" onclick="setCategoryFilter(\'all\', this)">All Categories</button>';
+    present.forEach(c => {
+      html += '<button class="sport-tab" data-cat="' + esc(c) + '" onclick="setCategoryFilter(\'' + esc(c).replace(/'/g, "\\'") + '\', this)">' +
+        esc(c) + ' (' + counts[c] + ')</button>';
+    });
+    wrap.innerHTML = html;
+    wrap.hidden = false;
+  }
+
+  function setCategoryFilter(cat, btn) {
+    categoryFilter = cat;
+    document.querySelectorAll('#catTabs .sport-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
     render();
   }
@@ -216,6 +262,9 @@
     let filtered = filter === 'all' ? allRows : allRows.filter(r => r.type === filter);
     if (filter === 'player' && sportFilter !== 'all') {
       filtered = filtered.filter(r => (r.sport || '') === sportFilter);
+      if (categoryFilter !== 'all') {
+        filtered = filtered.filter(r => (r.category || '') === categoryFilter);
+      }
     }
     return sortRows(filtered);
   }
