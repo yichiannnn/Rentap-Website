@@ -1211,6 +1211,24 @@ p { max-width: 68ch; }
 .field-hint em { color: var(--gold); font-style: italic; }
 .field-hint strong { color: var(--light); }
 
+.checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  cursor: pointer;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+.checkbox-row input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
 .bank-box {
   margin: 0.25rem 0 1rem;
   padding: 1rem 1.1rem;

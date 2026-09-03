@@ -840,6 +840,12 @@
         </div>
 
         <!-- Team sports: team name + members -->
+        <div class="form-field" id="p-solo-field" hidden>
+          <label class="checkbox-row">
+            <input type="checkbox" id="p-solo" onchange="toggleSolo()" />
+            <span>I don't have a team — register me solo and pair me with others.</span>
+          </label>
+        </div>
         <div class="form-field" id="p-team-field" hidden>
           <label for="p-team">Team Name</label>
           <input id="p-team" type="text" placeholder="Your team name" />

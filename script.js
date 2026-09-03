@@ -338,14 +338,12 @@ function updatePlayerFields() {
   const isTeam = TEAM_SPORTS.indexOf(sport) !== -1;
   const cats = SPORT_CATEGORIES[sport];
 
-  // Team sports → team name (required) + members
-  const teamField = document.getElementById('p-team-field');
-  const teamInput = document.getElementById('p-team');
-  const membersField = document.getElementById('p-members-field');
-  teamField.hidden = !isTeam;
-  teamInput.required = isTeam;
-  membersField.hidden = !isTeam;
-  if (!isTeam) { teamInput.value = ''; document.getElementById('p-members').value = ''; }
+  // Solo option — only for team sports
+  const soloField = document.getElementById('p-solo-field');
+  soloField.hidden = !isTeam;
+  if (!isTeam) document.getElementById('p-solo').checked = false;
+
+  applyTeamMode();
 
   // Individual sports → category select
   const catField = document.getElementById('p-category-field');
@@ -363,6 +361,22 @@ function updatePlayerFields() {
   }
 
   updatePartnerField();
+}
+
+function toggleSolo() { applyTeamMode(); }
+
+function applyTeamMode() {
+  const sport = document.getElementById('p-sport').value;
+  const isTeam = TEAM_SPORTS.indexOf(sport) !== -1;
+  const solo = document.getElementById('p-solo').checked;
+  const teamField = document.getElementById('p-team-field');
+  const teamInput = document.getElementById('p-team');
+  const membersField = document.getElementById('p-members-field');
+  const showTeam = isTeam && !solo;
+  teamField.hidden = !showTeam;
+  teamInput.required = showTeam;
+  membersField.hidden = !showTeam;
+  if (!showTeam) { teamInput.value = ''; document.getElementById('p-members').value = ''; }
 }
 
 function updatePartnerField() {
@@ -545,8 +559,12 @@ async function submitForm(e) {
     data.sport = fieldVal('p-sport');
     if (verifiedMemberCode) data.memberNo = verifiedMemberCode;
     if (TEAM_SPORTS.indexOf(data.sport) !== -1) {
-      data.team = fieldVal('p-team');
-      data.members = fieldVal('p-members');
+      if (document.getElementById('p-solo').checked) {
+        data.team = 'SOLO — pair me with a team';
+      } else {
+        data.team = fieldVal('p-team');
+        data.members = fieldVal('p-members');
+      }
     } else {
       data.category = fieldVal('p-category');
       // Partner / relay teammates are stored alongside team members
