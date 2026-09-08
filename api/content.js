@@ -145,8 +145,19 @@ async function getBazaar(sql, isAdmin) {
 
 async function getMerch(sql) {
     const { rows } = await sql.sql`
-    SELECT id, name, description, price_cents, sizes, image_id, available, sort
+    SELECT id, name, description, price_cents, member_price_cents, sizes, available, sort
     FROM merch ORDER BY sort ASC, id ASC`;
+    const ids = rows.map(m => m.id);
+    let images = [];
+    if (ids.length) {
+        const imgRes = await sql.sql`
+      SELECT id, merch_id, image_id FROM merch_images WHERE merch_id = ANY(${ids})
+      ORDER BY sort ASC, id ASC`;
+        images = imgRes.rows;
+    }
+    const byMerch = {};
+    images.forEach(r => (byMerch[r.merch_id] ||= []).push({ id: r.id, image_id: r.image_id }));
+    rows.forEach(m => { m.images = byMerch[m.id] || []; });
     return rows;
 }
 
@@ -316,27 +327,31 @@ async function route(action, b) {
             if (!name) throw fail(400, 'Merch name is required');
             const description = str(b.description, 2000);
             const price_cents = priceOrNull(b.price_cents);
+            const member_price_cents = priceOrNull(b.member_price_cents);
             const sizes = str(b.sizes, 120);
-            const image_id = intOrNull(b.image_id);
             const available = boolOr(b.available, true);
             const sort = intOrNull(b.sort) || 0;
+            const image_ids = Array.isArray(b.image_ids) ? b.image_ids.map(intOrNull).filter(Boolean) : [];
             const { rows } = await sql.sql`
-        INSERT INTO merch (name, description, price_cents, sizes, image_id, available, sort, updated_at)
-        VALUES (${name}, ${description}, ${price_cents}, ${sizes}, ${image_id}, ${available}, ${sort}, now())
+        INSERT INTO merch (name, description, price_cents, member_price_cents, sizes, available, sort, updated_at)
+        VALUES (${name}, ${description}, ${price_cents}, ${member_price_cents}, ${sizes}, ${available}, ${sort}, now())
         RETURNING id`;
-            return { json: { ok: true, id: rows[0].id } };
+            const id = rows[0].id;
+            for (let i = 0; i < image_ids.length; i++) {
+                await sql.sql`INSERT INTO merch_images (merch_id, image_id, sort) VALUES (${id}, ${image_ids[i]}, ${i})`;
+            }
+            return { json: { ok: true, id } };
         }
         case 'merch.update': {
             const id = intOrNull(b.id);
             if (!id) throw fail(400, 'Missing merch id');
-            if ('image_id' in b) await maybeDropOldImage(sql, 'merch', id, intOrNull(b.image_id));
             const cols = [], vals = [];
             const push = (c, v) => { cols.push(`${c}=$${cols.length + 1}`); vals.push(v); };
             if ('name' in b) push('name', str(b.name, 160));
             if ('description' in b) push('description', str(b.description, 2000));
             if ('price_cents' in b) push('price_cents', priceOrNull(b.price_cents));
+            if ('member_price_cents' in b) push('member_price_cents', priceOrNull(b.member_price_cents));
             if ('sizes' in b) push('sizes', str(b.sizes, 120));
-            if ('image_id' in b) push('image_id', intOrNull(b.image_id));
             if ('available' in b) push('available', boolOr(b.available, true));
             if ('sort' in b) push('sort', intOrNull(b.sort) || 0);
             if (!cols.length) return { json: { ok: true } };
@@ -347,9 +362,29 @@ async function route(action, b) {
         case 'merch.delete': {
             const id = intOrNull(b.id);
             if (!id) throw fail(400, 'Missing merch id');
-            const imgs = await sql.sql`SELECT image_id FROM merch WHERE id=${id} AND image_id IS NOT NULL`;
-            await sql.sql`DELETE FROM merch WHERE id = ${id}`;
+            const imgs = await sql.sql`SELECT image_id FROM merch_images WHERE merch_id=${id}`;
+            await sql.sql`DELETE FROM merch WHERE id = ${id}`; // cascades merch_images
             await deleteImages(sql, imgs.rows.map(r => r.image_id));
+            return { json: { ok: true } };
+        }
+        case 'merch.image.add': {
+            const merch_id = intOrNull(b.merch_id);
+            const image_id = intOrNull(b.image_id);
+            if (!merch_id) throw fail(400, 'Missing merch id');
+            if (!image_id) throw fail(400, 'Missing image id');
+            const { rows: sortRows } = await sql.sql`
+        SELECT COALESCE(MAX(sort), -1) + 1 AS next FROM merch_images WHERE merch_id = ${merch_id}`;
+            const { rows } = await sql.sql`
+        INSERT INTO merch_images (merch_id, image_id, sort) VALUES (${merch_id}, ${image_id}, ${sortRows[0].next})
+        RETURNING id`;
+            return { json: { ok: true, id: rows[0].id } };
+        }
+        case 'merch.image.delete': {
+            const id = intOrNull(b.id);
+            if (!id) throw fail(400, 'Missing merch_images id');
+            const { rows } = await sql.sql`SELECT image_id FROM merch_images WHERE id = ${id}`;
+            await sql.sql`DELETE FROM merch_images WHERE id = ${id}`;
+            if (rows.length) await deleteImages(sql, [rows[0].image_id]);
             return { json: { ok: true } };
         }
 
@@ -392,9 +427,7 @@ function priceOrNull(v) {
 async function maybeDropOldImage(sql, table, rowId, newImageId) {
     const q = table === 'stalls'
         ? await sql.sql`SELECT image_id FROM stalls WHERE id=${rowId}`
-        : table === 'stall_items'
-            ? await sql.sql`SELECT image_id FROM stall_items WHERE id=${rowId}`
-            : await sql.sql`SELECT image_id FROM merch WHERE id=${rowId}`;
+        : await sql.sql`SELECT image_id FROM stall_items WHERE id=${rowId}`;
     const old = q.rows.length ? q.rows[0].image_id : null;
     if (old && old !== newImageId) {
         await sql.sql`DELETE FROM images WHERE id=${old}`;

@@ -319,6 +319,57 @@
             margin-top: .4rem;
         }
 
+        .img-multi-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            margin-top: .6rem;
+        }
+
+        .img-multi-preview:empty {
+            margin-top: 0;
+        }
+
+        .img-multi-preview .thumb-wrap,
+        .merch-gallery .thumb-wrap {
+            position: relative;
+        }
+
+        .img-multi-preview img,
+        .merch-gallery img {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: var(--ink);
+            display: block;
+        }
+
+        .thumb-remove {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 20px;
+            height: 20px;
+            min-height: 0;
+            padding: 0;
+            border-radius: 50%;
+            background: var(--red);
+            color: var(--light);
+            font-size: .75rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .merch-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            margin: .5rem 0;
+        }
+
         /* announcement preview */
         .ann-prev {
             border-radius: 8px;
@@ -472,17 +523,18 @@
                     <h3>New merch product</h3>
                     <div class="field"><label>Name</label><input id="mName" maxlength="160" /></div>
                     <div class="row">
-                        <div><label>Price (EUR)</label><input id="mPrice" type="number" step="0.01" min="0"
+                        <div><label>Non-member Price (EUR)</label><input id="mPrice" type="number" step="0.01" min="0"
                                 placeholder="e.g. 15.00" /></div>
-                        <div class="grow2"><label>Sizes</label><input id="mSizes" maxlength="120"
-                                placeholder="S / M / L / XL" /></div>
+                        <div><label>Member Price (EUR)</label><input id="mMemberPrice" type="number" step="0.01" min="0"
+                                placeholder="blank = same price" /></div>
                     </div>
+                    <div class="field"><label>Sizes</label><input id="mSizes" maxlength="120"
+                            placeholder="S / M / L / XL" /></div>
                     <div class="field"><label>Description</label><textarea id="mDesc" maxlength="2000"></textarea></div>
-                    <div class="field"><label>Image (optional)</label>
+                    <div class="field"><label>Photos (optional, multiple allowed)</label>
                         <div class="img-drop">
-                            <input type="file" accept="image/*" id="mImgFile" onchange="onPickImage('merch')" />
-                            <img class="img-preview" id="mImgPreview" alt="preview" />
-                            <div class="img-size" id="mImgSize"></div>
+                            <input type="file" accept="image/*" id="mImgFile" multiple onchange="onPickMerchImages()" />
+                            <div class="img-multi-preview" id="mImgPreviews"></div>
                             <div class="img-err" id="mImgErr" hidden></div>
                         </div>
                     </div>
@@ -622,11 +674,10 @@
             });
         }
 
-        // generic file-pick handler for the two top-level forms (stall, merch)
+        // generic file-pick handler for single-image forms (stall banner, item photo)
         async function onPickImage(ctx) {
             const map = {
                 stall: { file: 'sImgFile', prev: 'sImgPreview', size: 'sImgSize', err: 'sImgErr', btn: 'sCreateBtn' },
-                merch: { file: 'mImgFile', prev: 'mImgPreview', size: 'mImgSize', err: 'mImgErr', btn: 'mCreateBtn' },
             };
             const ids = map[ctx];
             const file = document.getElementById(ids.file).files[0];
@@ -656,6 +707,63 @@
             if (!s) return null;
             const res = await api('image.upload', { mime: s.mime, data: s.data });
             return res.id;
+        }
+
+        // ── Merch: multiple staged photos ─────────────
+        function renderStagedMerchPreviews() {
+            const list = staged.merch || [];
+            document.getElementById('mImgPreviews').innerHTML = list.map((s, i) => `
+      <div class="thumb-wrap">
+        <img src="data:${s.mime};base64,${s.data}" alt="" />
+        <button type="button" class="thumb-remove" onclick="removeStagedMerchImage(${i})">×</button>
+      </div>`).join('');
+        }
+        async function onPickMerchImages() {
+            const input = document.getElementById('mImgFile');
+            const errEl = document.getElementById('mImgErr');
+            errEl.hidden = true;
+            staged.merch = [];
+            for (const file of Array.from(input.files || [])) {
+                try { staged.merch.push(await compressImage(file)); }
+                catch (e) { errEl.textContent = e.message; errEl.hidden = false; }
+            }
+            renderStagedMerchPreviews();
+        }
+        function removeStagedMerchImage(i) {
+            if (!staged.merch) return;
+            staged.merch.splice(i, 1);
+            renderStagedMerchPreviews();
+        }
+        async function uploadStagedMerchImages() {
+            const ids = [];
+            for (const s of (staged.merch || [])) {
+                const res = await api('image.upload', { mime: s.mime, data: s.data });
+                ids.push(res.id);
+            }
+            return ids;
+        }
+        // upload+attach one or more new photos to an existing merch product
+        async function addMerchImages(id, inputEl) {
+            const errEl = document.getElementById('me-addimg-err-' + id);
+            errEl.hidden = true;
+            const files = Array.from(inputEl.files || []);
+            if (!files.length) return;
+            try {
+                for (const file of files) {
+                    const out = await compressImage(file);
+                    const up = await api('image.upload', { mime: out.mime, data: out.data });
+                    await api('merch.image.add', { merch_id: id, image_id: up.id });
+                }
+                await refresh();
+                editMerch(id);
+            } catch (e) { errEl.textContent = e.message; errEl.hidden = false; }
+        }
+        async function deleteMerchImage(merchId, imgRowId) {
+            try {
+                await api('merch.image.delete', { id: imgRowId });
+                await refresh();
+                editMerch(merchId);
+            } catch (e) { flash('globalMsg', e.message, false); }
         }
 
         // ── ANNOUNCEMENTS ─────────────────────────────
@@ -924,21 +1032,21 @@
             if (!name) { flash('merchMsg', 'Product name is required.', false); return; }
             btn.disabled = true;
             try {
-                let image_id = null;
-                try { image_id = await uploadStaged('merch'); }
-                catch (e) { throw new Error('Image upload failed: ' + e.message); }
+                let image_ids = [];
+                try { image_ids = await uploadStagedMerchImages(); }
+                catch (e) { throw new Error('Photo upload failed: ' + e.message); }
                 await api('merch.create', {
                     name,
                     price_cents: eurToCents(document.getElementById('mPrice').value),
+                    member_price_cents: eurToCents(document.getElementById('mMemberPrice').value),
                     sizes: document.getElementById('mSizes').value.trim(),
                     description: document.getElementById('mDesc').value.trim(),
                     available: document.getElementById('mAvailable').checked,
-                    image_id,
+                    image_ids,
                 });
-                ['mName', 'mPrice', 'mSizes', 'mDesc'].forEach(i => document.getElementById(i).value = '');
+                ['mName', 'mPrice', 'mMemberPrice', 'mSizes', 'mDesc'].forEach(i => document.getElementById(i).value = '');
                 document.getElementById('mImgFile').value = '';
-                document.getElementById('mImgPreview').style.display = 'none';
-                document.getElementById('mImgSize').textContent = '';
+                document.getElementById('mImgPreviews').innerHTML = '';
                 delete staged.merch;
                 await refresh();
                 flash('merchMsg', 'Product created.', true);
@@ -949,12 +1057,17 @@
             const wrap = document.getElementById('merchList');
             const list = cache.merch;
             if (!list.length) { wrap.innerHTML = '<p class="muted">No products yet.</p>'; return; }
-            wrap.innerHTML = list.map(m => `
+            wrap.innerHTML = list.map(m => {
+                const thumbs = (m.images || []).map(img => `<img class="thumb" src="${imgUrl(img.image_id)}" alt="" />`).join('');
+                const priceLabel = m.member_price_cents != null
+                    ? `${esc(fmtPrice(m.price_cents))} · Member ${esc(fmtPrice(m.member_price_cents))}`
+                    : esc(fmtPrice(m.price_cents));
+                return `
     <div class="card" data-merch="${m.id}">
       <div class="list-item">
-        ${m.image_id ? `<img class="thumb" src="${imgUrl(m.image_id)}" alt="" />` : ''}
+        ${thumbs}
         <span class="name">${esc(m.name)}</span>
-        <span class="badge">${esc(fmtPrice(m.price_cents))}</span>
+        <span class="badge">${priceLabel}</span>
         ${m.available ? '' : '<span class="badge off">Sold out</span>'}
         <span style="margin-left:auto"></span>
         <label style="margin:0">Sort</label>
@@ -968,18 +1081,32 @@
         <button class="btn-danger" onclick="deleteMerch(${m.id}, this)">Delete</button>
       </div>
       <div id="merchEdit-${m.id}"></div>
-    </div>`).join('');
+    </div>`;
+            }).join('');
         }
         function editMerch(id) {
             const m = cache.merch.find(x => x.id === id);
             if (!m) return;
+            const gallery = (m.images || []).map(img => `
+      <div class="thumb-wrap">
+        <img src="${imgUrl(img.image_id)}" alt="" />
+        <button type="button" class="thumb-remove" onclick="deleteMerchImage(${id}, ${img.id})">×</button>
+      </div>`).join('');
             document.getElementById('merchEdit-' + id).innerHTML = `<div class="item-block">
     <div class="field"><label>Name</label><input id="me-n-${id}" maxlength="160" value="${esc(m.name)}" /></div>
     <div class="row">
-      <div><label>Price (EUR)</label><input id="me-p-${id}" type="number" step="0.01" min="0" value="${m.price_cents != null ? (m.price_cents / 100).toFixed(2) : ''}" /></div>
-      <div class="grow2"><label>Sizes</label><input id="me-s-${id}" maxlength="120" value="${esc(m.sizes || '')}" /></div>
+      <div><label>Non-member Price (EUR)</label><input id="me-p-${id}" type="number" step="0.01" min="0" value="${m.price_cents != null ? (m.price_cents / 100).toFixed(2) : ''}" /></div>
+      <div><label>Member Price (EUR)</label><input id="me-mp-${id}" type="number" step="0.01" min="0" value="${m.member_price_cents != null ? (m.member_price_cents / 100).toFixed(2) : ''}" placeholder="blank = same price" /></div>
     </div>
+    <div class="field"><label>Sizes</label><input id="me-s-${id}" maxlength="120" value="${esc(m.sizes || '')}" /></div>
     <div class="field"><label>Description</label><textarea id="me-d-${id}" maxlength="2000">${esc(m.description || '')}</textarea></div>
+    <div class="field"><label>Photos</label>
+      <div class="merch-gallery">${gallery || '<p class="muted" style="margin:0">No photos yet.</p>'}</div>
+      <div class="img-drop">
+        <input type="file" accept="image/*" multiple id="me-addimg-${id}" onchange="addMerchImages(${id}, this)" />
+        <div class="img-err" id="me-addimg-err-${id}" hidden></div>
+      </div>
+    </div>
     <div class="inline-actions">
       <button class="btn-primary" onclick="saveMerch(${id}, this)">Save</button>
       <button class="btn-ghost" onclick="document.getElementById('merchEdit-${id}').innerHTML=''">Cancel</button>
@@ -993,6 +1120,7 @@
                     id,
                     name: document.getElementById('me-n-' + id).value.trim(),
                     price_cents: eurToCents(document.getElementById('me-p-' + id).value),
+                    member_price_cents: eurToCents(document.getElementById('me-mp-' + id).value),
                     sizes: document.getElementById('me-s-' + id).value.trim(),
                     description: document.getElementById('me-d-' + id).value.trim(),
                 });

@@ -85,20 +85,52 @@ CREATE TABLE IF NOT EXISTS stall_items (
 
 -- Official RENTAP merchandise sold by the committee
 CREATE TABLE IF NOT EXISTS merch (
-  id          SERIAL PRIMARY KEY,
-  name        TEXT NOT NULL,
-  description TEXT,
-  price_cents INTEGER,
-  sizes       TEXT,                            -- free text: 'S / M / L / XL'
-  image_id    INTEGER REFERENCES images(id) ON DELETE SET NULL,
-  available   BOOLEAN NOT NULL DEFAULT true,
-  sort        INTEGER NOT NULL DEFAULT 0,
-  created_at  TIMESTAMPTZ DEFAULT now(),
-  updated_at  TIMESTAMPTZ DEFAULT now()
+  id                  SERIAL PRIMARY KEY,
+  name                TEXT NOT NULL,
+  description         TEXT,
+  price_cents         INTEGER,                 -- non-member price
+  member_price_cents  INTEGER,                 -- MGSS/MAK member price (NULL = same as non-member)
+  sizes               TEXT,                    -- free text: 'S / M / L / XL'
+  available           BOOLEAN NOT NULL DEFAULT true,
+  sort                INTEGER NOT NULL DEFAULT 0,
+  created_at          TIMESTAMPTZ DEFAULT now(),
+  updated_at          TIMESTAMPTZ DEFAULT now()
+);
+
+-- Photo gallery for a merch product (one product, many photos)
+CREATE TABLE IF NOT EXISTS merch_images (
+  id        SERIAL PRIMARY KEY,
+  merch_id  INTEGER NOT NULL REFERENCES merch(id) ON DELETE CASCADE,
+  image_id  INTEGER NOT NULL REFERENCES images(id) ON DELETE CASCADE,
+  sort      INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS idx_ann_pub ON announcements(published, pinned);
 CREATE INDEX IF NOT EXISTS idx_items_stall ON stall_items(stall_id);
+CREATE INDEX IF NOT EXISTS idx_merch_images_merch ON merch_images(merch_id);
+```
+
+### 2b. Already have a `merch` table from before? Run this migration once
+If your `merch` table was created before member pricing and photo galleries
+existed, add the new bits and move any existing single photo per product into
+the gallery table, then drop the old column:
+
+```sql
+ALTER TABLE merch ADD COLUMN IF NOT EXISTS member_price_cents INTEGER;
+
+CREATE TABLE IF NOT EXISTS merch_images (
+  id        SERIAL PRIMARY KEY,
+  merch_id  INTEGER NOT NULL REFERENCES merch(id) ON DELETE CASCADE,
+  image_id  INTEGER NOT NULL REFERENCES images(id) ON DELETE CASCADE,
+  sort      INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS idx_merch_images_merch ON merch_images(merch_id);
+
+-- carry over each product's existing single photo into the new gallery table
+INSERT INTO merch_images (merch_id, image_id, sort)
+SELECT id, image_id, 0 FROM merch WHERE image_id IS NOT NULL;
+
+ALTER TABLE merch DROP COLUMN IF EXISTS image_id;
 ```
 
 ### 3. Deploy
@@ -140,9 +172,12 @@ the three most recent with a "Show all" toggle.
    a stall also deletes its items and their photos.
 
 ### Merchandise
-Same pattern at the top level: name, price, sizes line, description, photo and an
-availability toggle. Products appear on the Merchandise tab of `/bazaar.html`
-(`/bazaar.html#merch` opens it directly).
+Same pattern at the top level: name, a non-member price and an optional member
+price (leave the member price blank if MGSS/MAK members pay the same),
+sizes line, description, one or more photos, and an availability toggle.
+Products appear on `/merch.html`. Add extra photos any time from the Edit
+panel — each is uploaded and compressed the same way as the first — and
+delete individual photos from the gallery without touching the others.
 
 ### Photos
 Photos are compressed in your browser before upload: the longest side is scaled

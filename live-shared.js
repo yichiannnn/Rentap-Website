@@ -68,6 +68,12 @@ window.clockLabel = function (m) {
   return '0′';
 };
 
+/* ── Price formatting: EUR cents → '€X.XX' ── */
+window.fmtPrice = function (cents) {
+  if (cents == null) return '';
+  return '€' + (cents / 100).toFixed(2);
+};
+
 /* ── Set-sports helper: format a per-set breakdown ── */
 window.formatSets = function (sets) {
   if (!Array.isArray(sets) || !sets.length) return '';
