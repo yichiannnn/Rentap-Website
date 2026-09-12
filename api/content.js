@@ -125,21 +125,30 @@ async function getAnnouncements(sql, isAdmin) {
 
 async function getBazaar(sql, isAdmin) {
     const stallsRes = isAdmin
-        ? await sql.sql`SELECT id, name, description, category, location, image_id, published, sort, created_at FROM stalls ORDER BY sort ASC, name ASC`
-        : await sql.sql`SELECT id, name, description, category, location, image_id, published, sort FROM stalls WHERE published = true ORDER BY sort ASC, name ASC`;
+        ? await sql.sql`SELECT id, name, description, category, location, published, sort, created_at FROM stalls ORDER BY sort ASC, name ASC`
+        : await sql.sql`SELECT id, name, description, category, location, published, sort FROM stalls WHERE published = true ORDER BY sort ASC, name ASC`;
     const stalls = stallsRes.rows;
     const ids = stalls.map(s => s.id);
-    let items = [];
+    let items = [], images = [];
     if (ids.length) {
         const itemsRes = await sql.sql`
       SELECT id, stall_id, name, description, price_cents, image_id, available, sort
       FROM stall_items WHERE stall_id = ANY(${ids})
       ORDER BY sort ASC, id ASC`;
         items = itemsRes.rows;
+        const imgRes = await sql.sql`
+      SELECT id, stall_id, image_id FROM stall_images WHERE stall_id = ANY(${ids})
+      ORDER BY sort ASC, id ASC`;
+        images = imgRes.rows;
     }
     const byStall = {};
     items.forEach(it => (byStall[it.stall_id] ||= []).push(it));
-    stalls.forEach(s => { s.items = byStall[s.id] || []; });
+    const imagesByStall = {};
+    images.forEach(r => (imagesByStall[r.stall_id] ||= []).push({ id: r.id, image_id: r.image_id }));
+    stalls.forEach(s => {
+        s.items = byStall[s.id] || [];
+        s.images = imagesByStall[s.id] || [];
+    });
     return stalls;
 }
 
@@ -237,27 +246,28 @@ async function route(action, b) {
             const category = STALL_CATS.includes(b.category) ? b.category : 'food';
             const description = str(b.description, 2000);
             const location = str(b.location, 160);
-            const image_id = intOrNull(b.image_id);
             const published = boolOr(b.published, true);
             const sort = intOrNull(b.sort) || 0;
+            const image_ids = Array.isArray(b.image_ids) ? b.image_ids.map(intOrNull).filter(Boolean) : [];
             const { rows } = await sql.sql`
-        INSERT INTO stalls (name, description, category, location, image_id, published, sort, updated_at)
-        VALUES (${name}, ${description}, ${category}, ${location}, ${image_id}, ${published}, ${sort}, now())
+        INSERT INTO stalls (name, description, category, location, published, sort, updated_at)
+        VALUES (${name}, ${description}, ${category}, ${location}, ${published}, ${sort}, now())
         RETURNING id`;
-            return { json: { ok: true, id: rows[0].id } };
+            const id = rows[0].id;
+            for (let i = 0; i < image_ids.length; i++) {
+                await sql.sql`INSERT INTO stall_images (stall_id, image_id, sort) VALUES (${id}, ${image_ids[i]}, ${i})`;
+            }
+            return { json: { ok: true, id } };
         }
         case 'stall.update': {
             const id = intOrNull(b.id);
             if (!id) throw fail(400, 'Missing stall id');
-            // if replacing the banner image, drop the old image row
-            if ('image_id' in b) await maybeDropOldImage(sql, 'stalls', id, intOrNull(b.image_id));
             const cols = [], vals = [];
             const push = (c, v) => { cols.push(`${c}=$${cols.length + 1}`); vals.push(v); };
             if ('name' in b) push('name', str(b.name, 160));
             if ('description' in b) push('description', str(b.description, 2000));
             if ('category' in b) push('category', STALL_CATS.includes(b.category) ? b.category : 'food');
             if ('location' in b) push('location', str(b.location, 160));
-            if ('image_id' in b) push('image_id', intOrNull(b.image_id));
             if ('published' in b) push('published', boolOr(b.published, true));
             if ('sort' in b) push('sort', intOrNull(b.sort) || 0);
             if (!cols.length) return { json: { ok: true } };
@@ -268,13 +278,33 @@ async function route(action, b) {
         case 'stall.delete': {
             const id = intOrNull(b.id);
             if (!id) throw fail(400, 'Missing stall id');
-            // collect images (stall banner + all item images) then delete
+            // collect images (stall posters + all item images) then delete
             const imgs = await sql.sql`
-        SELECT image_id FROM stalls WHERE id=${id} AND image_id IS NOT NULL
+        SELECT image_id FROM stall_images WHERE stall_id=${id}
         UNION ALL
         SELECT image_id FROM stall_items WHERE stall_id=${id} AND image_id IS NOT NULL`;
-            await sql.sql`DELETE FROM stalls WHERE id = ${id}`; // cascades items
+            await sql.sql`DELETE FROM stalls WHERE id = ${id}`; // cascades items + stall_images
             await deleteImages(sql, imgs.rows.map(r => r.image_id));
+            return { json: { ok: true } };
+        }
+        case 'stall.image.add': {
+            const stall_id = intOrNull(b.stall_id);
+            const image_id = intOrNull(b.image_id);
+            if (!stall_id) throw fail(400, 'Missing stall id');
+            if (!image_id) throw fail(400, 'Missing image id');
+            const { rows: sortRows } = await sql.sql`
+        SELECT COALESCE(MAX(sort), -1) + 1 AS next FROM stall_images WHERE stall_id = ${stall_id}`;
+            const { rows } = await sql.sql`
+        INSERT INTO stall_images (stall_id, image_id, sort) VALUES (${stall_id}, ${image_id}, ${sortRows[0].next})
+        RETURNING id`;
+            return { json: { ok: true, id: rows[0].id } };
+        }
+        case 'stall.image.delete': {
+            const id = intOrNull(b.id);
+            if (!id) throw fail(400, 'Missing stall_images id');
+            const { rows } = await sql.sql`SELECT image_id FROM stall_images WHERE id = ${id}`;
+            await sql.sql`DELETE FROM stall_images WHERE id = ${id}`;
+            if (rows.length) await deleteImages(sql, [rows[0].image_id]);
             return { json: { ok: true } };
         }
 
@@ -298,7 +328,7 @@ async function route(action, b) {
         case 'item.update': {
             const id = intOrNull(b.id);
             if (!id) throw fail(400, 'Missing item id');
-            if ('image_id' in b) await maybeDropOldImage(sql, 'stall_items', id, intOrNull(b.image_id));
+            if ('image_id' in b) await maybeDropOldImage(sql, id, intOrNull(b.image_id));
             const cols = [], vals = [];
             const push = (c, v) => { cols.push(`${c}=$${cols.length + 1}`); vals.push(v); };
             if ('name' in b) push('name', str(b.name, 160));
@@ -423,11 +453,9 @@ function priceOrNull(v) {
     return n;
 }
 
-// when a row's image is being replaced/cleared, delete the previously referenced image
-async function maybeDropOldImage(sql, table, rowId, newImageId) {
-    const q = table === 'stalls'
-        ? await sql.sql`SELECT image_id FROM stalls WHERE id=${rowId}`
-        : await sql.sql`SELECT image_id FROM stall_items WHERE id=${rowId}`;
+// when a stall item's photo is being replaced/cleared, delete the previously referenced image
+async function maybeDropOldImage(sql, rowId, newImageId) {
+    const q = await sql.sql`SELECT image_id FROM stall_items WHERE id=${rowId}`;
     const old = q.rows.length ? q.rows[0].image_id : null;
     if (old && old !== newImageId) {
         await sql.sql`DELETE FROM images WHERE id=${old}`;

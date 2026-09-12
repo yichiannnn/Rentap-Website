@@ -63,11 +63,18 @@ CREATE TABLE IF NOT EXISTS stalls (
   description TEXT,
   category    TEXT NOT NULL DEFAULT 'food',    -- 'food' | 'drinks' | 'carboot'
   location    TEXT,                            -- physical location text, OR a pre-order link (e.g. a Google Form URL) — rendered as a clickable link on the public page when it starts with http(s)://
-  image_id    INTEGER REFERENCES images(id) ON DELETE SET NULL,  -- stall banner photo
   published   BOOLEAN NOT NULL DEFAULT true,
   sort        INTEGER NOT NULL DEFAULT 0,
   created_at  TIMESTAMPTZ DEFAULT now(),
   updated_at  TIMESTAMPTZ DEFAULT now()
+);
+
+-- Photo gallery for a stall's poster(s) (one stall, many photos)
+CREATE TABLE IF NOT EXISTS stall_images (
+  id        SERIAL PRIMARY KEY,
+  stall_id  INTEGER NOT NULL REFERENCES stalls(id) ON DELETE CASCADE,
+  image_id  INTEGER NOT NULL REFERENCES images(id) ON DELETE CASCADE,
+  sort      INTEGER NOT NULL DEFAULT 0
 );
 
 -- Items a stall sells (food, drinks) with photo and price
@@ -108,6 +115,7 @@ CREATE TABLE IF NOT EXISTS merch_images (
 CREATE INDEX IF NOT EXISTS idx_ann_pub ON announcements(published, pinned);
 CREATE INDEX IF NOT EXISTS idx_items_stall ON stall_items(stall_id);
 CREATE INDEX IF NOT EXISTS idx_merch_images_merch ON merch_images(merch_id);
+CREATE INDEX IF NOT EXISTS idx_stall_images_stall ON stall_images(stall_id);
 ```
 
 ### 2b. Already have a `merch` table from before? Run this migration once
@@ -131,6 +139,26 @@ INSERT INTO merch_images (merch_id, image_id, sort)
 SELECT id, image_id, 0 FROM merch WHERE image_id IS NOT NULL;
 
 ALTER TABLE merch DROP COLUMN IF EXISTS image_id;
+```
+
+### 2c. Already have a `stalls` table from before? Run this migration once
+If your `stalls` table predates multi-photo posters, add the gallery table and
+move each stall's existing single banner photo into it, then drop the old column:
+
+```sql
+CREATE TABLE IF NOT EXISTS stall_images (
+  id        SERIAL PRIMARY KEY,
+  stall_id  INTEGER NOT NULL REFERENCES stalls(id) ON DELETE CASCADE,
+  image_id  INTEGER NOT NULL REFERENCES images(id) ON DELETE CASCADE,
+  sort      INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS idx_stall_images_stall ON stall_images(stall_id);
+
+-- carry over each stall's existing single banner photo into the new gallery table
+INSERT INTO stall_images (stall_id, image_id, sort)
+SELECT id, image_id, 0 FROM stalls WHERE image_id IS NOT NULL;
+
+ALTER TABLE stalls DROP COLUMN IF EXISTS image_id;
 ```
 
 ### 3. Deploy
@@ -165,13 +193,16 @@ the three most recent with a "Show all" toggle.
 1. Create a stall: name, category (Food / Drinks / Carboot), an optional
    pre-order link (paste a Google Form URL — it shows as a "Pre-order here →"
    button on the public page; leave blank, or type a plain location instead,
-   if the stall doesn't take pre-orders), and an optional banner photo.
+   if the stall doesn't take pre-orders), and one or more poster photos.
+   Multiple posters render as a swipeable/clickable carousel (‹ › arrows +
+   dots) on the public bazaar page. Add more photos any time from the stall's
+   card in the console, or delete individual ones from its gallery.
 2. Expand the stall to add items: name, an optional price in euros
    (`type=number`, step 0.01, converted to cents; leave blank for
    "Price at the stall"), an optional photo, and an availability toggle. Mark an
    item sold out and it renders dimmed on the bazaar page.
 3. Unpublish a stall to hide it and all its items while you prepare it. Deleting
-   a stall also deletes its items and their photos.
+   a stall also deletes its items and all of its photos.
 
 ### Merchandise
 Same pattern at the top level: name, a non-member price and an optional member

@@ -502,11 +502,10 @@
                                 placeholder="e.g. https://forms.gle/..." /></div>
                     </div>
                     <div class="field"><label>Description</label><textarea id="sDesc" maxlength="2000"></textarea></div>
-                    <div class="field"><label>Banner image (optional)</label>
+                    <div class="field"><label>Poster Photos (optional, multiple allowed)</label>
                         <div class="img-drop" id="sImgDrop">
-                            <input type="file" accept="image/*" id="sImgFile" onchange="onPickImage('stall')" />
-                            <img class="img-preview" id="sImgPreview" alt="preview" />
-                            <div class="img-size" id="sImgSize"></div>
+                            <input type="file" accept="image/*" id="sImgFile" multiple onchange="onPickImages('stall')" />
+                            <div class="img-multi-preview" id="sImgPreviews"></div>
                             <div class="img-err" id="sImgErr" hidden></div>
                         </div>
                     </div>
@@ -533,7 +532,7 @@
                     <div class="field"><label>Description</label><textarea id="mDesc" maxlength="2000"></textarea></div>
                     <div class="field"><label>Photos (optional, multiple allowed)</label>
                         <div class="img-drop">
-                            <input type="file" accept="image/*" id="mImgFile" multiple onchange="onPickMerchImages()" />
+                            <input type="file" accept="image/*" id="mImgFile" multiple onchange="onPickImages('merch')" />
                             <div class="img-multi-preview" id="mImgPreviews"></div>
                             <div class="img-err" id="mImgErr" hidden></div>
                         </div>
@@ -674,34 +673,8 @@
             });
         }
 
-        // generic file-pick handler for single-image forms (stall banner, item photo)
-        async function onPickImage(ctx) {
-            const map = {
-                stall: { file: 'sImgFile', prev: 'sImgPreview', size: 'sImgSize', err: 'sImgErr', btn: 'sCreateBtn' },
-            };
-            const ids = map[ctx];
-            const file = document.getElementById(ids.file).files[0];
-            const errEl = document.getElementById(ids.err);
-            const sizeEl = document.getElementById(ids.size);
-            const prev = document.getElementById(ids.prev);
-            errEl.hidden = true; sizeEl.textContent = '';
-            delete staged[ctx];
-            if (!file) { prev.style.display = 'none'; return; }
-            sizeEl.textContent = 'Compressing…';
-            try {
-                const out = await compressImage(file);
-                staged[ctx] = out;
-                prev.src = 'data:' + out.mime + ';base64,' + out.data;
-                prev.style.display = 'block';
-                sizeEl.textContent = Math.round(out.bytes / 1024) + ' KB · ' + out.mime;
-            } catch (e) {
-                errEl.textContent = e.message; errEl.hidden = false;
-                sizeEl.textContent = '';
-                prev.style.display = 'none';
-            }
-        }
-
-        // upload a staged image, return its new id (or null)
+        // upload a staged image, return its new id (or null) — used for the
+        // single item-photo picker (onPickItemImage) elsewhere in this file
         async function uploadStaged(ctx) {
             const s = staged[ctx];
             if (!s) return null;
@@ -709,60 +682,79 @@
             return res.id;
         }
 
-        // ── Merch: multiple staged photos ─────────────
-        function renderStagedMerchPreviews() {
-            const list = staged.merch || [];
-            document.getElementById('mImgPreviews').innerHTML = list.map((s, i) => `
+        // ── Multiple staged photos (merch, stall) ─────
+        // DOM ids use a single-letter prefix per form ('m' for merch, 's' for stall)
+        const IMG_ID_PREFIX = { merch: 'm', stall: 's' };
+        function renderStagedImagePreviews(ctx) {
+            const list = staged[ctx] || [];
+            document.getElementById(IMG_ID_PREFIX[ctx] + 'ImgPreviews').innerHTML = list.map((s, i) => `
       <div class="thumb-wrap">
         <img src="data:${s.mime};base64,${s.data}" alt="" />
-        <button type="button" class="thumb-remove" onclick="removeStagedMerchImage(${i})">×</button>
+        <button type="button" class="thumb-remove" onclick="removeStagedImage('${ctx}', ${i})">×</button>
       </div>`).join('');
         }
-        async function onPickMerchImages() {
-            const input = document.getElementById('mImgFile');
-            const errEl = document.getElementById('mImgErr');
+        async function onPickImages(ctx) {
+            const input = document.getElementById(IMG_ID_PREFIX[ctx] + 'ImgFile');
+            const errEl = document.getElementById(IMG_ID_PREFIX[ctx] + 'ImgErr');
             errEl.hidden = true;
-            staged.merch = [];
+            staged[ctx] = [];
             for (const file of Array.from(input.files || [])) {
-                try { staged.merch.push(await compressImage(file)); }
+                try { staged[ctx].push(await compressImage(file)); }
                 catch (e) { errEl.textContent = e.message; errEl.hidden = false; }
             }
-            renderStagedMerchPreviews();
+            renderStagedImagePreviews(ctx);
         }
-        function removeStagedMerchImage(i) {
-            if (!staged.merch) return;
-            staged.merch.splice(i, 1);
-            renderStagedMerchPreviews();
+        function removeStagedImage(ctx, i) {
+            if (!staged[ctx]) return;
+            staged[ctx].splice(i, 1);
+            renderStagedImagePreviews(ctx);
         }
-        async function uploadStagedMerchImages() {
+        async function uploadStagedImages(ctx) {
             const ids = [];
-            for (const s of (staged.merch || [])) {
+            for (const s of (staged[ctx] || [])) {
                 const res = await api('image.upload', { mime: s.mime, data: s.data });
                 ids.push(res.id);
             }
             return ids;
         }
-        // upload+attach one or more new photos to an existing merch product
-        async function addMerchImages(id, inputEl) {
-            const errEl = document.getElementById('me-addimg-err-' + id);
+        // upload+attach one or more new photos to an existing merch product or stall;
+        // returns true on success so the caller knows whether to refresh
+        async function addGalleryImagesCore(action, idField, id, inputEl, errElId) {
+            const errEl = document.getElementById(errElId);
             errEl.hidden = true;
             const files = Array.from(inputEl.files || []);
-            if (!files.length) return;
+            if (!files.length) return false;
             try {
                 for (const file of files) {
                     const out = await compressImage(file);
                     const up = await api('image.upload', { mime: out.mime, data: out.data });
-                    await api('merch.image.add', { merch_id: id, image_id: up.id });
+                    await api(action, { [idField]: id, image_id: up.id });
                 }
-                await refresh();
-                editMerch(id);
-            } catch (e) { errEl.textContent = e.message; errEl.hidden = false; }
+                return true;
+            } catch (e) {
+                errEl.textContent = e.message; errEl.hidden = false;
+                return false;
+            }
+        }
+        async function addMerchImages(id, inputEl) {
+            const ok = await addGalleryImagesCore('merch.image.add', 'merch_id', id, inputEl, 'me-addimg-err-' + id);
+            if (ok) { await refresh(); editMerch(id); }
         }
         async function deleteMerchImage(merchId, imgRowId) {
             try {
                 await api('merch.image.delete', { id: imgRowId });
                 await refresh();
                 editMerch(merchId);
+            } catch (e) { flash('globalMsg', e.message, false); }
+        }
+        async function addStallImages(id, inputEl) {
+            const ok = await addGalleryImagesCore('stall.image.add', 'stall_id', id, inputEl, 's-addimg-err-' + id);
+            if (ok) await refresh();
+        }
+        async function deleteStallImage(imgRowId) {
+            try {
+                await api('stall.image.delete', { id: imgRowId });
+                await refresh();
             } catch (e) { flash('globalMsg', e.message, false); }
         }
 
@@ -884,20 +876,19 @@
             if (!name) { flash('stallMsg', 'Stall name is required.', false); return; }
             btn.disabled = true;
             try {
-                let image_id = null;
-                try { image_id = await uploadStaged('stall'); }
-                catch (e) { throw new Error('Image upload failed: ' + e.message); }
+                let image_ids = [];
+                try { image_ids = await uploadStagedImages('stall'); }
+                catch (e) { throw new Error('Photo upload failed: ' + e.message); }
                 await api('stall.create', {
                     name,
                     category: document.getElementById('sCategory').value,
                     location: document.getElementById('sLocation').value.trim(),
                     description: document.getElementById('sDesc').value.trim(),
-                    image_id,
+                    image_ids,
                 });
                 ['sName', 'sLocation', 'sDesc'].forEach(i => document.getElementById(i).value = '');
                 document.getElementById('sImgFile').value = '';
-                document.getElementById('sImgPreview').style.display = 'none';
-                document.getElementById('sImgSize').textContent = '';
+                document.getElementById('sImgPreviews').innerHTML = '';
                 delete staged.stall;
                 await refresh();
                 flash('stallMsg', 'Stall created.', true);
@@ -911,10 +902,15 @@
             if (!list.length) { wrap.innerHTML = '<p class="muted">No stalls yet.</p>'; return; }
             wrap.innerHTML = list.map(s => {
                 const items = (s.items || []);
-                const banner = s.image_id ? `<img class="thumb" src="${imgUrl(s.image_id)}" alt="" style="width:64px;height:40px" />` : '';
+                const thumbs = (s.images || []).map(img => `<img class="thumb" src="${imgUrl(img.image_id)}" alt="" style="width:64px;height:40px" />`).join('');
+                const gallery = (s.images || []).map(img => `
+      <div class="thumb-wrap">
+        <img src="${imgUrl(img.image_id)}" alt="" style="width:64px;height:40px" />
+        <button type="button" class="thumb-remove" onclick="deleteStallImage(${img.id})">×</button>
+      </div>`).join('');
                 return `<div class="card" data-stall="${s.id}">
       <div class="list-item">
-        ${banner}
+        ${thumbs}
         <span class="name">${esc(s.name)}</span>
         <span class="badge">${esc(s.category)}</span>
         ${s.published ? '' : '<span class="badge off">Unpublished</span>'}
@@ -923,6 +919,13 @@
         <input class="sortnum" type="number" value="${s.sort != null ? s.sort : 0}" onchange="setStallSort(${s.id}, this.value)" />
       </div>
       ${s.location ? `<p class="muted" style="margin:.2rem 0">${/^https?:\/\//i.test(s.location) ? `<a href="${esc(s.location)}" target="_blank" rel="noopener">${esc(s.location)}</a>` : esc(s.location)}</p>` : ''}
+      <div class="field"><label>Poster Photos</label>
+        <div class="merch-gallery">${gallery || '<p class="muted" style="margin:0">No photos yet.</p>'}</div>
+        <div class="img-drop">
+          <input type="file" accept="image/*" multiple id="s-addimg-${s.id}" onchange="addStallImages(${s.id}, this)" />
+          <div class="img-err" id="s-addimg-err-${s.id}" hidden></div>
+        </div>
+      </div>
       <div class="inline-actions">
         <button class="btn-ghost" onclick="toggleStall(${s.id}, ${!s.published})">${s.published ? 'Unpublish' : 'Publish'}</button>
         <button class="btn-danger" onclick="deleteStall(${s.id}, ${items.length}, this)">Delete</button>
@@ -1033,7 +1036,7 @@
             btn.disabled = true;
             try {
                 let image_ids = [];
-                try { image_ids = await uploadStagedMerchImages(); }
+                try { image_ids = await uploadStagedImages('merch'); }
                 catch (e) { throw new Error('Photo upload failed: ' + e.message); }
                 await api('merch.create', {
                     name,
