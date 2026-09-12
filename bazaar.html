@@ -189,6 +189,105 @@
             background: var(--gold);
         }
 
+        .stall-banner {
+            cursor: zoom-in;
+        }
+
+        .poster-lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(13, 18, 9, .92);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 2rem;
+        }
+
+        .poster-lightbox[hidden] {
+            display: none;
+        }
+
+        .poster-lightbox img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .poster-lightbox-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .1);
+            color: var(--light);
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .poster-lightbox-close:hover {
+            background: rgba(255, 255, 255, .2);
+        }
+
+        .poster-lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3rem;
+            height: 3rem;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .1);
+            color: var(--light);
+            font-size: 1.8rem;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .poster-lightbox-nav:hover {
+            background: rgba(255, 255, 255, .2);
+        }
+
+        .poster-lightbox-nav.prev {
+            left: 1rem;
+        }
+
+        .poster-lightbox-nav.next {
+            right: 1rem;
+        }
+
+        .poster-lightbox-dots {
+            position: absolute;
+            bottom: 1.2rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: .4rem;
+        }
+
+        .poster-lightbox-dots .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(237, 232, 222, .45);
+        }
+
+        .poster-lightbox-dots .dot.active {
+            background: var(--gold);
+        }
+
         .stall-head {
             padding: 1.1rem 1.25rem .6rem;
         }
@@ -444,6 +543,14 @@
         </div>
     </main>
 
+    <div class="poster-lightbox" id="posterLightbox" hidden>
+        <button type="button" class="poster-lightbox-close" onclick="closeLightbox()" aria-label="Close">×</button>
+        <button type="button" class="poster-lightbox-nav prev" id="lightboxPrev" onclick="lightboxNav(-1)" aria-label="Previous photo">‹</button>
+        <img id="lightboxImg" src="" alt="" />
+        <button type="button" class="poster-lightbox-nav next" id="lightboxNext" onclick="lightboxNav(1)" aria-label="Next photo">›</button>
+        <div class="poster-lightbox-dots" id="lightboxDots"></div>
+    </div>
+
     <footer class="footer" style="margin-top:0;">
         <div class="container">
             <div class="footer-bottom" style="border-top:none;padding-top:0;">
@@ -495,6 +602,49 @@
             renderStalls();
         }
 
+        // ── Poster lightbox (full-size view) ──
+        let lightboxStallId = null;
+
+        function openLightbox(stallId) {
+            lightboxStallId = stallId;
+            renderLightbox();
+            document.getElementById('posterLightbox').hidden = false;
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            document.getElementById('posterLightbox').hidden = true;
+            document.body.style.overflow = '';
+            lightboxStallId = null;
+        }
+        function lightboxNav(dir) {
+            stallNav(lightboxStallId, dir);
+            renderLightbox();
+        }
+        function renderLightbox() {
+            const s = stalls.find(x => x.id === lightboxStallId);
+            const ids = s && s.images ? s.images.map(i => i.image_id) : [];
+            if (!ids.length) return;
+            const idx = Math.min(stallImgIdx[lightboxStallId] || 0, ids.length - 1);
+            const img = document.getElementById('lightboxImg');
+            img.src = imgUrl(ids[idx]);
+            img.alt = s.name;
+            const multi = ids.length > 1;
+            document.getElementById('lightboxPrev').hidden = !multi;
+            document.getElementById('lightboxNext').hidden = !multi;
+            document.getElementById('lightboxDots').innerHTML = multi
+                ? ids.map((_, i) => `<span class="dot${i === idx ? ' active' : ''}"></span>`).join('')
+                : '';
+        }
+        document.getElementById('posterLightbox').addEventListener('click', e => {
+            if (e.target.id === 'posterLightbox') closeLightbox();
+        });
+        document.addEventListener('keydown', e => {
+            if (document.getElementById('posterLightbox').hidden) return;
+            if (e.key === 'Escape') closeLightbox();
+            else if (e.key === 'ArrowLeft') lightboxNav(-1);
+            else if (e.key === 'ArrowRight') lightboxNav(1);
+        });
+
         // ── Food & Drinks ──
         function renderStalls() {
             const panel = document.getElementById('panel-food');
@@ -506,7 +656,7 @@
                 let banner;
                 if (posterIds.length) {
                     const idx = Math.min(stallImgIdx[s.id] || 0, posterIds.length - 1);
-                    const img = `<img class="stall-banner" src="${imgUrl(posterIds[idx])}" alt="${esc(s.name)}" loading="lazy" width="800" height="450" />`;
+                    const img = `<img class="stall-banner" src="${imgUrl(posterIds[idx])}" alt="${esc(s.name)}" loading="lazy" width="800" height="450" onclick="openLightbox(${s.id})" />`;
                     const nav = posterIds.length > 1 ? `
         <button type="button" class="stall-nav prev" onclick="stallNav(${s.id}, -1)" aria-label="Previous photo">‹</button>
         <button type="button" class="stall-nav next" onclick="stallNav(${s.id}, 1)" aria-label="Next photo">›</button>
