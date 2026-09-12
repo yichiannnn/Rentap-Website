@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS stalls (
   name        TEXT NOT NULL,
   description TEXT,
   category    TEXT NOT NULL DEFAULT 'food',    -- 'food' | 'drinks' | 'carboot'
-  location    TEXT,                            -- free text: 'Stall 4, main field'
+  location    TEXT,                            -- physical location text, OR a pre-order link (e.g. a Google Form URL) — rendered as a clickable link on the public page when it starts with http(s)://
   image_id    INTEGER REFERENCES images(id) ON DELETE SET NULL,  -- stall banner photo
   published   BOOLEAN NOT NULL DEFAULT true,
   sort        INTEGER NOT NULL DEFAULT 0,
@@ -162,8 +162,10 @@ The full list appears at the top of the Results page, newest first, collapsed to
 the three most recent with a "Show all" toggle.
 
 ### Stalls and items
-1. Create a stall: name, category (Food / Drinks / Carboot), location and an
-   optional banner photo.
+1. Create a stall: name, category (Food / Drinks / Carboot), an optional
+   pre-order link (paste a Google Form URL — it shows as a "Pre-order here →"
+   button on the public page; leave blank, or type a plain location instead,
+   if the stall doesn't take pre-orders), and an optional banner photo.
 2. Expand the stall to add items: name, an optional price in euros
    (`type=number`, step 0.01, converted to cents; leave blank for
    "Price at the stall"), an optional photo, and an availability toggle. Mark an

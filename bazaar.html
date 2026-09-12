@@ -170,6 +170,16 @@
             font-size: .82rem;
         }
 
+        a.stall-preorder {
+            color: var(--gold);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        a.stall-preorder:hover {
+            text-decoration: underline;
+        }
+
         .stall-desc {
             color: var(--text);
             font-size: .9rem;
@@ -400,6 +410,15 @@
 
         function imgUrl(id) { return '/api/content?image=' + encodeURIComponent(id); }
 
+        // stalls store either a physical location (plain text) or a pre-order
+        // link (a URL, e.g. to a Google Form) in the same field
+        function renderStallLocation(value) {
+            if (/^https?:\/\//i.test(value)) {
+                return `<a class="stall-loc stall-preorder" href="${esc(value)}" target="_blank" rel="noopener">Pre-order here →</a>`;
+            }
+            return `<span class="stall-loc">${esc(value)}</span>`;
+        }
+
         function loading(msg) {
             return `<div class="empty-state"><p>${esc(msg)}</p></div>`;
         }
@@ -440,7 +459,7 @@
         <div class="stall-name">${esc(s.name)}</div>
         <div class="stall-meta">
           <span class="cat-chip">${esc(CAT_LABEL[s.category] || s.category)}</span>
-          ${s.location ? `<span class="stall-loc">${esc(s.location)}</span>` : ''}
+          ${s.location ? renderStallLocation(s.location) : ''}
         </div>
       </div>
       ${s.description ? `<p class="stall-desc">${esc(s.description)}</p>` : ''}
