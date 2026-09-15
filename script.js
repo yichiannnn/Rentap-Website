@@ -202,7 +202,7 @@ const modalBox = document.getElementById('modalBox');
 // ── Registration availability ────────────────
 // Flip a value to true when that registration opens.
 const REG_OPEN = {
-  player: true,
+  player: false,
   volunteer: false,
   spectator: true,
   vendor: false
@@ -221,8 +221,8 @@ let pendingGateType = null;
 
 const COMING_SOON = {
   player: {
-    title: 'Player Registration Opens Soon',
-    msg: 'Sport sign-ups are not open just yet. Registration will open soon — check back closer to the event to pick your sport and build your team.'
+    title: 'Player Registration Closed',
+    msg: 'Player registration for all sports is now closed. Thank you to everyone who signed up — see you on the field 26–27 September! If you have any questions, please contact us.'
   },
   volunteer: {
     title: 'Volunteer Registration Full',
