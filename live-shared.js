@@ -11,9 +11,12 @@ window.SPORT_CONFIG = {
   badminton:     { name: 'Badminton',   scoring: 'sets',   live: false, clock: false, groups: true,  knockout: true,  events: false, advance: 2 },
   volleyball:    { name: 'Volleyball',  scoring: 'sets',   live: false, clock: false, groups: true,  knockout: true,  events: false, advance: 2 },
   basketball:    { name: 'Basketball',  scoring: 'points', live: false, clock: false, groups: true,  knockout: true,  events: false, advance: 2 },
+  'table-tennis': { name: 'Table Tennis', scoring: 'sets', live: false, clock: false, groups: true, knockout: true, events: false, advance: 2 },
+  frisbee:       { name: 'Frisbee',     scoring: 'points', live: false, clock: false, groups: true,  knockout: true,  events: false, advance: 2 },
+  'tug-of-war':  { name: 'Tug of War',  scoring: 'points', live: false, clock: false, groups: true,  knockout: true,  events: false, advance: 2 },
 };
 
-window.SPORT_ORDER = ['football', 'volleyball', 'badminton', 'basketball', 'touch-rugby'];
+window.SPORT_ORDER = ['football', 'volleyball', 'badminton', 'basketball', 'touch-rugby', 'table-tennis', 'frisbee', 'tug-of-war'];
 
 /* ── Inline SVG icons (stroke style, matches index.html) ── */
 window.SPORT_ICONS = {
@@ -22,6 +25,9 @@ window.SPORT_ICONS = {
   volleyball: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 12 C 11.1 8.9 11 5.7 12.9 2.7"/><path d="M12 12 C 11.1 8.9 11 5.7 12.9 2.7" transform="rotate(120 12 12)"/><path d="M12 12 C 11.1 8.9 11 5.7 12.9 2.7" transform="rotate(240 12 12)"/></svg>`,
   badminton: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="9" rx="5" ry="6" transform="rotate(-40 9 9)"/><line x1="13" y1="13" x2="19" y2="21"/><circle cx="20" cy="4" r="1.5"/><path d="M18.5 4 L17 1.5 M20 4 L20 1.5 M21.5 4 L23 1.5"/></svg>`,
   'touch-rugby': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1.8 12 Q5 6 12 6 Q19 6 22.2 12 Q19 18 12 18 Q5 18 1.8 12 Z"/><line x1="3.4" y1="12" x2="20.6" y2="12"/><line x1="12" y1="8.6" x2="12" y2="15.4"/></svg>`,
+  'table-tennis': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="6.5"/><line x1="8" y1="5" x2="8" y2="15"/><line x1="15" y1="15" x2="20" y2="21"/><circle cx="20" cy="5" r="2.5"/></svg>`,
+  frisbee: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="12" cy="12" rx="10" ry="5"/><ellipse cx="12" cy="12" rx="5" ry="2.3"/></svg>`,
+  'tug-of-war': `<svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12 Q3 8 7 8 L41 8 Q45 8 45 12 Q45 16 41 16 L7 16 Q3 16 3 12 Z"/><path d="M12 8 Q16 12 14 16"/><path d="M22 8 Q26 12 24 16"/><path d="M32 8 Q36 12 34 16"/></svg>`,
 };
 
 /* ── HTML escaping (mirror admin.html) ── */

@@ -1,7 +1,7 @@
 import { db } from '@vercel/postgres';
 import crypto from 'crypto';
 
-const SLUGS = ['football', 'touch-rugby', 'badminton', 'volleyball', 'basketball'];
+const SLUGS = ['football', 'touch-rugby', 'badminton', 'volleyball', 'basketball', 'table-tennis', 'frisbee', 'tug-of-war'];
 const EVENT_TYPES = ['goal', 'own_goal', 'penalty_goal', 'yellow', 'red', 'sub', 'note'];
 const SCORING_EVENTS = ['goal', 'own_goal', 'penalty_goal'];
 const STAGES = ['group', 'quarter', 'semi', 'third', 'final'];

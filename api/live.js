@@ -7,6 +7,9 @@ const SPORTS = {
   badminton:     { scoring: 'sets',   win: 2, draw: 0, loss: 0 },
   volleyball:    { scoring: 'sets' },   // custom 3/2/1/0 scheme
   basketball:    { scoring: 'points', win: 3, draw: 1, loss: 0 },
+  'table-tennis': { scoring: 'sets' },   // custom: win 3, loser 1 if they took a set
+  frisbee:       { scoring: 'points', win: 3, draw: 1, loss: 0 },   // +1 bonus for scoring 11+
+  'tug-of-war':  { scoring: 'points', win: 3, draw: 0, loss: 0 },   // pulls won
 };
 const SLUGS = Object.keys(SPORTS);
 
@@ -203,6 +206,8 @@ function applyResult(sport, rowA, rowB, a, b, m, h2h) {
       // 2-0 = 3, 2-1 = 2 for winner; loser 1-2 = 1, 0-2 = 0
       ptsA = (b === 0) ? 3 : 2;
       ptsB = (b === 1) ? 1 : 0;
+    } else if (sport === 'table-tennis') {
+      ptsA = 3; ptsB = (b > 0) ? 1 : 0;
     } else {
       ptsA = cfg.win; ptsB = cfg.loss;
     }
@@ -212,6 +217,8 @@ function applyResult(sport, rowA, rowB, a, b, m, h2h) {
     if (sport === 'volleyball') {
       ptsB = (a === 0) ? 3 : 2;
       ptsA = (a === 1) ? 1 : 0;
+    } else if (sport === 'table-tennis') {
+      ptsB = 3; ptsA = (a > 0) ? 1 : 0;
     } else {
       ptsB = cfg.win; ptsA = cfg.loss;
     }
@@ -219,6 +226,11 @@ function applyResult(sport, rowA, rowB, a, b, m, h2h) {
     rowA.d++; rowB.d++;
     resA = 'D'; resB = 'D';
     ptsA = cfg.draw; ptsB = cfg.draw;
+  }
+
+  if (sport === 'frisbee') {   // bonus point for scoring 11 or more
+    if (a >= 11) ptsA += 1;
+    if (b >= 11) ptsB += 1;
   }
 
   rowA.pts += ptsA; rowB.pts += ptsB;
@@ -266,7 +278,7 @@ function baseCompare(sport, a, b) {
     if (b.sw !== a.sw) return b.sw - a.sw;
     return a.team.localeCompare(b.team);
   }
-  if (sport === 'badminton') {
+  if (sport === 'badminton' || sport === 'table-tennis') {
     const sdA = a.gf - a.ga, sdB = b.gf - b.ga;
     if (sdB !== sdA) return sdB - sdA;
     return a.team.localeCompare(b.team);
