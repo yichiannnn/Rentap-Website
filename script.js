@@ -204,7 +204,7 @@ const modalBox = document.getElementById('modalBox');
 const REG_OPEN = {
   player: false,
   volunteer: false,
-  spectator: true,
+  spectator: false,
   vendor: false
 };
 
@@ -229,8 +229,8 @@ const COMING_SOON = {
     msg: 'All volunteer spots have been filled — volunteer registration is now closed. Thank you for your interest! If you have any questions, please contact us.'
   },
   spectator: {
-    title: 'Spectator Registration Opens Soon',
-    msg: 'Spectator entry is not open yet. Registration will open soon — check back nearer the event to reserve your spot and cheer the teams on.'
+    title: 'Spectator Registration',
+    msg: 'Stay tuned for news regarding the Spectators registration on 23/9!'
   },
   vendor: {
     title: 'Vendor Registration Full',
