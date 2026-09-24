@@ -309,8 +309,8 @@ def parse_badminton(wb):
                              ('WD', 'M', 'N', 'O'), ('WS', 'Q', 'R', 'S')])
     matches = []
     hall = lambda day, court: 'Hall 1' if court <= 3 else 'Hall 3'
-    parse_grid(ws, 'badminton', entries, 1, 38, 39, hall, 'Court', matches)
-    parse_grid(ws, 'badminton', entries, 2, 61, 62, hall, 'Court', matches)
+    parse_grid(ws, 'badminton', entries, 1, 37, 38, hall, 'Court', matches)
+    parse_grid(ws, 'badminton', entries, 2, 60, 61, hall, 'Court', matches)
     return racket_teams('badminton', entries), matches
 
 
