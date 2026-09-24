@@ -179,7 +179,7 @@
         <li><a href="index.html#about">About</a></li>
         <li><a href="index.html#sports">Sports</a></li>
         <li><a href="index.html#schedule">Schedule</a></li>
-        <li><a href="fixtures.html">Fixtures</a></li>
+        <!-- <li><a href="fixtures.html">Fixtures</a></li> hidden until go-live -->
         <li><a href="index.html#register" class="nav-cta">Register</a></li>
       </ul>
     </nav>
@@ -710,8 +710,8 @@ function renderSport() {
   document.getElementById('sportSubtitle').textContent = sport.subtitle + ' · RENTAP XVII Rules & Regulations';
   document.getElementById('heroIcon').innerHTML        = sport.icon;
 
-  // Link to this sport's fixtures & results (only the sports with a fixtures tab).
-  const FIXTURE_SPORTS = ['football', 'volleyball', 'touch-rugby', 'badminton', 'table-tennis'];
+  // Link to this sport's fixtures & results — hidden until go-live.
+  const FIXTURE_SPORTS = [];
   const fixturesLink = document.getElementById('fixturesLink');
   if (fixturesLink && FIXTURE_SPORTS.includes(slug)) {
     fixturesLink.href = 'fixtures.html#' + slug;
