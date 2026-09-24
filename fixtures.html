@@ -844,12 +844,21 @@ function placementsHTML(f) {
 
 // ══════════════════════════ TRACK (finishing times, ranked) ══════════════════════════
 function fmtRaceTime(ms) { return (ms / 1000).toFixed(2) + 's'; }
+function trackCatChips(all) {
+  const groups = [...new Set(all.map(e => e.event_group))];
+  if (groups.length < 2) return '';
+  const cat = activeCat('track');
+  const chip = (val, label) => `<button type="button" class="fx-cat${cat === val ? ' on' : ''}" data-cat="${val}" style="--c:var(--gold)" aria-pressed="${cat === val}"><span class="dot"></span>${esc(label)}</button>`;
+  return `<div class="fx-chips" role="group" aria-label="Event">${chip('all', 'All')}${groups.map(g => chip(g, g)).join('')}</div>`;
+}
 function trackHTML() {
-  const events = (data.track && data.track.events) || [];
-  if (!events.length) return `<div class="fx-toolbar">${dayBar()}</div>` + emptyBlock('Track results appear here once heats are run.');
+  const all = (data.track && data.track.events) || [];
+  if (!all.length) return `<div class="fx-toolbar">${dayBar()}</div>` + emptyBlock('Track results appear here once heats are run.');
+  const cat = activeCat('track');
+  const events = cat === 'all' ? all : all.filter(e => e.event_group === cat);
   const byGroup = {};
   events.forEach(e => (byGroup[e.event_group] ||= []).push(e));
-  let html = `<div class="fx-toolbar">${dayBar()}</div>`;
+  let html = `<div class="fx-toolbar">${dayBar()}${trackCatChips(all)}</div>`;
   Object.keys(byGroup).forEach(g => {
     html += `<div class="block"><div class="block-title">${esc(g)}</div>`;
     byGroup[g].forEach(e => {
