@@ -711,7 +711,7 @@ function renderSport() {
   document.getElementById('heroIcon').innerHTML        = sport.icon;
 
   // Link to this sport's fixtures & results (only the sports with a fixtures tab).
-  const FIXTURE_SPORTS = ['football', 'volleyball', 'touch-rugby', 'badminton', 'table-tennis'];
+  const FIXTURE_SPORTS = ['football', 'volleyball', 'touch-rugby', 'badminton', 'table-tennis', 'basketball', 'frisbee', 'track', 'tug-of-war'];
   const fixturesLink = document.getElementById('fixturesLink');
   if (fixturesLink && FIXTURE_SPORTS.includes(slug)) {
     fixturesLink.href = 'fixtures.html#' + slug;
