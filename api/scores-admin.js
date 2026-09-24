@@ -1,5 +1,6 @@
 import { db } from '@vercel/postgres';
 import crypto from 'crypto';
+import { resolveAdvancement } from '../lib/advance.js';
 
 // One slug per database `sport`; badminton and table tennis have one per category
 // (mirror of SPORT_CONFIG in live-shared.js and SPORTS in api/live.js).
@@ -215,8 +216,14 @@ async function route(action, b) {
 
     // ── STATUS FLOW ────────────────────────────────
     // Just two states: enter the score once the game is over, then Finish.
-    case 'match.finish':
-      return setStatus(sql, b.id, `status='finished'`);
+    case 'match.finish': {
+      const id = intOrNull(b.id);
+      if (!id) throw fail(400, 'Missing match id');
+      const { rows } = await sql.sql`
+        UPDATE matches SET status='finished', updated_at=now() WHERE id=${id} RETURNING sport`;
+      if (rows.length) await autoAdvance(sql, rows[0].sport);
+      return { json: { ok: true } };
+    }
     case 'match.reopen':
       return setStatus(sql, b.id, `status='scheduled'`);
     // Undo a mistaken score entry: back to scheduled, 0–0, no sets.
@@ -243,7 +250,9 @@ async function route(action, b) {
       const sa = intOrNull(b.score_a) ?? 0;
       const sb = intOrNull(b.score_b) ?? 0;
       if (sa < 0 || sb < 0) throw fail(400, 'Scores cannot be negative');
-      await sql.sql`UPDATE matches SET score_a=${sa}, score_b=${sb}, updated_at=now() WHERE id=${id}`;
+      const { rows } = await sql.sql`
+        UPDATE matches SET score_a=${sa}, score_b=${sb}, updated_at=now() WHERE id=${id} RETURNING sport`;
+      if (rows.length) await autoAdvance(sql, rows[0].sport);
       return { json: { ok: true } };
     }
 
@@ -263,9 +272,10 @@ async function route(action, b) {
         clean.push([a, c]);
         if (a > c) won_a++; else if (c > a) won_b++;
       }
-      await sql.sql`
+      const { rows } = await sql.sql`
         UPDATE matches SET sets=${JSON.stringify(clean)}::jsonb, score_a=${won_a}, score_b=${won_b}, updated_at=now()
-        WHERE id=${id}`;
+        WHERE id=${id} RETURNING sport`;
+      if (rows.length) await autoAdvance(sql, rows[0].sport);
       return { json: { ok: true, score_a: won_a, score_b: won_b } };
     }
 
@@ -345,6 +355,25 @@ async function route(action, b) {
 
     default:
       throw fail(400, 'Unknown action');
+  }
+}
+
+// After a result changes, fill any scheduled knockout slot whose placeholder
+// ("Champion A", "Winner SF1", …) is now resolvable — but only slots that are
+// still empty; a manually-set team is never overwritten. Called after every
+// write that can change a finished result for a sport.
+async function autoAdvance(sql, sport) {
+  const [teamsRes, matchesRes] = await Promise.all([
+    sql.sql`SELECT * FROM teams WHERE sport = ${sport}`,
+    sql.sql`SELECT * FROM matches WHERE sport = ${sport}`,
+  ]);
+  const fills = resolveAdvancement(sport, teamsRes.rows, matchesRes.rows);
+  for (const f of fills) {
+    const col = f.side === 'a' ? 'team_a_id' : 'team_b_id';
+    await sql.query(
+      `UPDATE matches SET ${col}=$1, updated_at=now() WHERE id=$2 AND ${col} IS NULL`,
+      [f.team_id, f.matchId]
+    );
   }
 }
 
