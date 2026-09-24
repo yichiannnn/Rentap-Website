@@ -465,7 +465,7 @@ p { max-width: 68ch; }
   flex-shrink: 0;
   min-width: 100%;
   white-space: nowrap;
-  animation: marquee 44s linear infinite;
+  animation: marquee 75s linear infinite;
 }
 
 .strip-track span,
