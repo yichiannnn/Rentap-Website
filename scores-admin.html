@@ -383,24 +383,27 @@ async function loadSport() {
 function renderAll() {
   const trackMode = sport === 'track';
   const placementMode = !trackMode && !!SPORT_CONFIG[sport].placementOnly;
-  document.querySelector('[data-view="teams"]').hidden = placementMode || trackMode;
-  document.querySelector('[data-view="fixtures"]').hidden = placementMode || trackMode;
-  document.querySelector('[data-view="control"]').hidden = placementMode || trackMode;
-  document.querySelector('[data-view="placements"]').hidden = !placementMode;
+  // basketball's ad-hoc teams still get real squads (players entered on the
+  // day); it just has no fixtures/match control since there's no fixed format
+  const teamsVisible = !trackMode && (!placementMode || sport === 'basketball');
+  const fixturesVisible = !trackMode && !placementMode;
+  const controlVisible = !trackMode && !placementMode;
+  const placementsVisible = placementMode;
+  document.querySelector('[data-view="teams"]').hidden = !teamsVisible;
+  document.querySelector('[data-view="fixtures"]').hidden = !fixturesVisible;
+  document.querySelector('[data-view="control"]').hidden = !controlVisible;
+  document.querySelector('[data-view="placements"]').hidden = !placementsVisible;
   document.querySelector('[data-view="track"]').hidden = !trackMode;
   if (trackMode) {
     setView('track');
     renderTrack();
-  } else if (placementMode) {
-    if (['teams', 'fixtures', 'control', 'track'].includes(view)) setView('placements');
-    renderPlacements();
   } else {
-    if (view === 'placements' || view === 'track') setView('teams');
-    renderTeams();
-    renderFixtureForm();
-    renderFixtureList();
-    renderControlSelect();
-    renderControl();
+    const visible = { teams: teamsVisible, fixtures: fixturesVisible, control: controlVisible, placements: placementsVisible };
+    if (!visible[view]) setView(teamsVisible ? 'teams' : 'placements');
+    if (teamsVisible) renderTeams();
+    if (fixturesVisible) { renderFixtureForm(); renderFixtureList(); }
+    if (controlVisible) { renderControlSelect(); renderControl(); }
+    if (placementsVisible) renderPlacements();
   }
   // half-length field for football only; entry code for the racket categories
   document.getElementById('fHalfWrap').style.display = (sport === 'football') ? '' : 'none';
