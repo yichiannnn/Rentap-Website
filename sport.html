@@ -179,7 +179,7 @@
         <li><a href="index.html#about">About</a></li>
         <li><a href="index.html#sports">Sports</a></li>
         <li><a href="index.html#schedule">Schedule</a></li>
-        <!-- <li><a href="live.html">Live</a></li> hidden until go-live -->
+        <li><a href="fixtures.html">Fixtures</a></li>
         <li><a href="index.html#register" class="nav-cta">Register</a></li>
       </ul>
     </nav>
@@ -198,9 +198,9 @@
     <h1 class="sport-title" id="sportTitle">—</h1>
     <p class="sport-subtitle" id="sportSubtitle">RENTAP XVII · Rules &amp; Regulations</p>
     <div class="sport-chips" id="sportChips"></div>
-    <a href="live.html" class="btn btn-gold" id="liveResultsLink" style="margin-top:1.5rem;display:none">
-      <span style="display:inline-block;width:.55rem;height:.55rem;border-radius:50%;background:currentColor;margin-right:.15rem"></span>
-      Live Scores
+    <a href="fixtures.html" class="btn btn-gold" id="fixturesLink" style="margin-top:1.5rem;display:none">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Fixtures &amp; Results
     </a>
   </div>
 </section>
@@ -236,7 +236,7 @@ const SPORTS = {
     name: 'Football',
     subtitle: 'Men\'s · Half-Field · 9v9',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><polygon points="12,8 14.4,9.8 13.5,12.6 10.5,12.6 9.6,9.8"/><line x1="12" y1="8" x2="12" y2="2.5"/><line x1="14.4" y1="9.8" x2="19.5" y2="7.5"/><line x1="13.5" y1="12.6" x2="17.5" y2="17"/><line x1="10.5" y1="12.6" x2="6.5" y2="17"/><line x1="9.6" y1="9.8" x2="4.5" y2="7.5"/></svg>`,
-    chips: ['Men Only', '12 Players (9+3 subs)', 'Half-Field Pitch', 'Max 10 Teams'],
+    chips: ['Men Only', '12 Players (9+3 subs)', 'Half-Field Pitch', '2 Groups of 5', 'Top 2 → Semi-finals'],
     pic: { name: 'Wan Adam', phone: '+60 13-512 2811' },
     sections: [
       {
@@ -253,20 +253,21 @@ const SPORTS = {
       {
         title: 'Match Format & Duration',
         table: {
-          headers: ['Stage', 'First Half', 'Interval', 'Second Half', 'Total Match Time', 'Time Slot'],
+          headers: ['Stage', 'First Half', 'Interval', 'Second Half', 'Playing Time', 'Time Slot'],
           rows: [
-            ['Group Stage', '10 min', '2 min', '10 min', '22 min', '35 min'],
-            ['Semi-finals & Final', '15 min', '3 min', '15 min', '33 min', '45 min'],
+            ['Group Stage & Semi-finals', '10 min', '5 min', '10 min', '25 min', '30 min'],
+            ['3rd Place', '10 min', '5 min', '10 min', '25 min', '30 min'],
+            ['Final', '15 min', '5 min', '15 min', '35 min', '60 min'],
           ]
         }
       },
       {
         title: 'Scoring System',
         rules: [
-          'Group Stage: Teams divided into two groups (A & B). Win = 3 pts, Draw = 1 pt, Loss = 0 pts.',
+          'Group Stage: two groups of five (A & B), round robin — every team plays four group matches. Win = 3 pts, Draw = 1 pt, Loss = 0 pts.',
           'Tie-breakers in order: Head-to-head result → Goal difference → Goals scored → Penalty shoot-out (5 kicks).',
-          'Four teams from each group advance to the quarter-finals.',
-          'Knockout draws and finals: if level after 90 min, penalty shoot-out (5 kicks). No extra time.',
+          'The top two teams of each group advance to the semi-finals on Sunday morning: Champion A v Runner-up B, Champion B v Runner-up A.',
+          'The losing semi-finalists play the 3rd-place match; the final follows. If a knockout match is level at full time, penalty shoot-out (5 kicks). No extra time.',
         ]
       },
       {
@@ -296,7 +297,7 @@ const SPORTS = {
     name: 'Badminton',
     subtitle: 'Singles & Doubles · 5 Categories',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="9" rx="5" ry="6" transform="rotate(-40 9 9)"/><line x1="13" y1="13" x2="19" y2="21"/><line x1="7" y1="4" x2="11" y2="4"/><circle cx="20" cy="4" r="1.5"/><path d="M18.5 4 L17 1.5 M20 4 L20 1.5 M21.5 4 L23 1.5"/></svg>`,
-    chips: ["Women's Single", "Men's Single", "Women's Doubles", "Men's Doubles", "Mixed Doubles", 'Max 16 per Category'],
+    chips: ["Women's Single", "Men's Single", "Women's Doubles", "Men's Doubles", "Mixed Doubles", 'Groups to 15 · Knockouts to 21'],
     pic: null,
     sections: [
       {
@@ -312,17 +313,18 @@ const SPORTS = {
       {
         title: 'Tournament Format',
         rules: [
-          'Group Stage: Teams divided into Group A and Group B. Each team plays every other team in their group (Round-Robin).',
-          'Group points: straight-set (2–0) win = 3 pts; 3-set (rubber) win = 1 pt; loss = 0 pts. Point difference breaks remaining ties.',
-          'Top-performing teams from each group advance to the Knockout Stage.',
-          'Knockout Stage: Single-elimination until a winner is determined.',
+          "Men's Singles: three groups. The group winners and the best runner-up go to the semi-finals (Sunday).",
+          "Men's Doubles: four groups. The top two of each group go to the quarter-finals (Saturday evening); semi-finals and final on Sunday.",
+          'Mixed Doubles: two groups. The top two of each group go to the semi-finals (Sunday).',
+          "Women's Doubles and Women's Singles: single round robin — the winner is decided by the final ranking, no knockout stage.",
+          'Group points: 2–0 win = 3 pts, 2–1 win = 2 pts, 1–2 loss = 1 pt, 0–2 loss = 0 pts.',
         ]
       },
       {
         title: 'Match Rules',
         rules: [
           'All singles and doubles matches are best-of-3 games.',
-          'First player/team to score 21 points wins a game.',
+          'Group-stage games are played to 15 points; semi-finals, finals and 3rd-place matches to 21.',
           'First to win 2 out of 3 games wins the match.',
           'All games are scored and refereed by an official appointed by the RENTAP XVII committee.',
           'Linesmen will be represented by players not currently in a match.',
@@ -389,13 +391,13 @@ const SPORTS = {
     name: 'Volleyball',
     subtitle: 'Mixed · 6v6 · FIVB Rules',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><g><path d="M12 12 C 11.1 8.9 11 5.7 12.9 2.7"/><path d="M12 12 C 11.1 8.9 11 5.7 12.9 2.7" transform="rotate(120 12 12)"/><path d="M12 12 C 11.1 8.9 11 5.7 12.9 2.7" transform="rotate(240 12 12)"/></g></svg>`,
-    chips: ['Mixed Gender', 'Max 8 Teams', '6 Field + 2 Subs', 'Net: 2.40m'],
+    chips: ['Mixed Gender', '6 Teams · Single League', '6 Field + 2 Subs', 'Net: 2.40m'],
     pic: { name: 'Shaquille', phone: '+60 19-620 0776' },
     sections: [
       {
         title: 'General Rules',
         rules: [
-          'Maximum 8 mixed-gender teams; min. 6 and max. 8 players per team (6 field + up to 2 substitutes).',
+          'Six mixed-gender teams; min. 6 and max. 8 players per team (6 field + up to 2 substitutes).',
           'Teams must consist primarily of Malaysians. Max. 2 international players per team, with only 1 on the court at any time.',
           'Libero (if used) must wear a contrasting outfit. Net height: 2.40 metres.',
           'Each team is encouraged to bring their own ball.',
@@ -405,10 +407,10 @@ const SPORTS = {
       {
         title: 'Scoring System',
         rules: [
-          'Preliminary Group Stage (Day 1): Set won by first team to reach 20 points (best-of-3).',
-          'Group Stage points: 2–0 win = 3 pts, 2–1 win = 2 pts, 1–2 loss = 1 pt, 0–2 or forfeit = 0 pts.',
-          'Knockout Stage (Day 2): Sets won by first team to reach 25 pts (1st & 2nd sets) or 15 pts (3rd set), best-of-3.',
-          'Group placement determined by: accumulated points → win/loss ratio → number of sets won.',
+          'Single league of six teams: every team plays every other team once (Saturday and Sunday morning, Hall 2).',
+          'Each match is two sets to 25 points, in a one-hour slot.',
+          'League points: 2–0 win = 3 pts, 1–1 draw = 1 pt, 0–2 loss or forfeit = 0 pts.',
+          'The champion is decided by the league table — there is no knockout stage. Tie-breakers: points → win/loss ratio → sets won.',
         ]
       },
       {
@@ -437,9 +439,17 @@ const SPORTS = {
     name: 'Touch Rugby',
     subtitle: 'Mixed · 6v6 · 60m × 50m Pitch',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1.8 12 Q5 6 12 6 Q19 6 22.2 12 Q19 18 12 18 Q5 18 1.8 12 Z"/><line x1="3.4" y1="12" x2="20.6" y2="12"/><line x1="12" y1="8.6" x2="12" y2="15.4"/><line x1="10.4" y1="9.4" x2="13.6" y2="9.4"/><line x1="10.4" y1="10.7" x2="13.6" y2="10.7"/><line x1="10.4" y1="13.3" x2="13.6" y2="13.3"/><line x1="10.4" y1="14.6" x2="13.6" y2="14.6"/></svg>`,
-    chips: ['Mixed Gender', 'Min 6 on Field', 'Max 10 per Squad', 'Rolling Subs', '6 Touches'],
+    chips: ['Mixed Gender', 'Min 6 on Field', 'Max 10 per Squad', 'Rolling Subs', '6 Touches', 'Double Round Robin'],
     pic: null,
     sections: [
+      {
+        title: 'Format',
+        rules: [
+          'Three teams play a double round robin — each pair meets twice (five matches on Saturday, one on Sunday morning).',
+          '45-minute matches on the field. Win = 3 pts, Draw = 1 pt, Loss = 0 pts.',
+          'The champion is decided by the league table; there is no final.',
+        ]
+      },
       {
         title: 'General Rules',
         rules: [
@@ -589,26 +599,25 @@ const SPORTS = {
     name: 'Table Tennis',
     subtitle: 'Singles & Doubles',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="6.5"/><line x1="8" y1="5" x2="8" y2="15"/><line x1="15" y1="15" x2="20" y2="21"/><circle cx="20" cy="5" r="2.5"/></svg>`,
-    chips: ["Men's Singles (16)", "Women's Singles (16)", 'Doubles Open (16)', 'Sets to 11'],
+    chips: ["Men's Singles (8)", "Women's Singles (4)", 'Open Doubles (11 pairs)', 'Games to 11'],
     pic: { name: 'Izudin', phone: '+49 162 8343280' },
     sections: [
       {
         title: 'Categories',
         rules: [
-          "Men's Singles — 16 players.",
-          "Women's Singles — 16 players.",
-          "Doubles Open (Men's, Women's & Mixed Doubles) — 16 teams.",
-          'Participant / team numbers are capped as above; no extra entries once a category closes.',
-          'Players may enter both singles and doubles, but must state this on the registration form.',
+          "Men's Singles — 8 players in two groups of four; the top two of each group go to the semi-finals (Sunday).",
+          "Women's Singles — 4 players, single round robin; 1st v 2nd play the final and 3rd v 4th the 3rd-place match (Saturday afternoon).",
+          "Open Doubles (men's, women's and mixed pairs together) — 11 pairs in two groups; the top two of each group go to the semi-finals (Sunday).",
+          'Players may enter both singles and doubles.',
         ]
       },
       {
         title: 'Fixtures & Format',
         rules: [
-          'Group format of 4 teams per group; the top 2 from each group advance to the quarter-finals.',
-          'A set ends at 11 points, or on a 2-point lead in the case of deuce.',
-          'Each category plays at least 3 games in the group round.',
-          'Winning 2 sets = 3 pts; winning 1 set = 1 pt; winning 0 sets = 0 pts.',
+          'Group matches are two games to 11 points — a 1–1 is a draw. A game ends at 11 points, or on a 2-point lead in the case of deuce.',
+          'Group points: 2–0 win = 3 pts, 1–1 draw = 2 pts, 0–2 loss = 0 pts.',
+          'Semi-finals are best of three games; the final and 3rd-place match are best of five.',
+          'Saturday in Hall 4, Sunday in Hall 3 — six tables.',
         ]
       },
       {
@@ -701,13 +710,12 @@ function renderSport() {
   document.getElementById('sportSubtitle').textContent = sport.subtitle + ' · RENTAP XVII Rules & Regulations';
   document.getElementById('heroIcon').innerHTML        = sport.icon;
 
-  // Link to this sport's live results — hidden until go-live.
-  // To re-enable: change SHOW_LIVE to true.
-  const SHOW_LIVE = false;
-  const liveLink = document.getElementById('liveResultsLink');
-  if (liveLink && SHOW_LIVE) {
-    liveLink.href = 'live.html#' + slug;
-    liveLink.style.display = 'inline-flex';
+  // Link to this sport's fixtures & results (only the sports with a fixtures tab).
+  const FIXTURE_SPORTS = ['football', 'volleyball', 'touch-rugby', 'badminton', 'table-tennis'];
+  const fixturesLink = document.getElementById('fixturesLink');
+  if (fixturesLink && FIXTURE_SPORTS.includes(slug)) {
+    fixturesLink.href = 'fixtures.html#' + slug;
+    fixturesLink.style.display = 'inline-flex';
   }
 
   // Rules/details visibility. Set SHOW_RULES to true to publish the full rules.

@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fixtures & Results — RENTAP XVII</title>
+  <meta name="description" content="Fixtures, results, standings and brackets for RENTAP XVII — 26–27 September 2026, Schulcampus Werderau, Nürnberg." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ── HERO ── */
+    .fx-hero { padding-top: calc(var(--nav-h) + 2.5rem); padding-bottom: 1.75rem; background: var(--ink); position: relative; overflow: hidden; }
+    .fx-hero-pattern {
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cpolygon points='30,4 56,30 30,56 4,30' stroke='%23A8200D' stroke-width='0.8' opacity='0.2'/%3E%3Cpolygon points='30,14 46,30 30,46 14,30' stroke='%23C8922A' stroke-width='0.5' opacity='0.15'/%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+    .fx-hero-pattern::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 90% at 50% 30%, transparent 20%, var(--ink) 88%); }
+    .fx-hero-inner { position: relative; z-index: 1; }
+    .back-link { display: inline-flex; align-items: center; gap: .5rem; color: var(--text-muted); font-size: .9rem; margin-bottom: 1.5rem; transition: color 200ms; }
+    .back-link:hover { color: var(--light); }
+    .fx-title { font-family: var(--display); font-size: clamp(3rem, 9vw, 5.5rem); letter-spacing: .05em; color: var(--light); line-height: 1; display: flex; align-items: center; gap: .9rem; }
+    .live-dot { width: .8rem; height: .8rem; border-radius: 50%; background: var(--red); flex-shrink: 0; box-shadow: 0 0 0 0 rgba(168,32,13,.7); animation: livepulse 1.8s infinite; }
+    @keyframes livepulse { 0% { box-shadow: 0 0 0 0 rgba(168,32,13,.6); } 70% { box-shadow: 0 0 0 12px rgba(168,32,13,0); } 100% { box-shadow: 0 0 0 0 rgba(168,32,13,0); } }
+    .fx-subtitle { color: var(--text-muted); font-size: .95rem; letter-spacing: .08em; text-transform: uppercase; margin-top: .4rem; }
+    .updated-stamp { color: var(--text-muted); font-size: .78rem; margin-top: .5rem; }
+    .updated-stamp .warn { color: var(--gold); }
+
+    /* ── FIND MY MATCHES ── */
+    .fx-search { position: relative; margin-top: 1.5rem; max-width: 540px; }
+    .fx-search label { display: block; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: .45rem; }
+    .fx-search-row { display: flex; gap: .5rem; }
+    .fx-search input { flex: 1; min-width: 0; background: rgba(0,0,0,.35); border: 1px solid rgba(200,146,42,.35); border-radius: var(--radius); padding: .7rem .95rem; color: var(--light); font-family: var(--body); font-size: 1rem; min-height: 46px; -webkit-appearance: none; }
+    .fx-search input::placeholder { color: var(--text-muted); }
+    .fx-search input:focus { outline: none; border-color: var(--gold); }
+    .fx-search .btn { padding: .55rem 1rem; }
+    .fx-suggest { position: absolute; left: 0; right: 0; top: 100%; margin-top: .35rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-lg); list-style: none; z-index: 45; max-height: 280px; overflow-y: auto; box-shadow: 0 14px 34px rgba(0,0,0,.45); }
+    .fx-suggest li button { width: 100%; text-align: left; background: none; border: none; color: var(--text); padding: .65rem .95rem; font-family: var(--body); font-size: .95rem; cursor: pointer; display: flex; justify-content: space-between; gap: .6rem; align-items: baseline; }
+    .fx-suggest li button:hover, .fx-suggest li button:focus { background: rgba(200,146,42,.14); color: var(--light); outline: none; }
+    .fx-suggest .sub { color: var(--text-muted); font-size: .76rem; white-space: nowrap; }
+    .fx-suggest .none { padding: .65rem .95rem; color: var(--text-muted); font-size: .88rem; }
+
+    /* personal timetable */
+    .fx-me { background: var(--surface-2); border-bottom: 1px solid var(--border); padding-block: 1.6rem 1.9rem; }
+    .fx-me-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1rem; margin-bottom: 1rem; }
+    .fx-me-head h2 { font-family: var(--display); font-size: 1.9rem; letter-spacing: .05em; color: var(--light); line-height: 1; }
+    .fx-me-head .meta { color: var(--text-muted); font-size: .85rem; }
+    .fx-me-head .btn { margin-left: auto; padding: .4rem .9rem; font-size: .8rem; }
+    .fx-me-day { font-family: var(--display); font-size: 1.15rem; letter-spacing: .08em; color: var(--gold); margin: 1rem 0 .5rem; }
+    .fx-me-list { list-style: none; display: grid; gap: .4rem; }
+    .fx-me-row { display: grid; grid-template-columns: 6.2rem 1fr auto; gap: .4rem .9rem; align-items: center; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--gold); border-radius: var(--radius-lg); padding: .6rem .85rem; text-align: left; color: var(--text); font-family: var(--body); cursor: pointer; width: 100%; }
+    .fx-me-row:hover { border-color: rgba(200,146,42,.5); }
+    .fx-me-row.iq { border-left-style: dashed; opacity: .68; }
+    .fx-me-row .when { font-family: var(--display); font-size: 1.15rem; letter-spacing: .05em; color: var(--light); line-height: 1.1; }
+    .fx-me-row .when small { display: block; font-family: var(--body); font-size: .68rem; letter-spacing: .04em; color: var(--text-muted); }
+    .fx-me-row .what { font-size: .92rem; min-width: 0; }
+    .fx-me-row .what b { color: var(--light); }
+    .fx-me-row .what span { display: block; color: var(--text-muted); font-size: .76rem; margin-top: .1rem; }
+    .fx-me-row .res { font-family: var(--display); font-size: 1.15rem; letter-spacing: .05em; color: var(--light); text-align: right; }
+    .fx-me-row .res small { display: block; font-family: var(--body); font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); }
+    .fx-me-row .res.live small { color: var(--red); }
+    .fx-me-empty { color: var(--text-muted); font-size: .9rem; }
+
+    /* ── SPORT TABS ── */
+    .live-tabs-wrap { position: sticky; top: var(--nav-h); z-index: 30; background: var(--surface); border-bottom: 2px solid var(--border); }
+    .live-tabs { display: flex; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; max-width: 1200px; margin-inline: auto; padding-inline: clamp(1.25rem, 5vw, 3rem); }
+    .live-tabs::-webkit-scrollbar { display: none; }
+    .live-tab { background: none; border: none; cursor: pointer; padding: .9rem 1.1rem; font-family: var(--body); font-weight: 600; font-size: .92rem; color: var(--text-muted); border-bottom: 3px solid transparent; margin-bottom: -2px; display: inline-flex; align-items: center; gap: .5rem; white-space: nowrap; transition: color 200ms, border-color 200ms; }
+    .live-tab svg { width: 20px; height: 20px; }
+    .live-tab:hover { color: var(--light); }
+    .live-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    /* ── PANEL ── */
+    .fx-panel { padding-block: clamp(1.5rem, 4vw, 3rem); background: var(--surface); min-height: 60vh; }
+    .fx-toolbar { display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: center; margin-bottom: 1.5rem; }
+    .fx-toolbar .spacer { flex: 1; }
+    .fx-seg { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; background: var(--surface-2); }
+    .fx-seg button { background: none; border: none; color: var(--text-muted); padding: .45rem .95rem; font-family: var(--body); font-weight: 600; font-size: .84rem; cursor: pointer; min-height: 36px; }
+    .fx-seg button.on { background: var(--gold); color: var(--ink); }
+    .fx-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .fx-cat { --c: var(--gold); border: 1px solid var(--border); background: var(--surface-2); color: var(--text); border-radius: 999px; padding: .35rem .8rem; font-family: var(--body); font-size: .8rem; font-weight: 700; cursor: pointer; display: inline-flex; gap: .45rem; align-items: center; min-height: 34px; }
+    .fx-cat .dot { width: .55rem; height: .55rem; border-radius: 50%; background: var(--c); }
+    .fx-cat .n { color: var(--text-muted); font-weight: 600; }
+    .fx-cat.on { border-color: var(--c); color: var(--light); background: rgba(200,146,42,.14); }
+    .block { margin-bottom: 2.75rem; }
+    .block-title { font-family: var(--display); font-size: 1.5rem; letter-spacing: .06em; color: var(--gold); margin-bottom: 1.1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .block-title .count-badge { font-family: var(--body); font-size: .72rem; font-weight: 700; color: var(--text-muted); letter-spacing: .05em; text-transform: uppercase; }
+    .fx-dayhead { font-family: var(--display); font-size: 1.2rem; letter-spacing: .08em; color: var(--light); margin: 1.4rem 0 .9rem; display: flex; align-items: center; gap: .6rem; }
+    .fx-dayhead::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .fx-note { color: var(--text-muted); font-size: .85rem; line-height: 1.6; }
+    details.fx-format { border: 1px dashed var(--border); border-radius: var(--radius-lg); padding: .8rem 1rem; margin-top: 1rem; }
+    details.fx-format summary { cursor: pointer; color: var(--gold); font-weight: 700; font-size: .85rem; letter-spacing: .06em; text-transform: uppercase; list-style: none; }
+    details.fx-format summary::-webkit-details-marker { display: none; }
+    details.fx-format p { color: var(--text-muted); font-size: .88rem; line-height: 1.6; margin-top: .6rem; max-width: none; }
+
+    /* ── BADGES / TEAM BUTTONS ── */
+    .fx-badge { --c: var(--gold); display: inline-grid; place-items: center; width: 2.15rem; height: 2.15rem; background: var(--c); color: #fff; font-family: var(--display); font-size: .95rem; letter-spacing: .04em; line-height: 1; clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%); flex-shrink: 0; text-shadow: 0 1px 2px rgba(0,0,0,.45); }
+    .fx-badge.lg { width: 3.4rem; height: 3.4rem; font-size: 1.5rem; }
+    .fx-badge.ink { color: var(--ink); text-shadow: none; }
+    .fx-code { --c: var(--gold); display: inline-block; font-family: var(--display); font-size: .92rem; letter-spacing: .08em; padding: .12rem .45rem; border-radius: 3px; background: var(--c); color: #fff; line-height: 1.15; flex-shrink: 0; }
+    .fx-code.ink { color: var(--ink); }
+    .fx-team { display: inline-flex; align-items: center; gap: .55rem; background: none; border: none; color: var(--light); font-family: var(--body); font-weight: 600; font-size: 1rem; cursor: pointer; text-align: left; padding: .2rem .3rem; border-radius: var(--radius); max-width: 100%; }
+    .fx-team:hover { background: rgba(255,255,255,.05); }
+    .fx-team.win { color: var(--gold); }
+    .fx-team .nm { min-width: 0; }
+    .fx-team .more { color: var(--text-muted); font-weight: 400; font-size: 1.1rem; line-height: 1; }
+    .fx-tbd { color: var(--text-muted); font-style: italic; font-weight: 500; font-size: .92rem; padding: .2rem .3rem; display: inline-block; }
+
+    /* ── GROUP CARDS ── */
+    .fx-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; }
+    .fx-group { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .fx-group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .8rem 1rem; background: rgba(200,146,42,.08); border-bottom: 1px solid var(--border); }
+    .fx-group-head h3 { font-family: var(--display); font-size: 1.4rem; letter-spacing: .08em; color: var(--gold); }
+    .fx-group-head span { font-size: .7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; text-align: right; }
+    .table-wrap { overflow-x: auto; }
+    table.standings { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    .standings th { color: var(--text-muted); text-align: center; padding: .5rem .35rem; font-size: .66rem; letter-spacing: .05em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    .standings th.left, .standings td.left { text-align: left; }
+    .standings td { padding: .45rem .35rem; text-align: center; border-bottom: 1px solid var(--border); color: var(--text); }
+    .standings tr:last-child td { border-bottom: none; }
+    .standings td.pos { color: var(--text-muted); width: 1.6rem; font-variant-numeric: tabular-nums; }
+    .standings tr.adv td.pos { border-left: 3px solid var(--gold); color: var(--gold); font-weight: 700; }
+    .standings tr.bru td.pos { border-left: 3px dashed var(--gold); }
+    .standings td.pts { color: var(--gold); font-weight: 700; }
+    .standings .fx-team { font-size: .92rem; padding: .1rem .2rem; gap: .5rem; }
+    .standings .fx-badge { width: 1.75rem; height: 1.75rem; font-size: .78rem; }
+    .form-dots { display: inline-flex; gap: .2rem; justify-content: center; }
+    .fd { width: .5rem; height: .5rem; border-radius: 50%; display: inline-block; }
+    .fd.W { background: var(--gold); } .fd.D { background: var(--text-muted); } .fd.L { background: var(--red); }
+    .fx-group-foot { padding: .6rem 1rem; font-size: .75rem; color: var(--text-muted); border-top: 1px solid var(--border); display: flex; align-items: center; gap: .5rem; }
+    .fx-rail { display: inline-block; width: 1rem; height: 3px; background: var(--gold); border-radius: 2px; }
+    .fx-rail.dash { background: repeating-linear-gradient(90deg, var(--gold) 0 3px, transparent 3px 5px); }
+
+    /* ── TIME RAIL + MATCH CARDS ── */
+    .fx-slot { display: grid; grid-template-columns: 4.6rem 1fr; gap: .5rem 1rem; margin-bottom: 1.1rem; }
+    .fx-slot-time { font-family: var(--display); font-size: 1.4rem; letter-spacing: .06em; color: var(--gold); padding-top: .55rem; line-height: 1; }
+    .fx-slot-time small { display: block; font-family: var(--body); font-size: .68rem; letter-spacing: .05em; color: var(--text-muted); margin-top: .25rem; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: .9rem; }
+    .cards.one { grid-template-columns: minmax(0, 620px); }
+    .mcard { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; scroll-margin-top: calc(var(--nav-h) + 4rem); }
+    .mcard--live { border-color: rgba(168,32,13,.55); box-shadow: 0 0 0 1px rgba(168,32,13,.25); }
+    .mcard--flash { animation: cardflash 1.4s var(--ease-out); }
+    @keyframes cardflash { 0% { box-shadow: 0 0 0 4px rgba(200,146,42,.6); } 100% { box-shadow: 0 0 0 0 rgba(200,146,42,0); } }
+    .mcard-top { display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .5rem .85rem; font-size: .7rem; letter-spacing: .05em; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    .mcard-stage { font-weight: 700; display: inline-flex; align-items: center; gap: .4rem; min-width: 0; }
+    .fx-venue { display: inline-flex; align-items: center; gap: .3rem; white-space: nowrap; }
+    .fx-venue svg { width: 12px; height: 12px; }
+    .badge-live { display: inline-flex; align-items: center; gap: .35rem; background: var(--red); color: #fff; padding: .12rem .5rem; border-radius: 999px; font-weight: 700; font-size: .66rem; letter-spacing: .08em; }
+    .badge-live::before { content: ''; width: .4rem; height: .4rem; border-radius: 50%; background: #fff; animation: livepulse 1.8s infinite; }
+    .badge-ft { color: var(--gold); font-weight: 700; }
+    .mcard-body { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem; padding: .9rem .85rem; }
+    .mc-team { min-width: 0; display: flex; align-items: center; }
+    .mc-team.a { justify-content: flex-end; text-align: right; }
+    .mc-team.a .fx-team { flex-direction: row-reverse; text-align: right; }
+    .mc-center { text-align: center; min-width: 84px; }
+    .mc-score { font-family: var(--display); font-size: 2.3rem; color: var(--light); line-height: 1; letter-spacing: .04em; }
+    .mc-score .sep { color: var(--text-muted); margin: 0 .16rem; }
+    .mc-clock { font-size: .76rem; color: var(--red); font-weight: 700; margin-top: .25rem; letter-spacing: .05em; }
+    .mc-clock.ft { color: var(--gold); }
+    .mc-kick { font-family: var(--display); font-size: 1.5rem; color: var(--light); letter-spacing: .05em; line-height: 1; }
+    .mc-kick small { display: block; font-family: var(--body); font-size: .66rem; color: var(--text-muted); letter-spacing: .06em; text-transform: uppercase; margin-top: .25rem; }
+    .mc-sets { font-size: .76rem; color: var(--text-muted); margin-top: .3rem; font-variant-numeric: tabular-nums; }
+    .mcard-foot { display: flex; flex-wrap: wrap; gap: .3rem .9rem; padding: 0 .85rem .65rem; font-size: .74rem; color: var(--text-muted); }
+    .mcard-foot b { color: var(--text); font-weight: 600; }
+
+    /* football timeline */
+    .fx-tl { list-style: none; border-top: 1px solid var(--border); padding: .5rem .9rem .7rem; }
+    .fx-tl-row { display: grid; grid-template-columns: 2.2rem 1.3rem 1fr; align-items: center; gap: .5rem; padding: .3rem 0; font-size: .86rem; color: var(--text); }
+    .fx-tl-min { color: var(--gold); font-weight: 700; font-size: .8rem; text-align: right; }
+    .fx-tl-ico { color: var(--text-muted); display: flex; }
+    .fx-tl-ico svg { width: 15px; height: 15px; }
+    .fx-tl-txt .who { color: var(--light); }
+    .fx-tl-txt .team { color: var(--text-muted); font-size: .78rem; }
+    .fx-tl-row.fresh { animation: freshpop 1.6s var(--ease-out); }
+    @keyframes freshpop { 0% { background: rgba(200,146,42,.25); } 100% { background: transparent; } }
+    .card-yellow rect { fill: #d9a919; stroke: #d9a919; }
+    .card-red rect { fill: var(--red); stroke: var(--red); }
+    details.finished-tl > summary { cursor: pointer; list-style: none; padding: .5rem .9rem; border-top: 1px solid var(--border); font-size: .76rem; color: var(--text-muted); letter-spacing: .04em; }
+    details.finished-tl > summary::-webkit-details-marker { display: none; }
+    details.finished-tl[open] > summary { color: var(--gold); }
+
+    /* ── BRACKET ── */
+    .bracket { display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: .5rem; -webkit-overflow-scrolling: touch; align-items: stretch; }
+    .bkt-round { display: flex; flex-direction: column; justify-content: space-around; gap: 1rem; min-width: 230px; flex: 1; position: relative; }
+    .bkt-round h4 { font-family: var(--display); font-size: .95rem; letter-spacing: .08em; color: var(--text-muted); text-align: center; margin-bottom: .2rem; text-transform: uppercase; }
+    .bkt-node { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: .55rem .7rem; font-size: .84rem; position: relative; scroll-margin-top: calc(var(--nav-h) + 4rem); }
+    .bkt-node.final { border-color: rgba(200,146,42,.55); box-shadow: 0 0 0 1px rgba(200,146,42,.2); }
+    .bkt-node.live { border-color: rgba(168,32,13,.55); }
+    .bkt-meta { display: flex; justify-content: space-between; gap: .5rem; font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); margin-bottom: .35rem; }
+    .bkt-meta b { color: var(--gold); }
+    .bkt-line { display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .18rem 0; color: var(--text); min-width: 0; }
+    .bkt-line.win { color: var(--gold); font-weight: 600; }
+    .bkt-line .s { color: var(--light); font-variant-numeric: tabular-nums; font-family: var(--display); font-size: 1.05rem; letter-spacing: .05em; }
+    .bkt-line .fx-team { font-size: .86rem; padding: .05rem .15rem; gap: .4rem; }
+    .bkt-line .fx-badge { width: 1.6rem; height: 1.6rem; font-size: .72rem; }
+    .bkt-line .fx-tbd { font-size: .84rem; padding: .05rem .15rem; }
+    .bkt-round.has-next > .bkt-node::after { content: ''; position: absolute; right: -1.5rem; top: 50%; width: 1.5rem; height: 1px; background: var(--border); }
+    .bkt-third { margin-top: 1.25rem; opacity: .85; }
+
+    /* ── SQUADS ── */
+    .fx-squads { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: .75rem; }
+    .fx-squad-btn { display: flex; align-items: center; gap: .75rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: .7rem .9rem; color: var(--light); font-family: var(--body); font-weight: 600; font-size: .95rem; cursor: pointer; text-align: left; transition: border-color 200ms, transform 150ms; }
+    .fx-squad-btn:hover { border-color: rgba(200,146,42,.5); transform: translateY(-1px); }
+    .fx-squad-btn small { display: block; color: var(--text-muted); font-size: .74rem; font-weight: 500; }
+
+    /* ── HEAD-TO-HEAD (volleyball) ── */
+    .fx-h2h-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); }
+    .fx-h2h { width: 100%; border-collapse: separate; border-spacing: 0; font-size: .8rem; min-width: 620px; }
+    .fx-h2h th, .fx-h2h td { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); padding: .45rem .4rem; text-align: center; vertical-align: middle; }
+    .fx-h2h tr:last-child td, .fx-h2h tr:last-child th { border-bottom: none; }
+    .fx-h2h th { background: rgba(200,146,42,.08); color: var(--gold); font-size: .68rem; letter-spacing: .04em; }
+    .fx-h2h th.col { padding: .5rem .3rem; }
+    .fx-h2h th.col .fx-badge { margin: 0 auto .2rem; }
+    .fx-h2h th.row { text-align: left; color: var(--light); font-size: .82rem; position: sticky; left: 0; background: var(--surface-2); z-index: 1; white-space: nowrap; }
+    .fx-h2h th.row .fx-team { font-size: .84rem; padding: 0; gap: .45rem; }
+    .fx-h2h td.self { background: repeating-linear-gradient(45deg, rgba(255,255,255,.035) 0 5px, transparent 5px 10px); }
+    .fx-h2h .cell { background: none; border: none; color: var(--text); font-family: var(--body); font-size: .78rem; cursor: pointer; padding: .2rem .35rem; border-radius: 4px; line-height: 1.25; }
+    .fx-h2h .cell:hover { background: rgba(200,146,42,.14); color: var(--light); }
+    .fx-h2h .cell .score { display: block; font-family: var(--display); font-size: 1.15rem; color: var(--light); letter-spacing: .06em; }
+    .fx-h2h .cell.live .score { color: var(--red); }
+    .fx-h2h .cell small { display: block; color: var(--text-muted); font-size: .66rem; }
+
+    /* ── TRIANGLE (touch rugby) ── */
+    .fx-tri { display: grid; grid-template-columns: 1fr auto 1fr; grid-template-rows: auto auto auto; gap: .6rem 1rem; align-items: center; justify-items: center; max-width: 760px; margin: .5rem auto 1.5rem; }
+    .fx-tri .v1 { grid-column: 2; grid-row: 1; } .fx-tri .e12 { grid-column: 1; grid-row: 2; } .fx-tri .e13 { grid-column: 3; grid-row: 2; }
+    .fx-tri .v2 { grid-column: 1; grid-row: 3; } .fx-tri .e23 { grid-column: 2; grid-row: 3; } .fx-tri .v3 { grid-column: 3; grid-row: 3; }
+    .fx-vertex { display: flex; flex-direction: column; align-items: center; gap: .4rem; background: none; border: none; color: var(--light); font-family: var(--body); font-weight: 700; font-size: .95rem; cursor: pointer; text-align: center; }
+    .fx-vertex small { color: var(--text-muted); font-weight: 500; font-size: .72rem; }
+    .fx-edge { display: flex; flex-direction: column; gap: .3rem; }
+    .fx-leg { background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: .28rem .75rem; font-size: .74rem; color: var(--text); white-space: nowrap; cursor: pointer; font-family: var(--body); display: inline-flex; gap: .45rem; align-items: center; }
+    .fx-leg:hover { border-color: rgba(200,146,42,.5); }
+    .fx-leg .lg { color: var(--text-muted); letter-spacing: .06em; text-transform: uppercase; font-size: .62rem; font-weight: 700; }
+    .fx-leg b { color: var(--light); font-family: var(--display); letter-spacing: .06em; font-size: 1rem; font-weight: 400; }
+    .fx-leg.live b { color: var(--red); }
+
+    /* ── COURT BOARD (badminton / table tennis) ── */
+    .fx-board-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 1rem; }
+    .fx-board { border-collapse: separate; border-spacing: 0; width: 100%; font-size: .78rem; }
+    .fx-board th { position: sticky; top: 0; background: var(--ink); color: var(--gold); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; padding: .55rem .4rem; border-bottom: 1px solid var(--border); border-right: 1px solid rgba(200,146,42,.08); z-index: 2; min-width: 118px; }
+    .fx-board th.t { min-width: 0; left: 0; z-index: 3; }
+    .fx-board th small { display: block; color: var(--text-muted); letter-spacing: 0; text-transform: none; font-weight: 400; }
+    .fx-board td { border-bottom: 1px solid var(--border); border-right: 1px solid rgba(200,146,42,.08); padding: .3rem; vertical-align: top; height: 3.1rem; }
+    .fx-board td.t { position: sticky; left: 0; background: var(--surface); font-family: var(--display); font-size: 1.05rem; letter-spacing: .06em; color: var(--light); padding: .45rem .6rem; z-index: 1; white-space: nowrap; vertical-align: middle; }
+    .fx-board td.blocked { background: repeating-linear-gradient(45deg, rgba(255,255,255,.035) 0 6px, transparent 6px 12px); color: var(--text-muted); font-size: .68rem; text-align: center; vertical-align: middle; letter-spacing: .06em; text-transform: uppercase; }
+    .fx-board td.break { text-align: center; color: var(--text-muted); letter-spacing: .14em; text-transform: uppercase; font-size: .68rem; background: rgba(0,0,0,.22); vertical-align: middle; height: 2.2rem; }
+    .fx-chip { --c: var(--gold); width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: .12rem; background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--c); border-radius: 4px; padding: .32rem .45rem; color: var(--light); font-family: var(--body); font-size: .8rem; font-weight: 700; cursor: pointer; text-align: left; line-height: 1.25; }
+    .fx-chip:hover { border-color: var(--c); }
+    .fx-chip .vs { color: var(--text-muted); font-weight: 400; margin: 0 .3rem; }
+    .fx-chip .st { font-size: .64rem; color: var(--text-muted); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .fx-chip .st.live { color: var(--red); } .fx-chip .st.ft { color: var(--gold); }
+    .fx-chip.dim { opacity: .3; }
+    .fx-chip.ko { background: rgba(200,146,42,.1); }
+    .fx-chip.ko .ko-lbl { font-family: var(--display); letter-spacing: .06em; font-size: .9rem; font-weight: 400; }
+    .fx-legend { display: flex; flex-wrap: wrap; gap: .4rem 1rem; font-size: .74rem; color: var(--text-muted); margin-bottom: .75rem; }
+    .fx-legend span { display: inline-flex; align-items: center; gap: .35rem; }
+    .fx-legend i { width: .6rem; height: .6rem; border-radius: 2px; display: inline-block; background: var(--c); }
+    .fx-entries { display: flex; flex-wrap: wrap; gap: .4rem; padding: .8rem 1rem; }
+    .fx-entry { display: inline-flex; align-items: center; gap: .4rem; background: none; border: 1px solid var(--border); border-radius: 999px; padding: .25rem .6rem .25rem .3rem; color: var(--text); font-family: var(--body); font-size: .78rem; cursor: pointer; }
+    .fx-entry:hover { border-color: var(--gold); color: var(--light); }
+
+    /* ── ANALYTICS (football) ── */
+    .stat-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
+    .a-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; }
+    .a-card h4 { font-family: var(--display); font-size: 1.15rem; letter-spacing: .05em; color: var(--gold); margin-bottom: .9rem; }
+    .boot-row { display: grid; grid-template-columns: 1.4rem 1fr auto; align-items: center; gap: .5rem; margin-bottom: .55rem; }
+    .boot-rank { color: var(--text-muted); font-size: .8rem; text-align: center; }
+    .boot-name { color: var(--light); font-size: .88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .boot-name .tm { color: var(--text-muted); font-size: .76rem; }
+    .boot-goals { color: var(--gold); font-weight: 700; font-variant-numeric: tabular-nums; }
+    .boot-bar { grid-column: 2 / 4; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: -.35rem; margin-bottom: .3rem; }
+    .boot-bar > span { display: block; height: 100%; background: var(--gold); border-radius: 3px; }
+    .boot-row.lead .boot-name { font-weight: 700; }
+    .pulse-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+    .pulse-item .n { font-family: var(--display); font-size: 1.9rem; color: var(--light); line-height: 1; }
+    .pulse-item .k { font-size: .72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-top: .2rem; }
+    .disc-row { display: flex; align-items: center; justify-content: space-between; padding: .35rem 0; font-size: .86rem; color: var(--text); }
+    .disc-cards { display: inline-flex; gap: .5rem; align-items: center; }
+    .disc-chip { display: inline-flex; align-items: center; gap: .25rem; }
+    .disc-swatch { width: .7rem; height: 1rem; border-radius: 2px; display: inline-block; }
+    .disc-swatch.y { background: #d9a919; } .disc-swatch.r { background: var(--red); }
+
+    /* ── SHEET (squads / match details) ── */
+    .fx-sheet { max-width: 580px; }
+    .fx-sheet-head { display: flex; align-items: center; gap: .9rem; margin-bottom: .75rem; padding-right: 2.2rem; }
+    .fx-sheet-head h2 { font-family: var(--display); font-size: 1.75rem; letter-spacing: .05em; color: var(--light); line-height: 1; }
+    .fx-sheet-head p { color: var(--text-muted); font-size: .84rem; margin: .25rem 0 0; max-width: none; }
+    .fx-sheet h3 { font-family: var(--display); font-size: 1.05rem; letter-spacing: .1em; color: var(--gold); margin: 1.2rem 0 .5rem; }
+    .fx-players { list-style: none; columns: 2; column-gap: 1.5rem; }
+    .fx-players li { display: flex; gap: .55rem; font-size: .92rem; color: var(--text); padding: .22rem 0; break-inside: avoid; }
+    .fx-players .num { color: var(--gold); font-weight: 700; width: 1.4rem; text-align: right; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+    .fx-mini { list-style: none; display: flex; flex-direction: column; gap: .35rem; }
+    .fx-mini li { display: grid; grid-template-columns: 5.8rem 1fr auto; gap: .5rem; font-size: .86rem; color: var(--text); padding: .4rem .55rem; background: rgba(255,255,255,.035); border-radius: var(--radius); align-items: center; }
+    .fx-mini li.iq { opacity: .6; }
+    .fx-mini .when { color: var(--gold); font-weight: 700; font-variant-numeric: tabular-nums; font-size: .8rem; }
+    .fx-mini .what { min-width: 0; }
+    .fx-mini .where { color: var(--text-muted); font-size: .72rem; display: block; }
+    .fx-mini .res { font-family: var(--display); letter-spacing: .05em; color: var(--light); font-size: 1.05rem; white-space: nowrap; }
+    .fx-mini .res.live { color: var(--red); }
+    .fx-vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: .75rem; align-items: start; margin: .5rem 0 .25rem; }
+    .fx-vs .side { min-width: 0; }
+    .fx-vs .side.b { text-align: right; }
+    .fx-vs .side .fx-code { margin-bottom: .35rem; }
+    .fx-vs .side ul { list-style: none; }
+    .fx-vs .side li { color: var(--light); font-weight: 600; font-size: .92rem; line-height: 1.35; }
+    .fx-vs .mid { text-align: center; padding-top: .3rem; }
+    .fx-empty-note { color: var(--text-muted); font-size: .85rem; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); border: 1px dashed var(--border); border-radius: var(--radius-lg); }
+    .empty-state svg { width: 2.5rem; height: 2.5rem; color: var(--border); margin-bottom: .8rem; }
+    .empty-state p { max-width: none; }
+
+    @media (max-width: 900px) {
+      .fx-groups { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .modal-overlay.fx-sheet-overlay { align-items: flex-end; padding: 0; }
+      .fx-sheet { border-radius: 14px 14px 0 0; max-height: 88svh; max-width: none; }
+      .fx-players { columns: 1; }
+      .fx-slot { grid-template-columns: 3.4rem 1fr; gap: .5rem; }
+      .fx-slot-time { font-size: 1.1rem; }
+      .mc-score { font-size: 2rem; }
+      .mc-team .fx-team { font-size: .9rem; }
+      .standings .hide-sm { display: none; }
+      .fx-me-row { grid-template-columns: 4.8rem 1fr auto; padding: .55rem .7rem; }
+      .fx-tri { gap: .4rem .35rem; }
+      .fx-leg { padding: .22rem .55rem; font-size: .68rem; }
+      .bkt-round { min-width: 200px; }
+      .fx-h2h { min-width: 520px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="navbar scrolled" id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">RENTAP<span>XVII</span></a>
+    <nav aria-label="Main navigation">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#sports">Sports</a></li>
+        <li><a href="index.html#schedule">Schedule</a></li>
+        <li><a href="bazaar.html">Bazaar</a></li>
+        <li><a href="announcements.html">News</a></li>
+        <li><a href="fixtures.html" class="nav-cta">Fixtures</a></li>
+      </ul>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<section class="fx-hero">
+  <div class="fx-hero-pattern" aria-hidden="true"></div>
+  <div class="container fx-hero-inner">
+    <a href="index.html#sports" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      All Sports
+    </a>
+    <h1 class="fx-title"><span class="live-dot" id="liveDot" hidden aria-label="Matches are live"></span>FIXTURES</h1>
+    <p class="fx-subtitle">RENTAP XVII · Fixtures &amp; Results · 26–27 Sep 2026</p>
+    <p class="updated-stamp" id="updatedStamp" aria-live="polite"></p>
+
+    <div class="fx-search">
+      <label for="fxSearch">Find my matches</label>
+      <div class="fx-search-row">
+        <input id="fxSearch" type="search" placeholder="Type your name…" autocomplete="off" spellcheck="false"
+               role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="fxSuggest" />
+        <button class="btn btn-ghost" id="fxClear" type="button" hidden>Clear</button>
+      </div>
+      <ul class="fx-suggest" id="fxSuggest" role="listbox" hidden></ul>
+    </div>
+    <div class="ticker" id="ticker" aria-label="Live and upcoming matches"></div>
+  </div>
+</section>
+
+<section class="fx-me" id="fxMe" hidden><div class="container" id="fxMeBody"></div></section>
+
+<div class="live-tabs-wrap">
+  <div class="live-tabs" id="fxTabs" role="tablist" aria-label="Sports"></div>
+</div>
+
+<main class="fx-panel">
+  <div class="container" id="panel" aria-live="polite"></div>
+</main>
+
+<footer class="footer" style="margin-top:0;">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0;">
+      <p>© 2026 RENTAP XVII. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="impressum.html">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+        <a href="agb.html">AGB</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="modal-overlay fx-sheet-overlay" id="fxSheet" hidden>
+  <div class="modal fx-sheet" role="dialog" aria-modal="true" aria-labelledby="fxSheetTitle">
+    <button class="modal-close" id="fxSheetClose" aria-label="Close">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="fxSheetBody"></div>
+  </div>
+</div>
+
+<script src="live-shared.js"></script>
+<script>
+// ══════════════════════════ STATE ══════════════════════════
+const DAYS = {
+  1: { date: '2026-09-26', short: 'Sat 26', long: 'Saturday 26 Sep' },
+  2: { date: '2026-09-27', short: 'Sun 27', long: 'Sunday 27 Sep' },
+};
+const CAT_COLOUR = { MS: '#C8922A', MD: '#A8200D', XD: '#EDE8DE', WD: '#0F8A4D', WS: '#7A8572', OD: '#A8200D' };
+// notes on the court boards that are not fixtures: the lunch break, and the
+// Hall 3 courts that basketball takes over on Saturday evening
+const BOARD_NOTES = {
+  badminton:      { 1: { breaks: ['12:30'], blocked: [{ from: '17:30', cols: [4, 5, 6], label: 'Basketball' }] }, 2: {} },
+  'table-tennis': { 1: { breaks: ['12:30'] }, 2: {} },
+};
+const ICON_PIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+const ICON_INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>';
+
+const state = {
+  family: 'football',
+  day: 'all',                 // 'all' | 1 | 2
+  cat: {},                    // family -> 'all' | slug
+  view: window.innerWidth <= 640 ? 'list' : 'board',
+  person: null,
+};
+const data = {};              // slug -> { teams, matches, standings }
+const teamById = {};          // slug -> id -> team
+const stamps = {};            // fetch key -> generated_at
+const rendered = {};          // family -> true once drawn
+let seenEventIds = new Set();
+let pollTimer = null, offline = false, allLoaded = false, allPromise = null;
+let sheetOpener = null;
+
+const $ = sel => document.querySelector(sel);
+const norm = s => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+const slugify = s => norm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const famSlugs = f => (FAMILIES[f] || { slugs: [] }).slugs;
+const cfgOf = slug => SPORT_CONFIG[slug] || {};
+
+// ══════════════════════════ TIME (always Europe/Berlin) ══════════════════════════
+function fmtT(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return isNaN(d) ? '' : d.toLocaleTimeString('en-GB', { timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit' });
+}
+function dateKey(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return isNaN(d) ? '' : d.toLocaleDateString('en-CA', { timeZone: 'Europe/Berlin' });
+}
+function dayOf(m) {
+  const k = dateKey(m.scheduled_at);
+  return k === DAYS[1].date ? 1 : k === DAYS[2].date ? 2 : 0;
+}
+function durationOf(slug, m) { return m.duration_min || cfgOf(slug).duration || 30; }
+function endIso(slug, m) { return m.scheduled_at ? new Date(new Date(m.scheduled_at).getTime() + durationOf(slug, m) * 60000).toISOString() : ''; }
+function whenLabel(m) { return m.scheduled_at ? (DAYS[dayOf(m)] ? DAYS[dayOf(m)].short + ' ' : '') + fmtT(m.scheduled_at) : 'TBD'; }
+function todayDay() {
+  const k = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Berlin' });
+  return k === DAYS[1].date ? 1 : k === DAYS[2].date ? 2 : 'all';
+}
+
+// ══════════════════════════ DATA ══════════════════════════
+function fetchKey(f) { return famSlugs(f).length === 1 ? 'sport=' + famSlugs(f)[0] : 'family=' + f; }
+function ingest(slug, payload) {
+  data[slug] = { teams: payload.teams || [], matches: payload.matches || [], standings: payload.standings || {} };
+  teamById[slug] = {};
+  data[slug].teams.forEach(t => { teamById[slug][t.id] = t; });
+}
+async function loadKey(key, probe) {
+  let url = '/api/live?' + key;
+  if (probe && stamps[key]) url += '&since=' + encodeURIComponent(stamps[key]);
+  const res = await fetch(url, { headers: { Accept: 'application/json' } });
+  if (!res.ok) throw new Error('bad status ' + res.status);
+  const json = await res.json();
+  if (json.unchanged) return false;
+  stamps[key] = json.generated_at || '';
+  if (json.sports) Object.keys(json.sports).forEach(s => ingest(s, json.sports[s]));
+  else ingest(json.sport, json);
+  return true;
+}
+function loadAll() {
+  if (!allPromise) {
+    allPromise = loadKey('family=all', false).then(() => { allLoaded = true; })
+      .catch(e => { allPromise = null; throw e; });
+  }
+  return allPromise;
+}
+
+function anyLive(slugs) {
+  return slugs.some(s => data[s] && data[s].matches.some(m => m.status === 'live' || m.status === 'halftime'));
+}
+async function poll(probe) {
+  const f = state.family;
+  try {
+    const changed = await loadKey(fetchKey(f), probe);
+    offline = false;
+    if (changed || !rendered[f]) { render(); rendered[f] = true; }
+    if (changed && state.person) renderMe();
+    stampUpdated();
+  } catch (e) {
+    offline = true;
+    stampUpdated();
+    if (!rendered[f]) $('#panel').innerHTML = emptyBlock('Could not reach the live server. Retrying…');
+  }
+  scheduleNext();
+}
+function restartPolling() {
+  if (pollTimer) clearTimeout(pollTimer);
+  poll(false);
+}
+function scheduleNext() {
+  if (pollTimer) clearTimeout(pollTimer);
+  if (document.visibilityState === 'hidden') return;
+  const interval = anyLive(famSlugs(state.family)) ? 10000 : 60000;
+  pollTimer = setTimeout(() => poll(true), interval);
+}
+function stampUpdated() {
+  const t = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  $('#updatedStamp').innerHTML = offline
+    ? '<span class="warn">Offline — showing last update ' + t + '</span>'
+    : 'Updated ' + t + ' · times are local to Nürnberg';
+  $('#liveDot').hidden = !anyLive(Object.keys(data));
+}
+
+// ══════════════════════════ SMALL HELPERS ══════════════════════════
+function initials(name) {
+  const words = name.split(/\s+/).filter(w => w && !/^(and|the|of|de|fc|rc|sc|fsv)$/i.test(w));
+  const src = words.length ? words : name.split(/\s+/);
+  return src.slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
+}
+function isLightColour(hex) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || '');
+  if (!m) return false;
+  const n = parseInt(m[1], 16);
+  const r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  return (r * 299 + g * 587 + b * 114) / 1000 > 150;
+}
+function safeColour(c) { return /^#[0-9a-fA-F]{6}$/.test(c || '') ? c : '#C8922A'; }
+function badgeHTML(team, cls) {
+  const c = safeColour(team.color);
+  const ink = isLightColour(c) ? ' ink' : '';
+  if (team.code) return `<span class="fx-code${ink}" style="--c:${c}">${esc(team.code)}</span>`;
+  return `<span class="fx-badge${ink}${cls ? ' ' + cls : ''}" style="--c:${c}" aria-hidden="true">${esc(initials(team.name))}</span>`;
+}
+// public label of a side: team name, or the entry code for racket entries (names on tap)
+function teamLabel(team) { return team.code ? team.code : team.name; }
+function teamBtn(slug, team, extra) {
+  // racket entries: the code tag is the label (names are revealed on tap)
+  const label = team.code ? '<span class="nm more" aria-hidden="true">›</span>' : `<span class="nm">${esc(team.name)}</span>`;
+  const title = team.code ? ` title="Tap for the players' names"` : '';
+  return `<button class="fx-team${extra ? ' ' + extra : ''}" data-team="${slug}|${team.id}" type="button"${title}>${badgeHTML(team)}${label}</button>`;
+}
+function isRacketSlug(slug) { return ['badminton', 'table-tennis'].includes(cfgOf(slug).family); }
+function sideHTML(slug, m, side, win) {
+  const id = m['team_' + side + '_id'];
+  const team = id && teamById[slug] ? teamById[slug][id] : null;
+  if (team) return teamBtn(slug, team, win ? 'win' : '');
+  const ph = m['placeholder_' + side];
+  return `<span class="fx-tbd">${esc(ph || 'TBD')}</span>`;
+}
+function sideText(slug, m, side) {
+  const id = m['team_' + side + '_id'];
+  const team = id && teamById[slug] ? teamById[slug][id] : null;
+  return team ? teamLabel(team) : (m['placeholder_' + side] || 'TBD');
+}
+function venueHTML(m) { return m.label ? `<span class="fx-venue">${ICON_PIN}${esc(m.label)}</span>` : ''; }
+function isLive(m) { return m.status === 'live' || m.status === 'halftime'; }
+function isDone(m) { return m.status === 'finished'; }
+function koLabel(slug, m) {
+  // knockout rounds are numbered by creation order within a stage (QF1..4, SF1..2)
+  if (m.stage === 'final') return 'Final';
+  if (m.stage === 'third') return '3rd Place';
+  const same = (data[slug] ? data[slug].matches : []).filter(x => x.stage === m.stage).sort((a, b) => a.id - b.id);
+  const n = same.findIndex(x => x.id === m.id) + 1;
+  return (m.stage === 'quarter' ? 'QF' : 'SF') + n;
+}
+function stageLabel(slug, m) {
+  if (m.stage === 'group') return m.group_name ? 'Group ' + m.group_name : (cfgOf(slug).groups ? 'Group' : 'League');
+  return stageName(m.stage) + (m.stage === 'quarter' || m.stage === 'semi' ? ' ' + koLabel(slug, m).replace(/\D/g, '') : '');
+}
+function resultHTML(slug, m) {
+  const cfg = cfgOf(slug);
+  if (m.status === 'scheduled') return `<div class="mc-kick">${m.scheduled_at ? esc(fmtT(m.scheduled_at)) : 'TBD'}<small>${esc(m.scheduled_at ? DAYS[dayOf(m)]?.short || '' : '')}</small></div>`;
+  let clock = '';
+  if (cfg.clock) {
+    const lbl = clockLabel(m);
+    clock = `<div class="mc-clock ${lbl === 'FT' ? 'ft' : ''}" data-clock-match="${m.id}">${esc(lbl)}</div>`;
+  } else if (isDone(m)) clock = '<div class="mc-clock ft">FT</div>';
+  else if (isLive(m)) clock = '<div class="mc-clock">In play</div>';
+  const sets = cfg.scoring === 'sets' && Array.isArray(m.sets) && m.sets.length ? `<div class="mc-sets">${esc(formatSets(m.sets))}</div>` : '';
+  return `<div class="mc-score">${m.score_a}<span class="sep">–</span>${m.score_b}</div>${clock}${sets}`;
+}
+function statusTop(m) {
+  if (isLive(m)) return '<span class="badge-live">LIVE</span>';
+  if (isDone(m)) return '<span class="badge-ft">Full time</span>';
+  return `<span>${esc(whenLabel(m))}</span>`;
+}
+function scoreText(m) {
+  if (m.status === 'scheduled') return '';
+  return m.score_a + '–' + m.score_b;
+}
+function matchesOf(slugs) { return slugs.flatMap(s => (data[s] ? data[s].matches.map(m => ({ slug: s, m })) : [])); }
+function byTime(a, b) { return (new Date(a.m.scheduled_at || 0) - new Date(b.m.scheduled_at || 0)) || (a.m.label || '').localeCompare(b.m.label || '') || a.m.id - b.m.id; }
+function emptyBlock(msg) { return `<div class="empty-state">${ICON_INFO}<p>${msg}</p></div>`; }
+function loadingHTML() { return '<div class="empty-state">Loading ' + esc(FAMILIES[state.family].name) + ' …</div>'; }
+
+// ══════════════════════════ MATCH CARD ══════════════════════════
+function matchCard(slug, m, opts) {
+  opts = opts || {};
+  const cfg = cfgOf(slug);
+  const aWin = isDone(m) && m.score_a > m.score_b, bWin = isDone(m) && m.score_b > m.score_a;
+  const catTag = opts.showCat && cfg.short ? `<span class="fx-code" style="--c:${CAT_COLOUR[cfg.short] || '#C8922A'}${isLightColour(CAT_COLOUR[cfg.short]) ? ';color:var(--ink)' : ''}">${cfg.short}</span>` : '';
+  let card = `<div class="mcard${isLive(m) ? ' mcard--live' : ''}" id="m-${m.id}" data-mid="${m.id}">
+    <div class="mcard-top"><span class="mcard-stage">${catTag}${esc(stageLabel(slug, m))}</span>${venueHTML(m)}${statusTop(m)}</div>
+    <div class="mcard-body">
+      <div class="mc-team a">${sideHTML(slug, m, 'a', aWin)}</div>
+      <div class="mc-center">${resultHTML(slug, m)}</div>
+      <div class="mc-team b">${sideHTML(slug, m, 'b', bWin)}</div>
+    </div>`;
+  const foot = [];
+  if (m.scheduled_at) foot.push(`<span>${esc(fmtT(m.scheduled_at))}–${esc(fmtT(endIso(slug, m)))}</span>`);
+  if (m.referee) foot.push(`<span>Referee: <b>${esc(m.referee)}</b></span>`);
+  if (foot.length) card += `<div class="mcard-foot">${foot.join('')}</div>`;
+  if (cfg.events && Array.isArray(m.events) && m.events.length) {
+    if (isLive(m)) card += timelineHTML(slug, m, true);
+    else if (isDone(m)) card += `<details class="finished-tl"><summary>Match timeline (${m.events.length})</summary>${timelineHTML(slug, m, false)}</details>`;
+  }
+  return card + '</div>';
+}
+function timelineHTML(slug, m, animateFresh) {
+  const evs = m.events.slice().sort((x, y) => (y.minute || 0) - (x.minute || 0) || y.id - x.id);
+  const rows = evs.map(e => {
+    const fresh = animateFresh && rendered[state.family] && !seenEventIds.has(e.id);
+    seenEventIds.add(e.id);
+    const teamLabelTxt = e.team_id === m.team_a_id ? sideText(slug, m, 'a') : (e.team_id === m.team_b_id ? sideText(slug, m, 'b') : '');
+    const who = e.player_name ? esc(e.player_name) : evLabel(e.type);
+    return `<li class="fx-tl-row${fresh ? ' fresh' : ''}">
+      <span class="fx-tl-min">${e.minute != null ? e.minute + '′' : ''}</span>
+      <span class="fx-tl-ico">${evIcon(e.type)}</span>
+      <span class="fx-tl-txt"><span class="who">${who}</span> <span class="team">${esc(teamLabelTxt)}${evSuffix(e.type)}</span></span>
+    </li>`;
+  }).join('');
+  return `<ul class="fx-tl">${rows}</ul>`;
+}
+function evIcon(type) {
+  switch (type) {
+    case 'goal': case 'penalty_goal': case 'own_goal': return SPORT_ICONS.football;
+    case 'yellow': return '<svg class="card-yellow" viewBox="0 0 24 24"><rect x="7" y="4" width="10" height="16" rx="1.5"/></svg>';
+    case 'red': return '<svg class="card-red" viewBox="0 0 24 24"><rect x="7" y="4" width="10" height="16" rx="1.5"/></svg>';
+    case 'sub': return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 3 21 7 17 11"/><path d="M21 7H9"/><polyline points="7 21 3 17 7 13"/><path d="M3 17h12"/></svg>';
+    default: return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>';
+  }
+}
+function evLabel(type) { return { goal: 'Goal', penalty_goal: 'Penalty', own_goal: 'Own goal', yellow: 'Yellow card', red: 'Red card', sub: 'Substitution', note: 'Note' }[type] || type; }
+function evSuffix(type) { return type === 'penalty_goal' ? ' · pen.' : type === 'own_goal' ? ' · o.g.' : ''; }
+function tickClocks() {
+  document.querySelectorAll('[data-clock-match]').forEach(el => {
+    const id = String(el.dataset.clockMatch);
+    for (const slug of Object.keys(data)) {
+      const m = data[slug].matches.find(x => String(x.id) === id);
+      if (m) { const lbl = clockLabel(m); el.textContent = lbl; el.classList.toggle('ft', lbl === 'FT'); return; }
+    }
+  });
+}
+
+// ══════════════════════════ SHARED BLOCKS ══════════════════════════
+function dayBar() {
+  const opts = [['all', 'All'], [1, DAYS[1].short], [2, DAYS[2].short]];
+  return `<div class="fx-seg" role="group" aria-label="Day">${opts.map(([v, l]) =>
+    `<button type="button" data-day="${v}" class="${String(state.day) === String(v) ? 'on' : ''}" aria-pressed="${String(state.day) === String(v)}">${l}</button>`).join('')}</div>`;
+}
+function daysToShow() { return state.day === 'all' ? [1, 2] : [Number(state.day)]; }
+// chronological match list on a time rail, grouped by kick-off time
+function scheduleBlock(entries, title, opts) {
+  opts = opts || {};
+  let html = `<div class="block"><div class="block-title">${title}<span class="count-badge">${entries.length} match${entries.length === 1 ? '' : 'es'}</span></div>`;
+  let shown = 0;
+  daysToShow().forEach(d => {
+    const list = entries.filter(x => dayOf(x.m) === d).sort(byTime);
+    if (!list.length) return;
+    shown += list.length;
+    html += `<h4 class="fx-dayhead">${DAYS[d].long}</h4>`;
+    const slots = new Map();
+    list.forEach(x => { const k = x.m.scheduled_at; if (!slots.has(k)) slots.set(k, []); slots.get(k).push(x); });
+    slots.forEach((xs, k) => {
+      html += `<div class="fx-slot"><div class="fx-slot-time">${esc(fmtT(k))}</div><div class="cards${opts.single ? ' one' : ''}">${xs.map(x => matchCard(x.slug, x.m, opts)).join('')}</div></div>`;
+    });
+  });
+  const unscheduled = entries.filter(x => !dayOf(x.m));
+  if (unscheduled.length && state.day === 'all') {
+    shown += unscheduled.length;
+    html += `<h4 class="fx-dayhead">Time to be confirmed</h4><div class="cards">${unscheduled.map(x => matchCard(x.slug, x.m, opts)).join('')}</div>`;
+  }
+  if (!shown) html += emptyBlock('No matches on this day.');
+  return html + '</div>';
+}
+function standingsTable(slug, rows, opts) {
+  opts = opts || {};
+  const cfg = cfgOf(slug);
+  const isSet = cfg.scoring === 'sets';
+  const bru = opts.bestRunnerUp;
+  let html = `<div class="table-wrap"><table class="standings"><thead><tr>
+    <th class="pos">#</th><th class="left">${isRacketSlug(slug) ? 'Entry' : 'Team'}</th><th>P</th><th class="hide-sm">W</th><th class="hide-sm">D</th><th class="hide-sm">L</th>
+    <th>${isSet ? 'SD' : 'GD'}</th><th>Pts</th><th class="hide-sm">Form</th></tr></thead><tbody>`;
+  rows.forEach((r, i) => {
+    const team = teamById[slug][r.team_id] || { name: r.team, code: r.code, color: null, id: r.team_id };
+    const adv = cfg.advance && i < cfg.advance ? 'adv' : (bru && bru === r.team_id ? 'bru' : '');
+    const gd = r.gf - r.ga;
+    html += `<tr class="${adv}"><td class="pos">${i + 1}</td>
+      <td class="left">${teamBtn(slug, team)}</td>
+      <td>${r.p}</td><td class="hide-sm">${r.w}</td><td class="hide-sm">${r.d}</td><td class="hide-sm">${r.l}</td>
+      <td>${gd > 0 ? '+' + gd : gd}</td><td class="pts">${r.pts}</td>
+      <td class="hide-sm"><span class="form-dots">${(r.form || []).map(f => `<span class="fd ${f}"></span>`).join('')}</span></td></tr>`;
+  });
+  return html + '</tbody></table></div>';
+}
+function groupCard(slug, g, rows, opts) {
+  const cfg = cfgOf(slug);
+  const title = g ? 'Group ' + g : (cfg.groups ? 'Group' : 'League');
+  const n = rows.length;
+  const games = matchesOf([slug]).filter(x => x.m.stage === 'group' && (x.m.group_name || '') === (g || '')).length;
+  let foot = '';
+  if (cfg.advance) foot = `<div class="fx-group-foot"><span class="fx-rail"></span>${esc(cfg.note || '')}</div>`;
+  else if (cfg.note) foot = `<div class="fx-group-foot">${esc(cfg.note)}</div>`;
+  return `<div class="fx-group"><div class="fx-group-head"><h3>${esc(title)}</h3><span>${n} ${isRacketSlug(slug) ? 'entries' : 'teams'} · ${games} matches</span></div>${standingsTable(slug, rows, opts)}${foot}</div>`;
+}
+function bracketBlock(slug, kos, opts) {
+  opts = opts || {};
+  if (!kos.length) return '';
+  const order = ['quarter', 'semi', 'final'];
+  const rounds = order.filter(st => kos.some(m => m.stage === st));
+  const third = kos.find(m => m.stage === 'third');
+  const node = (m, cls) => {
+    const fin = isDone(m), aWin = fin && m.score_a > m.score_b, bWin = fin && m.score_b > m.score_a;
+    const show = m.status !== 'scheduled';
+    return `<div class="bkt-node${cls ? ' ' + cls : ''}${isLive(m) ? ' live' : ''}" id="m-${m.id}">
+      <div class="bkt-meta"><b>${esc(koLabel(slug, m))}</b><span>${esc(whenLabel(m))}${m.label ? ' · ' + esc(m.label) : ''}</span>${isLive(m) ? '<span class="badge-live">LIVE</span>' : ''}</div>
+      <div class="bkt-line${aWin ? ' win' : ''}">${sideHTML(slug, m, 'a', aWin)}<span class="s">${show ? m.score_a : ''}</span></div>
+      <div class="bkt-line${bWin ? ' win' : ''}">${sideHTML(slug, m, 'b', bWin)}<span class="s">${show ? m.score_b : ''}</span></div>
+    </div>`;
+  };
+  let html = `<div class="block"><div class="block-title">${opts.title || 'Knockout'}</div><div class="bracket">`;
+  rounds.forEach((st, i) => {
+    const ms = kos.filter(m => m.stage === st).sort((a, b) => a.id - b.id);
+    const titles = { quarter: 'Quarter-finals', semi: 'Semi-finals', final: 'Final' };
+    html += `<div class="bkt-round${i < rounds.length - 1 ? ' has-next' : ''}"><h4>${titles[st]}</h4>${ms.map(m => node(m, st === 'final' ? 'final' : '')).join('')}`;
+    if (st === 'final' && third) html += `<div class="bkt-third"><h4>3rd place</h4>${node(third, '')}</div>`;
+    html += '</div>';
+  });
+  if (!rounds.includes('final') && third) html += `<div class="bkt-round"><h4>3rd place</h4>${node(third, '')}</div>`;
+  return html + '</div></div>';
+}
+function squadsBlock(slug, teams, title) {
+  if (!teams.length) return '';
+  return `<div class="block"><div class="block-title">${title || 'Squads'}<span class="count-badge">tap a team</span></div><div class="fx-squads">${teams.map(t =>
+    `<button class="fx-squad-btn" type="button" data-team="${slug}|${t.id}">${badgeHTML(t)}<span>${esc(t.name)}<small>${t.group_name ? 'Group ' + esc(t.group_name) + ' · ' : ''}${(t.players || []).length} players</small></span></button>`).join('')}</div></div>`;
+}
+function formatHTML(f) {
+  const lines = (FAMILIES[f] || {}).format || [];
+  if (!lines.length) return '';
+  return `<details class="fx-format"><summary>Format &amp; points</summary>${lines.map(l => `<p>${esc(l)}</p>`).join('')}</details>`;
+}
+
+// ══════════════════════════ FOOTBALL (UCL style) ══════════════════════════
+function footballHTML() {
+  const slug = 'football';
+  const d = data[slug];
+  const st = d.standings || {};
+  let html = '';
+  const groups = Object.keys(st).filter(g => g && st[g].length).sort();
+  if (groups.length) {
+    html += `<div class="block"><div class="block-title">Group Stage<span class="count-badge">${d.teams.length} teams</span></div>
+      <div class="fx-groups">${groups.map(g => groupCard(slug, g, st[g])).join('')}</div></div>`;
+  }
+  html += scheduleBlock(matchesOf([slug]).filter(x => x.m.stage === 'group'), 'Matchdays');
+  html += bracketBlock(slug, d.matches.filter(m => m.stage !== 'group'), { title: 'Road to the Final' });
+  html += analyticsBlock(slug);
+  html += squadsBlock(slug, d.teams.slice().sort((a, b) => (a.group_name || '').localeCompare(b.group_name || '') || a.name.localeCompare(b.name)));
+  return html;
+}
+function analyticsBlock(slug) {
+  const matches = data[slug].matches;
+  const events = matches.flatMap(m => (m.events || []).map(e => ({ ...e, _m: m })));
+  const finished = matches.filter(m => m.status === 'finished' && m.team_a_id && m.team_b_id);
+  if (!finished.length && !events.length) return '';
+  const scorers = {};
+  events.filter(e => e.type === 'goal' || e.type === 'penalty_goal').forEach(e => {
+    const name = e.player_name || 'Unknown';
+    const teamName = e.team_id === e._m.team_a_id ? e._m.team_a_name : e._m.team_b_name;
+    const key = name + '|' + (teamName || '');
+    (scorers[key] ||= { name, team: teamName || '', goals: 0 }).goals++;
+  });
+  const boot = Object.values(scorers).sort((a, b) => b.goals - a.goals).slice(0, 5);
+  const maxGoals = boot.length ? boot[0].goals : 0;
+  const goalEvents = events.filter(e => ['goal', 'penalty_goal', 'own_goal'].includes(e.type));
+  const totalGoals = finished.reduce((s, m) => s + m.score_a + m.score_b, 0);
+  const avg = finished.length ? (totalGoals / finished.length).toFixed(1) : '0.0';
+  let bw = null;
+  finished.forEach(m => { const diff = Math.abs(m.score_a - m.score_b); if (!bw || diff > bw.diff) bw = { diff, m }; });
+  const biggestWin = bw && bw.diff > 0 ? `${Math.max(bw.m.score_a, bw.m.score_b)}–${Math.min(bw.m.score_a, bw.m.score_b)}` : '—';
+  const fastest = goalEvents.filter(e => e.minute != null).sort((a, b) => a.minute - b.minute)[0];
+  const disc = {};
+  events.filter(e => e.type === 'yellow' || e.type === 'red').forEach(e => {
+    const teamName = e.team_id === e._m.team_a_id ? e._m.team_a_name : e._m.team_b_name;
+    (disc[teamName || 'Unknown'] ||= { y: 0, r: 0 })[e.type === 'yellow' ? 'y' : 'r']++;
+  });
+  const discTeams = Object.keys(disc).sort((a, b) => (disc[b].r * 3 + disc[b].y) - (disc[a].r * 3 + disc[a].y));
+  let cards = `<div class="a-card"><h4>Golden Boot</h4>`;
+  cards += boot.length ? boot.map((s, i) => `<div class="boot-row${i === 0 ? ' lead' : ''}"><span class="boot-rank">${i + 1}</span>
+      <span class="boot-name">${esc(s.name)} <span class="tm">${esc(s.team)}</span></span><span class="boot-goals">${s.goals}</span>
+      <span class="boot-bar"><span style="width:${maxGoals ? Math.round(s.goals / maxGoals * 100) : 0}%"></span></span></div>`).join('')
+    : '<p class="fx-empty-note">No goals yet.</p>';
+  cards += `</div><div class="a-card"><h4>Tournament Pulse</h4><div class="pulse-grid">
+    <div class="pulse-item"><div class="n">${totalGoals}</div><div class="k">Total goals</div></div>
+    <div class="pulse-item"><div class="n">${avg}</div><div class="k">Goals / match</div></div>
+    <div class="pulse-item"><div class="n">${esc(biggestWin)}</div><div class="k">Biggest win</div></div>
+    <div class="pulse-item"><div class="n">${fastest ? fastest.minute + '′' : '—'}</div><div class="k">Fastest goal</div></div></div></div>`;
+  if (discTeams.length) {
+    cards += `<div class="a-card"><h4>Discipline</h4>${discTeams.map(t => `<div class="disc-row"><span>${esc(t)}</span><span class="disc-cards">
+      <span class="disc-chip"><span class="disc-swatch y"></span>${disc[t].y}</span><span class="disc-chip"><span class="disc-swatch r"></span>${disc[t].r}</span></span></div>`).join('')}</div>`;
+  }
+  return `<div class="block"><div class="block-title">Football Analytics</div><div class="stat-cards">${cards}</div></div>`;
+}
+
+// ══════════════════════════ VOLLEYBALL ══════════════════════════
+function volleyballHTML() {
+  const slug = 'volleyball';
+  const d = data[slug];
+  const rows = (d.standings[''] || []);
+  let html = '';
+  if (rows.length) html += `<div class="block"><div class="block-title">League Table<span class="count-badge">${d.teams.length} teams · Hall 2</span></div><div class="fx-groups"><div class="fx-group">${standingsTable(slug, rows)}<div class="fx-group-foot"><span class="fx-rail"></span>${esc(cfgOf(slug).note)}</div></div></div></div>`;
+  html += h2hBlock(slug);
+  html += scheduleBlock(matchesOf([slug]), 'Match Schedule', { single: true });
+  html += squadsBlock(slug, d.teams);
+  return html;
+}
+function h2hBlock(slug) {
+  const d = data[slug];
+  const teams = d.teams;
+  if (teams.length < 2) return '';
+  const find = (a, b) => d.matches.filter(m => (m.team_a_id === a.id && m.team_b_id === b.id) || (m.team_a_id === b.id && m.team_b_id === a.id));
+  let html = `<div class="block"><div class="block-title">Head to Head<span class="count-badge">who plays whom, and when</span></div><div class="fx-h2h-wrap"><table class="fx-h2h"><thead><tr><th></th>`;
+  teams.forEach(t => { html += `<th class="col">${badgeHTML(t)}<span>${esc(initials(t.name))}</span></th>`; });
+  html += '</tr></thead><tbody>';
+  teams.forEach(row => {
+    html += `<tr><th class="row">${teamBtn(slug, row)}</th>`;
+    teams.forEach(col => {
+      if (row.id === col.id) { html += '<td class="self"></td>'; return; }
+      const ms = find(row, col);
+      if (!ms.length) { html += '<td>—</td>'; return; }
+      html += '<td>' + ms.map(m => {
+        const mine = m.team_a_id === row.id;
+        const score = m.status === 'scheduled' ? '' : (mine ? `${m.score_a}–${m.score_b}` : `${m.score_b}–${m.score_a}`);
+        return `<button class="cell${isLive(m) ? ' live' : ''}" type="button" data-jump="m-${m.id}" title="${esc(row.name)} v ${esc(col.name)}">${score ? `<span class="score">${score}</span><small>${isLive(m) ? 'LIVE' : 'FT'}</small>` : `${esc(whenLabel(m))}`}</button>`;
+      }).join('') + '</td>';
+    });
+    html += '</tr>';
+  });
+  return html + '</tbody></table></div></div>';
+}
+
+// ══════════════════════════ TOUCH RUGBY ══════════════════════════
+function rugbyHTML() {
+  const slug = 'touch-rugby';
+  const d = data[slug];
+  const rows = (d.standings[''] || []);
+  let html = '';
+  if (d.teams.length === 3) html += triangleBlock(slug);
+  if (rows.length) html += `<div class="block"><div class="block-title">League Table<span class="count-badge">double round robin</span></div><div class="fx-groups"><div class="fx-group">${standingsTable(slug, rows)}<div class="fx-group-foot"><span class="fx-rail"></span>${esc(cfgOf(slug).note)}</div></div></div></div>`;
+  html += scheduleBlock(matchesOf([slug]), 'Match Schedule');
+  html += squadsBlock(slug, d.teams);
+  return html;
+}
+function triangleBlock(slug) {
+  const d = data[slug];
+  const [t1, t2, t3] = d.teams;
+  const legs = (a, b) => d.matches.filter(m => (m.team_a_id === a.id && m.team_b_id === b.id) || (m.team_a_id === b.id && m.team_b_id === a.id))
+    .sort((x, y) => new Date(x.scheduled_at || 0) - new Date(y.scheduled_at || 0));
+  const vertex = (t, cls) => `<button class="fx-vertex ${cls}" type="button" data-team="${slug}|${t.id}">${badgeHTML(t, 'lg')}<span>${esc(t.name)}</span><small>${(t.players || []).length} players</small></button>`;
+  const edge = (a, b, cls) => `<div class="fx-edge ${cls}">${legs(a, b).map((m, i) => {
+    const mine = m.team_a_id === a.id;
+    const score = m.status === 'scheduled' ? '' : (mine ? `${m.score_a}–${m.score_b}` : `${m.score_b}–${m.score_a}`);
+    return `<button class="fx-leg${isLive(m) ? ' live' : ''}" type="button" data-jump="m-${m.id}" title="${esc(a.name)} v ${esc(b.name)}"><span class="lg">Leg ${i + 1}</span>${score ? `<b>${score}</b>` : `<span>${esc(whenLabel(m))}</span>`}${m.label ? `<span class="lg">${esc(m.label)}</span>` : ''}</button>`;
+  }).join('')}</div>`;
+  return `<div class="block"><div class="block-title">The Triangle<span class="count-badge">each pair plays twice</span></div>
+    <div class="fx-tri">${vertex(t1, 'v1')}${edge(t1, t2, 'e12')}${edge(t1, t3, 'e13')}${vertex(t2, 'v2')}${edge(t2, t3, 'e23')}${vertex(t3, 'v3')}</div></div>`;
+}
+
+// ══════════════════════════ BADMINTON / TABLE TENNIS ══════════════════════════
+function activeCat(f) { return state.cat[f] || 'all'; }
+function catChips(f) {
+  const slugs = famSlugs(f);
+  const chip = (slug, label, count, colour) => `<button type="button" class="fx-cat${activeCat(f) === slug ? ' on' : ''}" data-cat="${slug}" style="--c:${colour}" aria-pressed="${activeCat(f) === slug}"><span class="dot"></span>${label}${count != null ? ` <span class="n">${count}</span>` : ''}</button>`;
+  return `<div class="fx-chips" role="group" aria-label="Category">${chip('all', 'All', null, 'var(--gold)')}${slugs.map(s => chip(s, cfgOf(s).short + ' · ' + cfgOf(s).name, data[s] ? data[s].teams.length : 0, CAT_COLOUR[cfgOf(s).short] || '#C8922A')).join('')}</div>`;
+}
+function racketHTML(f) {
+  const slugs = famSlugs(f);
+  const cat = activeCat(f);
+  const shown = cat === 'all' ? slugs : [cat];
+  let html = '';
+  // schedule: board or list
+  const entries = matchesOf(shown);
+  const allEntries = matchesOf(slugs);
+  if (state.view === 'board') {
+    html += `<div class="block"><div class="block-title">Court Board<span class="count-badge">${cat === 'all' ? 'all categories' : esc(cfgOf(cat).name)}</span></div>`;
+    html += `<div class="fx-legend">${slugs.map(s => `<span style="--c:${CAT_COLOUR[cfgOf(s).short]}"><i></i>${cfgOf(s).short} ${esc(cfgOf(s).name)}</span>`).join('')}<span>Tap a match for the names.</span></div>`;
+    let any = false;
+    daysToShow().forEach(d => {
+      const list = allEntries.filter(x => dayOf(x.m) === d);
+      if (!list.length) return;
+      any = true;
+      html += `<h4 class="fx-dayhead">${DAYS[d].long}</h4>` + boardHTML(f, d, list, cat);
+    });
+    if (!any) html += emptyBlock('No matches on this day.');
+    html += '</div>';
+  } else {
+    html += scheduleBlock(entries, 'Match Schedule', { showCat: true });
+  }
+  // groups + brackets for the selected category (all categories when "All")
+  shown.forEach(s => {
+    if (!data[s]) return;
+    const cfg = cfgOf(s);
+    const st = data[s].standings || {};
+    const groups = Object.keys(st).filter(g => st[g].length).sort();
+    const bru = cfg.bestRunnerUp ? bestRunnerUp(st) : null;
+    if (groups.length) {
+      html += `<div class="block"><div class="block-title">${esc(cfg.short)} · ${esc(cfg.name)}<span class="count-badge">${data[s].teams.length} entries</span></div>
+        <div class="fx-groups">${groups.map(g => groupCard(s, g, st[g], { bestRunnerUp: bru })).join('')}</div>
+        ${bru ? '<p class="fx-note" style="margin-top:.6rem"><span class="fx-rail dash"></span> best runner-up across the groups (on current standings)</p>' : ''}</div>`;
+    }
+    html += bracketBlock(s, data[s].matches.filter(m => m.stage !== 'group'), { title: esc(cfg.short) + ' · Knockout' });
+  });
+  return html;
+}
+function bestRunnerUp(st) {
+  const seconds = Object.keys(st).map(g => st[g][1]).filter(Boolean);
+  if (!seconds.length) return null;
+  seconds.sort((a, b) => (b.pts - a.pts) || ((b.gf - b.ga) - (a.gf - a.ga)) || (b.gf - a.gf));
+  return seconds[0].team_id;
+}
+function courtNo(m) { const x = /(?:Court|Table)\s+(\d+)/i.exec(m.label || ''); return x ? Number(x[1]) : 0; }
+function hallOf(m) { const x = /Hall\s+\d+/i.exec(m.label || ''); return x ? x[0] : ''; }
+function boardHTML(f, d, list, cat) {
+  const notes = (BOARD_NOTES[f] || {})[d] || {};
+  const cols = Math.max(1, ...list.map(x => courtNo(x.m)));
+  const word = f === 'table-tennis' ? 'Table' : 'Court';
+  const halls = {};
+  list.forEach(x => { const c = courtNo(x.m); if (c && !halls[c]) halls[c] = hallOf(x.m); });
+  const toMin = t => { const [h, mi] = t.split(':').map(Number); return h * 60 + mi; };
+  const minutes = list.map(x => toMin(fmtT(x.m.scheduled_at)));
+  const ends = list.map(x => toMin(fmtT(x.m.scheduled_at)) + durationOf(x.slug, x.m));
+  let start = Math.min(...minutes), end = Math.max(...ends);
+  start -= start % 30;
+  // a row per 30-minute slot, plus any off-grid start time (table tennis finals at 12:45)
+  const rowSet = new Set(minutes);
+  for (let t = start; t < end; t += 30) rowSet.add(t);
+  const rows = Array.from(rowSet).sort((a, b) => a - b);
+  const hm = t => `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+  let html = `<div class="fx-board-wrap"><table class="fx-board"><thead><tr><th class="t">Time</th>`;
+  for (let c = 1; c <= cols; c++) html += `<th>${word} ${c}<small>${esc(halls[c] || '')}</small></th>`;
+  html += '</tr></thead><tbody>';
+  rows.forEach(t => {
+    const label = hm(t);
+    if ((notes.breaks || []).includes(label)) { html += `<tr><td class="t">${label}</td><td class="break" colspan="${cols}">Break</td></tr>`; return; }
+    html += `<tr><td class="t">${label}</td>`;
+    for (let c = 1; c <= cols; c++) {
+      const here = list.filter(x => courtNo(x.m) === c && toMin(fmtT(x.m.scheduled_at)) === t);
+      const blocked = (notes.blocked || []).find(b => b.cols.includes(c) && t >= toMin(b.from));
+      if (!here.length && blocked) { html += `<td class="blocked">${esc(blocked.label)}</td>`; continue; }
+      html += '<td>' + here.map(x => chipHTML(x.slug, x.m, cat)).join('') + '</td>';
+    }
+    html += '</tr>';
+  });
+  return html + '</tbody></table></div>';
+}
+function chipHTML(slug, m, cat) {
+  const cfg = cfgOf(slug);
+  const colour = CAT_COLOUR[cfg.short] || '#C8922A';
+  const dim = cat !== 'all' && cat !== slug ? ' dim' : '';
+  const st = isLive(m) ? '<span class="st live">Live</span>' : isDone(m) ? `<span class="st ft">FT ${m.score_a}–${m.score_b}</span>` : (durationOf(slug, m) !== 30 ? `<span class="st">${durationOf(slug, m)} min</span>` : '');
+  if (m.stage !== 'group') {
+    return `<button class="fx-chip ko${dim}" type="button" data-match="${slug}|${m.id}" style="--c:${colour}"><span class="ko-lbl">${esc(cfg.short)} ${esc(koLabel(slug, m))}</span><span class="st">${esc(sideText(slug, m, 'a'))} v ${esc(sideText(slug, m, 'b'))}</span>${st}</button>`;
+  }
+  return `<button class="fx-chip${dim}" type="button" data-match="${slug}|${m.id}" style="--c:${colour}"><span>${esc(sideText(slug, m, 'a'))}<span class="vs">v</span>${esc(sideText(slug, m, 'b'))}</span>${st}</button>`;
+}
+
+// ══════════════════════════ TOOLBAR + RENDER ══════════════════════════
+function toolbarHTML(f) {
+  let html = `<div class="fx-toolbar">${dayBar()}`;
+  if (famSlugs(f).length > 1) {
+    html += catChips(f) + `<span class="spacer"></span><div class="fx-seg" role="group" aria-label="View">
+      <button type="button" data-view="board" class="${state.view === 'board' ? 'on' : ''}">Board</button>
+      <button type="button" data-view="list" class="${state.view === 'list' ? 'on' : ''}">List</button></div>`;
+  }
+  return html + '</div>';
+}
+function render() {
+  const f = state.family;
+  const panel = $('#panel');
+  const slugs = famSlugs(f);
+  if (!slugs.some(s => data[s])) { panel.innerHTML = loadingHTML(); return; }
+  const hasAny = slugs.some(s => data[s] && (data[s].matches.length || data[s].teams.length));
+  if (!hasAny) { panel.innerHTML = emptyBlock('Fixtures for ' + esc(FAMILIES[f].name) + ' appear here once the draw is published.'); renderTicker(); return; }
+  let html = toolbarHTML(f);
+  if (f === 'football') html += footballHTML();
+  else if (f === 'volleyball') html += volleyballHTML();
+  else if (f === 'touch-rugby') html += rugbyHTML();
+  else html += racketHTML(f);
+  html += formatHTML(f);
+  panel.innerHTML = html;
+  tickClocks();
+  renderTicker();
+}
+function renderTicker() {
+  const el = $('#ticker');
+  const entries = matchesOf(famSlugs(state.family));
+  const live = entries.filter(x => isLive(x.m));
+  let items = [];
+  if (live.length) {
+    items = live.map(x => `${esc(sideText(x.slug, x.m, 'a'))} ${x.m.score_a}–${x.m.score_b} ${esc(sideText(x.slug, x.m, 'b'))}${cfgOf(x.slug).clock ? ' · ' + esc(clockLabel(x.m)) : ''}`);
+  } else {
+    const now = Date.now();
+    const next = entries.filter(x => x.m.status === 'scheduled' && x.m.scheduled_at && new Date(x.m.scheduled_at) > now - 5 * 60000)
+      .sort(byTime).slice(0, 8);
+    items = next.map(x => `${esc(sideText(x.slug, x.m, 'a'))} v ${esc(sideText(x.slug, x.m, 'b'))} · ${esc(whenLabel(x.m))}`);
+  }
+  if (!items.length) { el.innerHTML = ''; return; }
+  const track = items.map(s => `<span>${s}</span><span class="strip-dot">•</span>`).join('');
+  el.innerHTML = `<div class="strip" style="margin-top:1.5rem"><div class="strip-track">${track}${track}</div></div>`;
+}
+
+// ══════════════════════════ TABS + HASH ══════════════════════════
+function buildTabs() {
+  $('#fxTabs').innerHTML = FIXTURE_ORDER.map(f => `<button class="live-tab" role="tab" data-family="${f}" type="button">${SPORT_ICONS[f] || ''}<span>${esc(FAMILIES[f].name)}</span></button>`).join('');
+  markActiveTab();
+}
+function markActiveTab() {
+  document.querySelectorAll('.live-tab').forEach(t => {
+    const on = t.dataset.family === state.family;
+    t.classList.toggle('active', on);
+    t.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+}
+function selectFamily(f, sub) {
+  if (!FAMILIES[f] || !FIXTURE_ORDER.includes(f)) return;
+  const changed = f !== state.family;
+  state.family = f;
+  if (sub && famSlugs(f).length > 1) {
+    const slug = famSlugs(f).find(s => cfgOf(s).short.toLowerCase() === sub.toLowerCase() || s === sub);
+    if (slug) state.cat[f] = slug;
+  }
+  markActiveTab();
+  writeHash();
+  if (changed) {
+    seenEventIds = new Set();
+    if (!rendered[f]) $('#panel').innerHTML = loadingHTML(); else render();
+    restartPolling();
+  } else render();
+  if (sub && famSlugs(f).length === 1 && data[f]) {
+    const team = data[f].teams.find(t => slugify(t.name) === sub);
+    if (team) openTeamSheet(f, team.id, null);
+  }
+}
+function writeHash() {
+  const f = state.family;
+  const cat = famSlugs(f).length > 1 && activeCat(f) !== 'all' ? '/' + cfgOf(activeCat(f)).short.toLowerCase() : '';
+  history.replaceState(null, '', '#' + f + cat);
+}
+function applyHash() {
+  const parts = (location.hash || '').replace('#', '').split('/');
+  const f = parts[0];
+  if (FIXTURE_ORDER.includes(f)) selectFamily(f, parts[1] || '');
+}
+
+// ══════════════════════════ SHEET ══════════════════════════
+function openSheet(html, opener) {
+  sheetOpener = opener || document.activeElement;
+  $('#fxSheetBody').innerHTML = html;
+  const ov = $('#fxSheet');
+  ov.hidden = false;
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => $('#fxSheetClose').focus(), 30);
+}
+function closeSheet() {
+  const ov = $('#fxSheet');
+  if (ov.hidden) return;
+  ov.hidden = true;
+  document.body.style.overflow = '';
+  $('#fxSheetBody').innerHTML = '';
+  if (sheetOpener && sheetOpener.focus && document.contains(sheetOpener)) sheetOpener.focus();
+  sheetOpener = null;
+}
+function miniList(slug, items) {
+  // items: [{m, cert}] for one team
+  return `<ul class="fx-mini">${items.map(({ m, cert, vs }) => {
+    const res = m.status === 'scheduled' ? '' : `<span class="res${isLive(m) ? ' live' : ''}">${m.score_a}–${m.score_b}</span>`;
+    return `<li class="${cert === 'if qualified' ? 'iq' : ''}"><span class="when">${esc(whenLabel(m))}</span>
+      <span class="what">${esc(vs)}<span class="where">${esc(stageLabel(slug, m))}${m.label ? ' · ' + esc(m.label) : ''}${cert === 'if qualified' ? ' · if qualified' : ''}</span></span>${res}</li>`;
+  }).join('')}</ul>`;
+}
+function teamEvents(slug, team) {
+  const out = [];
+  (data[slug] ? data[slug].matches : []).forEach(m => {
+    const mine = m.team_a_id === team.id || m.team_b_id === team.id;
+    if (mine) {
+      const oppSide = m.team_a_id === team.id ? 'b' : 'a';
+      out.push({ m, cert: 'fixed', vs: 'v ' + sideText(slug, m, oppSide) });
+    } else if (m.stage !== 'group' && (!m.team_a_id || !m.team_b_id)) {
+      out.push({ m, cert: 'if qualified', vs: koLabel(slug, m) + ': ' + sideText(slug, m, 'a') + ' v ' + sideText(slug, m, 'b') });
+    }
+  });
+  return out.sort((a, b) => byTime({ m: a.m }, { m: b.m }));
+}
+function openTeamSheet(slug, id, opener) {
+  const team = teamById[slug] && teamById[slug][id];
+  if (!team) return;
+  const cfg = cfgOf(slug);
+  const events = teamEvents(slug, team);
+  const duties = famSlugs(cfg.family).flatMap(s => (data[s] ? data[s].matches : []).filter(m => m.referee && m.referee === team.name).map(m => ({ slug: s, m })));
+  let html = `<div class="fx-sheet-head">${badgeHTML(team, 'lg')}<div><h2 id="fxSheetTitle">${esc(team.name)}</h2>
+    <p>${esc(sportLabel(slug))}${team.group_name ? ' · Group ' + esc(team.group_name) : ''}${team.code ? ' · ' + esc(team.code) : ''}</p></div></div>`;
+  html += `<h3>${team.code ? 'Players' : 'Squad'} (${(team.players || []).length})</h3>`;
+  html += (team.players || []).length
+    ? `<ol class="fx-players">${team.players.map(p => `<li><span class="num">${p.number != null ? p.number : '·'}</span><span>${esc(p.name)}</span></li>`).join('')}</ol>`
+    : '<p class="fx-empty-note">Squad to be announced.</p>';
+  html += `<h3>Fixtures</h3>` + (events.length ? miniList(slug, events) : '<p class="fx-empty-note">No fixtures yet.</p>');
+  if (duties.length) {
+    html += `<h3>Referee duties</h3><ul class="fx-mini">${duties.sort(byTime).map(({ slug: s, m }) =>
+      `<li><span class="when">${esc(whenLabel(m))}</span><span class="what">${esc(sideText(s, m, 'a'))} v ${esc(sideText(s, m, 'b'))}<span class="where">${esc(stageLabel(s, m))}${m.label ? ' · ' + esc(m.label) : ''}</span></span><span></span></li>`).join('')}</ul>`;
+  }
+  openSheet(html, opener);
+}
+function openMatchSheet(slug, id, opener) {
+  const m = data[slug] && data[slug].matches.find(x => String(x.id) === String(id));
+  if (!m) return;
+  const cfg = cfgOf(slug);
+  const side = (s) => {
+    const t = teamById[slug][m['team_' + s + '_id']];
+    if (!t) return `<span class="fx-tbd">${esc(m['placeholder_' + s] || 'TBD')}</span>`;
+    return `${badgeHTML(t)}<ul>${(t.players || []).map(p => `<li>${esc(p.name)}</li>`).join('') || `<li>${esc(t.name)}</li>`}</ul>`;
+  };
+  let html = `<div class="fx-sheet-head"><div><h2 id="fxSheetTitle">${esc(stageLabel(slug, m))}${m.stage !== 'group' ? ' · ' + esc(koLabel(slug, m)) : ''}</h2>
+    <p>${esc(sportLabel(slug))} · ${esc(whenLabel(m))}${m.scheduled_at ? '–' + esc(fmtT(endIso(slug, m))) : ''}${m.label ? ' · ' + esc(m.label) : ''}</p></div></div>`;
+  html += `<div class="fx-vs"><div class="side a">${side('a')}</div><div class="mid">${resultHTML(slug, m)}${m.status === 'scheduled' ? '<div class="mc-clock ft" style="color:var(--text-muted)">v</div>' : ''}</div><div class="side b">${side('b')}</div></div>`;
+  if (m.referee) html += `<p class="fx-note">Referee: ${esc(m.referee)}</p>`;
+  if (cfg.events && (m.events || []).length) html += `<h3>Timeline</h3>${timelineHTML(slug, m, false)}`;
+  openSheet(html, opener);
+}
+
+// ══════════════════════════ FIND MY MATCHES ══════════════════════════
+let searchIndex = null;
+function buildIndex() {
+  const byName = new Map();
+  Object.keys(data).forEach(slug => {
+    data[slug].teams.forEach(t => (t.players || []).forEach(p => {
+      const key = norm(p.name);
+      if (!key) return;
+      if (!byName.has(key)) byName.set(key, { name: p.name, key, memberships: [] });
+      byName.get(key).memberships.push({ slug, team: t });
+    }));
+  });
+  searchIndex = Array.from(byName.values()).sort((a, b) => a.name.localeCompare(b.name));
+}
+function suggest(q) {
+  const ul = $('#fxSuggest');
+  const input = $('#fxSearch');
+  const nq = norm(q);
+  if (nq.length < 2 || !searchIndex) { ul.hidden = true; input.setAttribute('aria-expanded', 'false'); return; }
+  const hits = searchIndex.filter(p => p.key.includes(nq)).slice(0, 8);
+  ul.innerHTML = hits.length
+    ? hits.map(p => `<li role="option"><button type="button" data-person="${esc(p.key)}">${esc(p.name)}<span class="sub">${esc([...new Set(p.memberships.map(x => FAMILIES[cfgOf(x.slug).family].name))].join(' · '))}</span></button></li>`).join('')
+    : '<li class="none">No player with that name — try a different spelling.</li>';
+  ul.hidden = false;
+  input.setAttribute('aria-expanded', 'true');
+}
+function selectPerson(key) {
+  const p = searchIndex && searchIndex.find(x => x.key === key);
+  if (!p) return;
+  state.person = p.key;
+  $('#fxSearch').value = p.name;
+  $('#fxSuggest').hidden = true;
+  $('#fxSearch').setAttribute('aria-expanded', 'false');
+  $('#fxClear').hidden = false;
+  try { localStorage.setItem('fx-me', p.key); } catch (_) {}
+  renderMe();
+  $('#fxMe').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function clearPerson() {
+  state.person = null;
+  $('#fxSearch').value = '';
+  $('#fxClear').hidden = true;
+  $('#fxMe').hidden = true;
+  $('#fxMeBody').innerHTML = '';
+  try { localStorage.removeItem('fx-me'); } catch (_) {}
+}
+function renderMe() {
+  if (!state.person || !searchIndex) return;
+  const p = searchIndex.find(x => x.key === state.person);
+  if (!p) return;
+  const rows = [];
+  p.memberships.forEach(({ slug, team }) => {
+    teamEvents(slug, team).forEach(ev => rows.push({ slug, team, ...ev }));
+  });
+  rows.sort((a, b) => byTime({ m: a.m }, { m: b.m }) || a.slug.localeCompare(b.slug));
+  const fixed = rows.filter(r => r.cert === 'fixed').length;
+  const sports = [...new Set(p.memberships.map(x => sportLabel(x.slug) + (x.team.code ? ' ' + x.team.code : '')))];
+  let html = `<div class="fx-me-head"><h2>${esc(p.name)}</h2><span class="meta">${fixed} match${fixed === 1 ? '' : 'es'} · ${rows.length - fixed} if qualified · ${esc(sports.join(' · '))}</span><button class="btn btn-ghost" type="button" id="fxMeClear">Clear</button></div>`;
+  if (!rows.length) html += '<p class="fx-me-empty">No matches found for this name yet.</p>';
+  [1, 2, 0].forEach(d => {
+    const list = rows.filter(r => dayOf(r.m) === d);
+    if (!list.length) return;
+    html += `<div class="fx-me-day">${d ? DAYS[d].long : 'Time to be confirmed'}</div><ul class="fx-me-list">`;
+    list.forEach(r => {
+      const cfg = cfgOf(r.slug);
+      const res = r.m.status === 'scheduled' ? `<span class="res"><small>${esc(r.m.label || '')}</small></span>`
+        : `<span class="res${isLive(r.m) ? ' live' : ''}">${r.m.score_a}–${r.m.score_b}<small>${isLive(r.m) ? 'Live' : 'Full time'}</small></span>`;
+      html += `<li><button class="fx-me-row${r.cert === 'if qualified' ? ' iq' : ''}" type="button" data-goto="${cfg.family}|${r.slug}|${r.m.id}">
+        <span class="when">${esc(fmtT(r.m.scheduled_at) || 'TBD')}<small>${r.m.scheduled_at ? 'to ' + esc(fmtT(endIso(r.slug, r.m))) : ''}</small></span>
+        <span class="what"><b>${esc(sportLabel(r.slug))}</b> · ${esc(r.vs)}<span>${esc(stageLabel(r.slug, r.m))}${r.m.label ? ' · ' + esc(r.m.label) : ''}${r.cert === 'if qualified' ? ' · if qualified' : ''}${r.team.code ? ' · you are ' + esc(r.team.code) : ''}</span></span>${res}</button></li>`;
+    });
+    html += '</ul>';
+  });
+  $('#fxMeBody').innerHTML = html;
+  $('#fxMe').hidden = false;
+}
+async function ensureIndex() {
+  if (searchIndex) return;
+  try { await loadAll(); buildIndex(); } catch (_) { /* offline: suggestions stay empty */ }
+}
+
+// ══════════════════════════ EVENTS ══════════════════════════
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-family],[data-day],[data-cat],[data-view],[data-team],[data-match],[data-jump],[data-person],[data-goto],#fxMeClear,#fxClear,#fxSheetClose');
+  if (!t) return;
+  if (t.dataset.family) { selectFamily(t.dataset.family); return; }
+  if (t.dataset.day) { state.day = t.dataset.day === 'all' ? 'all' : Number(t.dataset.day); render(); return; }
+  if (t.dataset.cat) { state.cat[state.family] = t.dataset.cat; writeHash(); render(); return; }
+  if (t.dataset.view) { state.view = t.dataset.view; render(); return; }
+  if (t.dataset.team) { const [slug, id] = t.dataset.team.split('|'); openTeamSheet(slug, Number(id), t); return; }
+  if (t.dataset.match) { const [slug, id] = t.dataset.match.split('|'); openMatchSheet(slug, id, t); return; }
+  if (t.dataset.jump) { jumpTo(t.dataset.jump); return; }
+  if (t.dataset.person) { selectPerson(t.dataset.person); return; }
+  if (t.dataset.goto) {
+    const [f, slug, id] = t.dataset.goto.split('|');
+    if (famSlugs(f).length > 1) state.cat[f] = slug;
+    const d = data[slug] && data[slug].matches.find(m => String(m.id) === id);
+    if (d && dayOf(d)) state.day = dayOf(d);
+    if (famSlugs(f).length > 1 && state.view === 'board' && d && d.stage === 'group') state.view = 'list';
+    selectFamily(f);
+    setTimeout(() => jumpTo('m-' + id, true), 80);
+    return;
+  }
+  if (t.id === 'fxMeClear' || t.id === 'fxClear') { clearPerson(); return; }
+  if (t.id === 'fxSheetClose') closeSheet();
+});
+function jumpTo(id, flash) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  el.classList.add('mcard--flash');
+  setTimeout(() => el.classList.remove('mcard--flash'), 1500);
+}
+$('#fxSheet').addEventListener('click', e => { if (e.target === e.currentTarget) closeSheet(); });
+document.addEventListener('keydown', e => {
+  const ov = $('#fxSheet');
+  if (e.key === 'Escape') { if (!ov.hidden) closeSheet(); else { $('#fxSuggest').hidden = true; } return; }
+  if (e.key === 'Tab' && !ov.hidden) {   // keep focus inside the dialog
+    const f = ov.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])');
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
+const searchEl = $('#fxSearch');
+searchEl.addEventListener('focus', ensureIndex);
+searchEl.addEventListener('input', async () => { await ensureIndex(); suggest(searchEl.value); });
+searchEl.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') { const b = $('#fxSuggest button'); if (b) { e.preventDefault(); b.focus(); } }
+  if (e.key === 'Enter') { const b = $('#fxSuggest button'); if (b && !$('#fxSuggest').hidden) { e.preventDefault(); b.click(); } }
+});
+$('#fxSuggest').addEventListener('keydown', e => {
+  const items = Array.from($('#fxSuggest').querySelectorAll('button'));
+  const i = items.indexOf(document.activeElement);
+  if (e.key === 'ArrowDown' && i < items.length - 1) { e.preventDefault(); items[i + 1].focus(); }
+  if (e.key === 'ArrowUp') { e.preventDefault(); if (i > 0) items[i - 1].focus(); else searchEl.focus(); }
+});
+document.addEventListener('click', e => { if (!e.target.closest('.fx-search')) $('#fxSuggest').hidden = true; });
+
+// mobile nav (subpages do not load script.js)
+const navToggle = $('#navToggle'), navLinks = $('#navLinks');
+navToggle.addEventListener('click', () => {
+  const open = navLinks.classList.toggle('open');
+  navToggle.classList.toggle('open', open);
+  navToggle.setAttribute('aria-expanded', String(open));
+});
+
+window.addEventListener('hashchange', applyHash);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') poll(true);
+  else if (pollTimer) clearTimeout(pollTimer);
+});
+setInterval(tickClocks, 30000);
+
+// ══════════════════════════ INIT ══════════════════════════
+(function init() {
+  state.day = todayDay();
+  buildTabs();
+  const parts = (location.hash || '').replace('#', '').split('/');
+  if (FIXTURE_ORDER.includes(parts[0])) state.family = parts[0];
+  $('#panel').innerHTML = loadingHTML();
+  markActiveTab();
+  restartPolling();
+  if (parts[1]) setTimeout(() => selectFamily(state.family, parts[1]), 400);
+  let saved = '';
+  try { saved = localStorage.getItem('fx-me') || ''; } catch (_) {}
+  if (saved) ensureIndex().then(() => { if (searchIndex && searchIndex.some(p => p.key === saved)) selectPerson(saved); });
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
