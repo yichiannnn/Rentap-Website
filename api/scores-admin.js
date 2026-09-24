@@ -318,7 +318,7 @@ async function route(action, b) {
     }
     case 'race.entry.create': {
       const event_id = intOrNull(b.event_id);
-      const name = str(b.name, 120);
+      const name = str(b.name, 300); // relay entries join up to 4 names, e.g. "A / B / C / D"
       if (!event_id) throw fail(400, 'Missing event id');
       if (!name) throw fail(400, 'Entry name is required');
       const lane = intOrNull(b.lane);
@@ -336,7 +336,7 @@ async function route(action, b) {
       if (!id) throw fail(400, 'Missing entry id');
       const cols = [], vals = [];
       const push = (c, v) => { cols.push(`${c}=$${cols.length + 1}`); vals.push(v); };
-      if ('name' in b)        push('name', str(b.name, 120));
+      if ('name' in b)        push('name', str(b.name, 300)); // relay entries join up to 4 names
       if ('lane' in b)        push('lane', intOrNull(b.lane));
       if ('time_ms' in b)     push('time_ms', intOrNull(b.time_ms));
       if ('placeholder' in b) push('placeholder', boolOr(b.placeholder, false));
