@@ -151,7 +151,6 @@
       <button class="vtab active" data-view="teams" onclick="setView('teams')">Teams &amp; Squads</button>
       <button class="vtab" data-view="fixtures" onclick="setView('fixtures')">Fixtures</button>
       <button class="vtab" data-view="control" onclick="setView('control')">Match Control</button>
-      <button class="vtab" data-view="placements" onclick="setView('placements')" hidden>Placements</button>
       <button class="vtab" data-view="track" onclick="setView('track')">Track</button>
     </div>
 
@@ -218,21 +217,6 @@
       <div id="controlBody"></div>
     </div>
 
-    <!-- PLACEMENTS (frisbee / basketball: 1st, 2nd, 3rd) -->
-    <div class="panel" id="panel-placements">
-      <div class="card">
-        <h3>Add Entry</h3>
-        <div class="row">
-          <div class="grow2"><label>Team / Entry Name</label><input id="plName" placeholder="e.g. Crackfurt SC" /></div>
-          <div><label>Group</label><input id="plGroup" placeholder="blank = one overall group" maxlength="20" /></div>
-        </div>
-        <div class="field" style="margin-top:.6rem"><label>Players</label><textarea id="plNote" placeholder="One player per line" rows="2"></textarea></div>
-        <div class="inline-actions"><button class="btn-primary" onclick="createPlacement()">Add</button></div>
-        <p id="plMsg" class="err" hidden></p>
-      </div>
-      <div id="placementList"></div>
-    </div>
-
     <!-- TRACK -->
     <div class="panel" id="panel-track">
       <div class="card">
@@ -284,7 +268,7 @@
 let ADMIN_KEY = '';
 let view = 'teams';
 let sport = 'football';
-let store = { teams: [], matches: [], placements: [] };   // current sport data
+let store = { teams: [], matches: [] };   // current sport data
 let sheetCtx = null;                       // { matchId, teamId, players }
 
 // ── AUTH / API ────────────────────────────────
@@ -373,39 +357,33 @@ async function loadSport() {
     const json = await fetch('/api/live?sport=' + encodeURIComponent(sport) + '&_=' + Date.now(), { cache: 'no-store' }).then(r => r.json());
     store.teams = json.teams || [];
     store.matches = json.matches || [];
-    store.placements = json.placements || [];
   } catch (e) {
-    store.teams = []; store.matches = []; store.placements = [];
+    store.teams = []; store.matches = [];
   }
   renderAll();
 }
 
 function renderAll() {
   const trackMode = sport === 'track';
-  const placementMode = !trackMode && !!SPORT_CONFIG[sport].placementOnly; // basketball: team-level 1st/2nd/3rd
-  const rosterPlaceMode = !trackMode && !!SPORT_CONFIG[sport].rosterPlacement; // frisbee: players ranked within their team
-  // both basketball and frisbee still get real Teams & Squads; only their
-  // fixtures/match control (no fixed format) and the Placements tab
-  // (basketball only) differ from a normal sport
+  // basketball and frisbee: real Teams & Squads (with a per-player Place
+  // field), but no fixtures/match control since there's no fixed format
+  const rosterPlaceMode = !trackMode && !!SPORT_CONFIG[sport].rosterPlacement;
   const teamsVisible = !trackMode;
-  const fixturesVisible = !trackMode && !placementMode && !rosterPlaceMode;
-  const controlVisible = !trackMode && !placementMode && !rosterPlaceMode;
-  const placementsVisible = placementMode;
+  const fixturesVisible = !trackMode && !rosterPlaceMode;
+  const controlVisible = !trackMode && !rosterPlaceMode;
   document.querySelector('[data-view="teams"]').hidden = !teamsVisible;
   document.querySelector('[data-view="fixtures"]').hidden = !fixturesVisible;
   document.querySelector('[data-view="control"]').hidden = !controlVisible;
-  document.querySelector('[data-view="placements"]').hidden = !placementsVisible;
   document.querySelector('[data-view="track"]').hidden = !trackMode;
   if (trackMode) {
     setView('track');
     renderTrack();
   } else {
-    const visible = { teams: teamsVisible, fixtures: fixturesVisible, control: controlVisible, placements: placementsVisible };
-    if (!visible[view]) setView(teamsVisible ? 'teams' : 'placements');
-    if (teamsVisible) renderTeams();
+    const visible = { teams: teamsVisible, fixtures: fixturesVisible, control: controlVisible };
+    if (!visible[view]) setView('teams');
+    renderTeams();
     if (fixturesVisible) { renderFixtureForm(); renderFixtureList(); }
     if (controlVisible) { renderControlSelect(); renderControl(); }
-    if (placementsVisible) renderPlacements();
   }
   // half-length field for football only; entry code for the racket categories
   document.getElementById('fHalfWrap').style.display = (sport === 'football') ? '' : 'none';
@@ -885,52 +863,6 @@ async function confirmGoal() {
   } finally { btn.disabled = false; }
 }
 
-// ── PLACEMENTS (frisbee / basketball: 1st, 2nd, 3rd) ──────
-async function createPlacement() {
-  const name = document.getElementById('plName').value.trim();
-  const group_name = document.getElementById('plGroup').value.trim();
-  const note = document.getElementById('plNote').value.trim();
-  if (!name) { flash('plMsg', 'Entry name is required.', false); return; }
-  try {
-    await api('placement.create', { sport, name, group_name, note });
-    document.getElementById('plName').value = '';
-    document.getElementById('plGroup').value = '';
-    document.getElementById('plNote').value = '';
-    await loadSport();
-    flash('plMsg', 'Entry added.', true);
-  } catch (e) { flash('plMsg', e.message, false); }
-}
-function renderPlacements() {
-  const wrap = document.getElementById('placementList');
-  const list = store.placements || [];
-  if (!list.length) { wrap.innerHTML = '<p class="muted">No entries yet for ' + esc(SPORT_CONFIG[sport].name) + '.</p>'; return; }
-  const groups = {};
-  list.forEach(p => (groups[p.group_name || ''] ||= []).push(p));
-  wrap.innerHTML = Object.keys(groups).sort().map(g => `
-    <div class="card">
-      <h3>${g ? 'Group ' + esc(g) : 'Entries'}</h3>
-      ${groups[g].map(p => `
-        <div class="list-item" data-placement="${p.id}">
-          <span class="name">${esc(p.name)}</span>
-          <div style="flex:0 0 130px"><label style="margin:0">Place (1/2/3)</label><input type="number" min="1" max="3" value="${p.place != null ? p.place : ''}" onchange="savePlacement(${p.id}, {place: this.value})" /></div>
-          <button class="btn-danger" onclick="deletePlacement(${p.id}, this)">Delete</button>
-        </div>
-        <div class="list-item" style="margin-top:-.3rem">
-          <div class="grow2"><label style="margin:0">Players</label><textarea rows="2" onchange="savePlacement(${p.id}, {note: this.value})">${esc(p.note || '')}</textarea></div>
-        </div>`).join('')}
-    </div>`).join('');
-}
-async function savePlacement(id, fields) {
-  const payload = { id };
-  for (const k in fields) payload[k] = fields[k] === '' ? null : fields[k];
-  try { await api('placement.update', payload); await loadSport(); }
-  catch (e) { flash('plMsg', e.message, false); }
-}
-async function deletePlacement(id, btn) {
-  if (btn.dataset.confirm !== '1') { btn.dataset.confirm = '1'; btn.textContent = 'Confirm?'; setTimeout(() => { if (btn) { btn.dataset.confirm = '0'; btn.textContent = 'Delete'; } }, 3000); return; }
-  try { await api('placement.delete', { id }); await loadSport(); }
-  catch (e) { flash('plMsg', e.message, false); }
-}
 
 // ── TRACK (events + per-lane finishing times) ────────────────
 let trackEvents = [];

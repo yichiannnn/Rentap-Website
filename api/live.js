@@ -1,8 +1,6 @@
 import { sql } from '@vercel/postgres';
 import { SLUGS, familyOf, codeNumber, computeStandings } from '../lib/standings.js';
 
-const PLACEMENT_SPORTS = ['basketball']; // frisbee ranks players within their own team instead
-
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
@@ -150,17 +148,6 @@ async function loadSports(slugs) {
       a.name.localeCompare(b.name));
     out[slug].standings = computeStandings(slug, out[slug].teams, out[slug].matches);
   }
-
-  // ── Placements (frisbee tally, basketball 1st/2nd/3rd) ───────────────
-  const placementSlugs = slugs.filter(s => PLACEMENT_SPORTS.includes(s));
-  if (placementSlugs.length) {
-    const { rows } = await sql`
-      SELECT * FROM placements WHERE sport = ANY(${placementSlugs})
-      ORDER BY sport, group_name NULLS FIRST, sort, name
-    `;
-    rows.forEach(p => (out[p.sport].placements ||= []).push(p));
-  }
-  placementSlugs.forEach(s => { out[s].placements ||= []; });
 
   return out;
 }

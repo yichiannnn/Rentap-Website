@@ -357,44 +357,6 @@ async function route(action, b) {
       return { json: { ok: true } };
     }
 
-    // ── PLACEMENTS (frisbee tally, basketball 1st/2nd/3rd) ──
-    case 'placement.create': {
-      const sport = str(b.sport, 40);
-      if (!['frisbee', 'basketball'].includes(sport)) throw fail(400, 'Unknown placement sport');
-      const name = str(b.name, 120);
-      if (!name) throw fail(400, 'Entry name is required');
-      const group_name = str(b.group_name, 20);
-      const note = str(b.note, 500);
-      const sort = intOrNull(b.sort) || 0;
-      const { rows } = await sql.sql`
-        INSERT INTO placements (sport, group_name, name, note, sort)
-        VALUES (${sport}, ${group_name}, ${name}, ${note}, ${sort})
-        RETURNING id`;
-      return { json: { ok: true, id: rows[0].id } };
-    }
-    case 'placement.update': {
-      const id = intOrNull(b.id);
-      if (!id) throw fail(400, 'Missing placement id');
-      const cols = [], vals = [];
-      const push = (c, v) => { cols.push(`${c}=$${cols.length + 1}`); vals.push(v); };
-      if ('name' in b)         push('name', str(b.name, 120));
-      if ('group_name' in b)   push('group_name', str(b.group_name, 20));
-      if ('note' in b)         push('note', str(b.note, 500));
-      if ('gold_tries' in b)   push('gold_tries', intOrNull(b.gold_tries));
-      if ('silver_tries' in b) push('silver_tries', intOrNull(b.silver_tries));
-      if ('place' in b)        push('place', intOrNull(b.place));
-      if ('sort' in b)         push('sort', intOrNull(b.sort) || 0);
-      if (!cols.length) return { json: { ok: true } };
-      vals.push(id);
-      await sql.query(`UPDATE placements SET ${cols.join(', ')}, updated_at=now() WHERE id=$${vals.length}`, vals);
-      return { json: { ok: true } };
-    }
-    case 'placement.delete': {
-      const id = intOrNull(b.id);
-      if (!id) throw fail(400, 'Missing placement id');
-      await sql.sql`DELETE FROM placements WHERE id = ${id}`;
-      return { json: { ok: true } };
-    }
 
     default:
       throw fail(400, 'Unknown action');
