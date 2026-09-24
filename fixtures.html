@@ -556,10 +556,10 @@ function badgeHTML(team, cls) {
 // public label of a side: team name, or the entry code for racket entries (names on tap)
 function teamLabel(team) { return team.code ? team.code : team.name; }
 function teamBtn(slug, team, extra) {
-  // racket entries: the code tag is the label (names are revealed on tap)
-  const label = team.code ? '<span class="nm more" aria-hidden="true">›</span>' : `<span class="nm">${esc(team.name)}</span>`;
-  const title = team.code ? ` title="Tap for the players' names"` : '';
-  return `<button class="fx-team${extra ? ' ' + extra : ''}" data-team="${slug}|${team.id}" type="button"${title}>${badgeHTML(team)}${label}</button>`;
+  // match cards always show the player name(s); the code badge (if any) stays
+  // alongside it, and tapping still opens the team sheet for squad details.
+  const label = `<span class="nm">${esc(team.name)}</span>`;
+  return `<button class="fx-team${extra ? ' ' + extra : ''}" data-team="${slug}|${team.id}" type="button" title="Tap for details">${badgeHTML(team)}${label}</button>`;
 }
 function isRacketSlug(slug) { return ['badminton', 'table-tennis'].includes(cfgOf(slug).family); }
 function sideHTML(slug, m, side, win) {
