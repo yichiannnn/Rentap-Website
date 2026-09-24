@@ -337,7 +337,7 @@ function initApp() {
     const fam = FAMILIES[f];
     if (fam.slugs.length === 1) return `<option value="${fam.slugs[0]}">${esc(fam.name)}</option>`;
     return `<optgroup label="${esc(fam.name)}">${fam.slugs.map(s => `<option value="${s}">${esc(SPORT_CONFIG[s].name)}</option>`).join('')}</optgroup>`;
-  }).join('');
+  }).join('') + '<option value="track">Track</option>';
   sel.value = sport;
   loadSport();
   loadTrack();
@@ -362,6 +362,7 @@ function toLocalInput(iso) {
 function onSportChange() {
   sport = document.getElementById('sportSel').value;
   loadSport();
+  if (sport === 'track') loadTrack();
 }
 
 async function loadSport() {
@@ -378,16 +379,21 @@ async function loadSport() {
 }
 
 function renderAll() {
-  const placementMode = !!SPORT_CONFIG[sport].placementOnly;
-  document.querySelector('[data-view="teams"]').hidden = placementMode;
-  document.querySelector('[data-view="fixtures"]').hidden = placementMode;
-  document.querySelector('[data-view="control"]').hidden = placementMode;
+  const trackMode = sport === 'track';
+  const placementMode = !trackMode && !!SPORT_CONFIG[sport].placementOnly;
+  document.querySelector('[data-view="teams"]').hidden = placementMode || trackMode;
+  document.querySelector('[data-view="fixtures"]').hidden = placementMode || trackMode;
+  document.querySelector('[data-view="control"]').hidden = placementMode || trackMode;
   document.querySelector('[data-view="placements"]').hidden = !placementMode;
-  if (placementMode) {
-    if (['teams', 'fixtures', 'control'].includes(view)) setView('placements');
+  document.querySelector('[data-view="track"]').hidden = !trackMode;
+  if (trackMode) {
+    setView('track');
+    renderTrack();
+  } else if (placementMode) {
+    if (['teams', 'fixtures', 'control', 'track'].includes(view)) setView('placements');
     renderPlacements();
   } else {
-    if (view === 'placements') setView('teams');
+    if (view === 'placements' || view === 'track') setView('teams');
     renderTeams();
     renderFixtureForm();
     renderFixtureList();
