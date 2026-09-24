@@ -129,17 +129,72 @@ The public `/live.html` shows fixtures and empty standings immediately.
 **Basketball / Rugby Touch:** use the `+1` steppers or type the final score, then
 Full Time.
 
-**Volleyball / Badminton:** enter each set's score (e.g. `15–10`, `12–15`,
-`15–13`). Sets won and the match result are computed for you. Volleyball uses the
-rulebook 3/2/1/0 points; badminton uses 2 points per win.
+**Volleyball / Badminton / Table tennis:** enter each set's score (e.g. `15–10`,
+`12–15`, `15–13`). Sets won and the match result are computed for you. Points follow
+the v6 schedule: volleyball two sets to 25 (2–0 = 3, 1–1 = 1, 0–2 = 0); badminton
+best of three (2–0 = 3, 2–1 = 2, 1–2 = 1, 0–2 = 0); table tennis two games to 11
+(2–0 = 3, 1–1 = 2, 0–2 = 0). Only group-stage matches count towards standings.
+
+**Knockouts:** fixtures are created with placeholders ("Champion A", "Winner SF1").
+Once a group is decided, open the Fixtures tab, press **Edit** on the knockout match
+and pick the real teams — the public bracket switches from placeholders to names.
+
+**Reset:** a match kicked off or scored by mistake goes back to scheduled, 0–0 and no
+events with the **Reset** button in Match Control (two taps).
 
 ---
+
+## Fixtures & results page (September 2026)
+
+The public page is `/fixtures.html` (`live.html` redirects there). It renders from the
+same database: fixtures, squads, standings, brackets, court boards and a "Find my
+matches" name search. Badminton and table tennis use **one sport slug per category**
+so each keeps its own groups and bracket:
+
+```
+football · volleyball · touch-rugby
+badminton-ms · badminton-md · badminton-xd · badminton-wd · badminton-ws
+table-tennis-ms · table-tennis-ws · table-tennis-od
+```
+
+### One-time migration
+Run this once in the Neon SQL editor **before** deploying the fixtures page. Every
+column is optional, nothing existing changes:
+
+```sql
+ALTER TABLE teams   ADD COLUMN IF NOT EXISTS code TEXT;                 -- entry code: MS1, MD4, OD7
+ALTER TABLE matches ADD COLUMN IF NOT EXISTS placeholder_a TEXT,        -- "Champion A", "Winner QF1" …
+                    ADD COLUMN IF NOT EXISTS placeholder_b TEXT,
+                    ADD COLUMN IF NOT EXISTS referee TEXT,              -- referee team from the schedule
+                    ADD COLUMN IF NOT EXISTS duration_min INTEGER;      -- slot length in minutes
+```
+
+### Loading the organisers' schedule
+The five sports are seeded straight from the schedule workbook (kept out of git under
+`data/`, it holds full names):
+
+```bash
+python3 scripts/build-fixtures.py            # xlsx → data/fixtures-seed.json, with checks
+node scripts/seed-fixtures.mjs --dry-run     # what would be created
+node --env-file=.env scripts/seed-fixtures.mjs --base https://<deployment> --wipe
+```
+
+`--wipe` deletes the existing teams and matches of each seeded sport first (and the
+old test data). Matches are created in the file's order because the public bracket
+labels knockout rounds by creation order (QF1..4, SF1..2).
+
+### Working on the page without a database
+`node scripts/dev-server.mjs --demo` serves the site on http://localhost:3400 and
+answers `/api/live` from the seed file, with a few pretend results so standings,
+brackets and timelines are populated.
 
 ## Notes
 
 - The `/api` functions only run once deployed on Vercel. A plain local file server
-  will not execute them. Use `vercel dev` to test locally with the database.
+  will not execute them. Use `vercel dev` to test locally with the database, or the
+  mock server above for the fixtures page.
 - `scores-admin.html` is `noindex` and gated by the admin key. Keep the key secret.
-- The live page keeps the last data on screen if the network drops and shows an
-  "Updated HH:MM:SS" stamp so viewers know how fresh it is.
+- The fixtures page keeps the last data on screen if the network drops and shows an
+  "Updated HH:MM:SS" stamp so viewers know how fresh it is. Public reads are cached at
+  the edge for a few seconds; the console bypasses that cache.
 - Free tier easily covers a weekend tournament.

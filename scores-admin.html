@@ -123,7 +123,7 @@
 <body>
 <div class="wrap">
   <h1>RENTAP XVII — Score Console</h1>
-  <p class="sub">Super admin only. Public results appear at <a href="live.html" target="_blank" rel="noopener">live.html</a>.</p>
+  <p class="sub">Super admin only. Public results appear at <a href="fixtures.html" target="_blank" rel="noopener">fixtures.html</a>.</p>
 
   <!-- GATE -->
   <div id="gate" class="gate">
@@ -161,6 +161,7 @@
         <div class="row">
           <div class="grow2"><label>Name</label><input id="tName" placeholder="e.g. FC Kuching" /></div>
           <div><label>Group</label><input id="tGroup" placeholder="A / B / blank" maxlength="20" /></div>
+          <div id="tCodeWrap" hidden><label>Code</label><input id="tCode" placeholder="e.g. MD1" maxlength="12" /></div>
           <div><label>Colour</label><input id="tColor" type="color" value="#c8922a" /></div>
           <div style="flex:0 0 auto"><button class="btn-primary" onclick="createTeam()">Add</button></div>
         </div>
@@ -192,6 +193,13 @@
           <div><label>Pitch / Court</label><input id="fLabel" placeholder="e.g. Pitch A" maxlength="80" /></div>
           <div id="fHalfWrap"><label>Half (min)</label><input id="fHalf" type="number" value="10" min="1" max="45" /></div>
         </div>
+        <div class="row" style="margin-top:.6rem">
+          <div><label>Referee (team)</label><input id="fRef" placeholder="e.g. Saki Baki" maxlength="120" /></div>
+          <div><label>Placeholder A</label><input id="fPhA" placeholder="e.g. Champion A" maxlength="60" /></div>
+          <div><label>Placeholder B</label><input id="fPhB" placeholder="e.g. Runner-up B" maxlength="60" /></div>
+          <div><label>Slot (min)</label><input id="fDur" type="number" min="5" max="180" placeholder="30" /></div>
+        </div>
+        <p class="muted" style="margin:.5rem 0 0">Knockouts: leave Team A/B as TBD and fill the placeholders — they show on the public page until you slot the real teams in with Edit.</p>
         <div class="inline-actions"><button class="btn-primary" onclick="createFixture()">Create Fixture</button></div>
         <p id="fixMsg" class="err" hidden></p>
       </div>
@@ -284,10 +292,32 @@ function lock(msg) {
 // ── INIT ──────────────────────────────────────
 function initApp() {
   // sport selector
+  // one option per slug; badminton and table tennis categories grouped under their family
   const sel = document.getElementById('sportSel');
-  sel.innerHTML = SPORT_ORDER.map(s => `<option value="${s}">${esc(SPORT_CONFIG[s].name)}</option>`).join('');
+  const families = [...new Set(SPORT_ORDER.map(s => SPORT_CONFIG[s].family))];
+  sel.innerHTML = families.map(f => {
+    const fam = FAMILIES[f];
+    if (fam.slugs.length === 1) return `<option value="${fam.slugs[0]}">${esc(fam.name)}</option>`;
+    return `<optgroup label="${esc(fam.name)}">${fam.slugs.map(s => `<option value="${s}">${esc(SPORT_CONFIG[s].name)}</option>`).join('')}</optgroup>`;
+  }).join('');
   sel.value = sport;
   loadSport();
+}
+
+function isRacket() { return ['badminton', 'table-tennis'].includes(SPORT_CONFIG[sport].family); }
+function teamLabel(t) { return t.code ? t.code + ' · ' + t.name : t.name; }
+function sideName(m, side) {
+  const t = store.teams.find(x => x.id === m['team_' + side + '_id']);
+  return t ? teamLabel(t) : (m['placeholder_' + side] || 'TBD');
+}
+function whenLabel(m) {
+  return m.scheduled_at ? new Date(m.scheduled_at).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' }) : 'no time set';
+}
+function toLocalInput(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function onSportChange() {
@@ -297,7 +327,8 @@ function onSportChange() {
 
 async function loadSport() {
   try {
-    const json = await fetch('/api/live?sport=' + encodeURIComponent(sport)).then(r => r.json());
+    // the changing query string bypasses the edge cache so the console never shows a stale score
+    const json = await fetch('/api/live?sport=' + encodeURIComponent(sport) + '&_=' + Date.now(), { cache: 'no-store' }).then(r => r.json());
     store.teams = json.teams || [];
     store.matches = json.matches || [];
   } catch (e) {
@@ -312,8 +343,10 @@ function renderAll() {
   renderFixtureList();
   renderControlSelect();
   renderControl();
-  // toggle half-length field for football only
+  // half-length field for football only; entry code for the racket categories
   document.getElementById('fHalfWrap').style.display = (sport === 'football') ? '' : 'none';
+  document.getElementById('tCodeWrap').hidden = !isRacket();
+  document.getElementById('fDur').placeholder = String(SPORT_CONFIG[sport].duration || 30);
 }
 
 function setView(v) {
@@ -337,11 +370,13 @@ async function createTeam() {
   const name = document.getElementById('tName').value.trim();
   const group_name = document.getElementById('tGroup').value.trim();
   const color = document.getElementById('tColor').value;
+  const code = document.getElementById('tCode').value.trim() || null;
   if (!name) { flash('teamMsg', 'Team name is required.', false); return; }
   try {
-    await api('team.create', { sport, name, group_name, color });
+    await api('team.create', { sport, name, group_name, color, code });
     document.getElementById('tName').value = '';
     document.getElementById('tGroup').value = '';
+    document.getElementById('tCode').value = '';
     await loadSport();
     flash('teamMsg', 'Team added.', true);
   } catch (e) { flash('teamMsg', e.message, false); }
@@ -353,7 +388,7 @@ function renderTeams() {
   wrap.innerHTML = store.teams.map(t => `
     <div class="card" data-team="${t.id}">
       <div class="list-item">
-        <span class="name">${esc(t.name)}</span>
+        <span class="name">${t.code ? `<span class="badge">${esc(t.code)}</span> ` : ''}${esc(t.name)}</span>
         ${t.group_name ? `<span class="badge">Group ${esc(t.group_name)}</span>` : ''}
         <span class="spacer" style="margin-left:auto"></span>
         <button class="btn-danger" onclick="deleteTeam(${t.id}, this)">Delete</button>
@@ -400,7 +435,7 @@ async function deletePlayer(id) {
 // ── FIXTURES VIEW ─────────────────────────────
 function teamOptions(selectedId) {
   return '<option value="">— TBD —</option>' + store.teams.map(t =>
-    `<option value="${t.id}" ${String(t.id) === String(selectedId) ? 'selected' : ''}>${esc(t.name)}${t.group_name ? ' (' + esc(t.group_name) + ')' : ''}</option>`
+    `<option value="${t.id}" ${String(t.id) === String(selectedId) ? 'selected' : ''}>${esc(teamLabel(t))}${t.group_name ? ' (' + esc(t.group_name) + ')' : ''}</option>`
   ).join('');
 }
 function renderFixtureForm() {
@@ -417,9 +452,13 @@ async function createFixture() {
   const label = document.getElementById('fLabel').value.trim();
   const half_length = parseInt(document.getElementById('fHalf').value, 10) || 10;
   const scheduled_at = whenVal ? new Date(whenVal).toISOString() : null;
+  const referee = document.getElementById('fRef').value.trim() || null;
+  const placeholder_a = document.getElementById('fPhA').value.trim() || null;
+  const placeholder_b = document.getElementById('fPhB').value.trim() || null;
+  const duration_min = parseInt(document.getElementById('fDur').value, 10) || null;
   try {
-    await api('match.create', { sport, stage, group_name, team_a_id, team_b_id, scheduled_at, label, half_length });
-    document.getElementById('fLabel').value = '';
+    await api('match.create', { sport, stage, group_name, team_a_id, team_b_id, scheduled_at, label, half_length, referee, placeholder_a, placeholder_b, duration_min });
+    ['fLabel', 'fRef', 'fPhA', 'fPhB', 'fDur'].forEach(id => { document.getElementById(id).value = ''; });
     await loadSport();
     flash('fixMsg', 'Fixture created.', true);
     setView('fixtures');
@@ -438,16 +477,61 @@ function renderFixtureList() {
       ${byStage[s].map(m => `
         <div class="card">
           <div class="list-item">
-            <span class="name">${esc(m.team_a_name || 'TBD')} v ${esc(m.team_b_name || 'TBD')}</span>
+            <span class="name">${esc(sideName(m, 'a'))} v ${esc(sideName(m, 'b'))}</span>
             <span class="badge">${esc(statusLabel(m.status))}</span>
             <span style="margin-left:auto"></span>
+            <button class="btn-ghost" onclick="editFixture(${m.id})">Edit</button>
             <button class="btn-danger" onclick="deleteMatch(${m.id}, this)">Delete</button>
           </div>
           <p class="muted" style="margin:.3rem 0 0">
-            ${m.group_name ? 'Group ' + esc(m.group_name) + ' · ' : ''}${m.label ? esc(m.label) + ' · ' : ''}${m.scheduled_at ? esc(new Date(m.scheduled_at).toLocaleString()) : 'no time set'}
+            ${m.group_name ? 'Group ' + esc(m.group_name) + ' · ' : ''}${m.label ? esc(m.label) + ' · ' : ''}${esc(whenLabel(m))}${m.referee ? ' · Ref: ' + esc(m.referee) : ''}
           </p>
+          <div id="fxEdit-${m.id}"></div>
         </div>`).join('')}
     </div>`).join('');
+}
+
+// Inline fixture editor: slot the real teams into a knockout, move a kickoff, fix a venue or referee.
+function editFixture(id) {
+  const m = store.matches.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('fxEdit-' + id).innerHTML = `
+    <div class="row" style="margin-top:.6rem">
+      <div class="grow2"><label>Team A</label><select id="e-a-${id}">${teamOptions(m.team_a_id)}</select></div>
+      <div class="grow2"><label>Team B</label><select id="e-b-${id}">${teamOptions(m.team_b_id)}</select></div>
+    </div>
+    <div class="row" style="margin-top:.6rem">
+      <div class="grow2"><label>Kickoff (local)</label><input id="e-when-${id}" type="datetime-local" value="${toLocalInput(m.scheduled_at)}" /></div>
+      <div><label>Pitch / Court</label><input id="e-label-${id}" value="${esc(m.label || '')}" maxlength="80" /></div>
+      <div><label>Referee</label><input id="e-ref-${id}" value="${esc(m.referee || '')}" maxlength="120" /></div>
+    </div>
+    <div class="row" style="margin-top:.6rem">
+      <div><label>Placeholder A</label><input id="e-pa-${id}" value="${esc(m.placeholder_a || '')}" maxlength="60" /></div>
+      <div><label>Placeholder B</label><input id="e-pb-${id}" value="${esc(m.placeholder_b || '')}" maxlength="60" /></div>
+      <div><label>Slot (min)</label><input id="e-dur-${id}" type="number" min="5" max="180" value="${m.duration_min || ''}" /></div>
+    </div>
+    <div class="inline-actions">
+      <button class="btn-primary" onclick="saveFixture(${id}, this)">Save</button>
+      <button class="btn-ghost" onclick="document.getElementById('fxEdit-${id}').innerHTML=''">Cancel</button>
+    </div>
+    <p id="fxEditMsg-${id}" class="err" hidden></p>`;
+}
+async function saveFixture(id, btn) {
+  const v = k => document.getElementById(`e-${k}-${id}`).value;
+  const whenVal = v('when');
+  btn.disabled = true;
+  try {
+    await api('match.update', {
+      id,
+      team_a_id: v('a') || null, team_b_id: v('b') || null,
+      scheduled_at: whenVal ? new Date(whenVal).toISOString() : null,
+      label: v('label').trim(), referee: v('ref').trim(),
+      placeholder_a: v('pa').trim(), placeholder_b: v('pb').trim(),
+      duration_min: v('dur') ? parseInt(v('dur'), 10) : null,
+    });
+    await loadSport();
+    flash('fixMsg', 'Fixture updated.', true);
+  } catch (e) { flash('fxEditMsg-' + id, e.message, false); btn.disabled = false; }
 }
 async function deleteMatch(id, btn) {
   if (btn.dataset.confirm !== '1') {
@@ -465,7 +549,7 @@ function renderControlSelect() {
   const prev = sel.value;
   if (!store.matches.length) { sel.innerHTML = '<option value="">No matches</option>'; return; }
   sel.innerHTML = store.matches.map(m =>
-    `<option value="${m.id}">${esc(m.team_a_name || 'TBD')} v ${esc(m.team_b_name || 'TBD')} — ${esc(statusLabel(m.status))}</option>`
+    `<option value="${m.id}">${esc(sideName(m, 'a'))} v ${esc(sideName(m, 'b'))} — ${esc(whenLabel(m))} — ${esc(statusLabel(m.status))}</option>`
   ).join('');
   if (prev && store.matches.some(m => String(m.id) === prev)) sel.value = prev;
 }
@@ -489,8 +573,8 @@ function renderControl() {
   </div>`;
 
   // score area
-  const aName = esc(m.team_a_name || 'Team A');
-  const bName = esc(m.team_b_name || 'Team B');
+  const aName = esc(m.team_a_name || m.placeholder_a || 'Team A');
+  const bName = esc(m.team_b_name || m.placeholder_b || 'Team B');
 
   if (cfg.scoring === 'sets') {
     html += setsControl(m, aName, bName);
@@ -539,7 +623,19 @@ function statusButtons(m, cfg) {
   }
   if (m.status === 'halftime') btns.push(B('Second Half', 'match.second_half'));
   if (m.status === 'finished') btns.push(B('Reopen', 'match.reopen', 'btn-ghost'));
+  if (m.status !== 'scheduled') btns.push(`<button class="btn-danger" onclick="resetMatch(${m.id}, this)">Reset</button>`);
   return btns.join('');
+}
+
+// Undo a mistaken kick-off or score: back to scheduled, 0–0, no sets, no events.
+async function resetMatch(id, btn) {
+  if (btn.dataset.confirm !== '1') {
+    btn.dataset.confirm = '1'; btn.textContent = 'Reset to scheduled?';
+    setTimeout(() => { if (btn) { btn.dataset.confirm = '0'; btn.textContent = 'Reset'; } }, 3000);
+    return;
+  }
+  try { await api('match.reset', { id }); await loadSport(); }
+  catch (e) { flash('ctrlMsg', e.message, false); }
 }
 
 async function statusAction(id, action) {
@@ -575,7 +671,7 @@ function setsControl(m, aName, bName) {
     </div>`).join('');
   return `<div class="card">
     <div class="score-big"><span class="tname">${aName}</span><span class="sc">${m.score_a} – ${m.score_b}</span><span class="tname">${bName}</span></div>
-    <p class="muted">Sets won, computed from set scores.</p>
+    <p class="muted">${esc(setsHint())}</p>
     <div id="setRows">${rows || '<p class="muted">No sets entered.</p>'}</div>
     <div class="inline-actions">
       <button class="btn-ghost" onclick="addSetRow()">+ Add Set</button>
@@ -583,7 +679,13 @@ function setsControl(m, aName, bName) {
     </div>
   </div>`;
 }
-let pendingSets = null;
+function setsHint() {
+  const fam = SPORT_CONFIG[sport].family;
+  if (fam === 'volleyball') return 'Two sets to 25 — enter both; a 1–1 is a draw (1 point each).';
+  if (fam === 'table-tennis') return 'Group matches: two games to 11 (1–1 is a draw, 2 points each). Semi-finals best of 3, final best of 5.';
+  if (fam === 'badminton') return 'Best of three to 15 (21 in knockouts): 2–0 = 3 pts, 2–1 = 2 pts, 1–2 = 1 pt, 0–2 = 0.';
+  return 'Sets won, computed from set scores.';
+}
 function readSetRows() {
   const rows = document.querySelectorAll('#setRows .set-row');
   const out = [];
