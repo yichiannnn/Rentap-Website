@@ -362,10 +362,11 @@ async function route(action, b) {
       const name = str(b.name, 120);
       if (!name) throw fail(400, 'Entry name is required');
       const group_name = str(b.group_name, 20);
+      const note = str(b.note, 500);
       const sort = intOrNull(b.sort) || 0;
       const { rows } = await sql.sql`
-        INSERT INTO placements (sport, group_name, name, sort)
-        VALUES (${sport}, ${group_name}, ${name}, ${sort})
+        INSERT INTO placements (sport, group_name, name, note, sort)
+        VALUES (${sport}, ${group_name}, ${name}, ${note}, ${sort})
         RETURNING id`;
       return { json: { ok: true, id: rows[0].id } };
     }

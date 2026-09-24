@@ -23,11 +23,12 @@
     a { color: var(--gold); }
 
     label { display: block; font-size: .72rem; color: var(--muted); margin-bottom: .3rem; text-transform: uppercase; letter-spacing: .05em; }
-    input, select {
+    input, select, textarea {
       width: 100%; padding: .7rem .85rem; background: var(--ink);
       border: 1px solid var(--border); border-radius: 6px; color: var(--light); font-size: 1rem;
-      min-height: 44px;
+      min-height: 44px; font-family: inherit;
     }
+    textarea { resize: vertical; }
     button { cursor: pointer; border: none; border-radius: 6px; font-weight: 600; font-size: .9rem; min-height: 44px; padding: .6rem 1rem; transition: opacity 150ms, background 150ms; }
     button:hover { opacity: .9; }
     button:disabled { opacity: .5; cursor: default; }
@@ -217,15 +218,16 @@
       <div id="controlBody"></div>
     </div>
 
-    <!-- PLACEMENTS (frisbee tally, basketball 1st/2nd/3rd) -->
+    <!-- PLACEMENTS (frisbee / basketball: 1st, 2nd, 3rd) -->
     <div class="panel" id="panel-placements">
       <div class="card">
         <h3>Add Entry</h3>
         <div class="row">
           <div class="grow2"><label>Team / Entry Name</label><input id="plName" placeholder="e.g. Crackfurt SC" /></div>
           <div><label>Group</label><input id="plGroup" placeholder="blank = one overall group" maxlength="20" /></div>
-          <div style="flex:0 0 auto"><button class="btn-primary" onclick="createPlacement()">Add</button></div>
         </div>
+        <div class="field" style="margin-top:.6rem"><label>Players</label><textarea id="plNote" placeholder="One player per line" rows="2"></textarea></div>
+        <div class="inline-actions"><button class="btn-primary" onclick="createPlacement()">Add</button></div>
         <p id="plMsg" class="err" hidden></p>
       </div>
       <div id="placementList"></div>
@@ -872,15 +874,17 @@ async function confirmGoal() {
   } finally { btn.disabled = false; }
 }
 
-// ── PLACEMENTS (frisbee tally, basketball 1st/2nd/3rd) ──────
+// ── PLACEMENTS (frisbee / basketball: 1st, 2nd, 3rd) ──────
 async function createPlacement() {
   const name = document.getElementById('plName').value.trim();
   const group_name = document.getElementById('plGroup').value.trim();
+  const note = document.getElementById('plNote').value.trim();
   if (!name) { flash('plMsg', 'Entry name is required.', false); return; }
   try {
-    await api('placement.create', { sport, name, group_name });
+    await api('placement.create', { sport, name, group_name, note });
     document.getElementById('plName').value = '';
     document.getElementById('plGroup').value = '';
+    document.getElementById('plNote').value = '';
     await loadSport();
     flash('plMsg', 'Entry added.', true);
   } catch (e) { flash('plMsg', e.message, false); }
@@ -889,7 +893,6 @@ function renderPlacements() {
   const wrap = document.getElementById('placementList');
   const list = store.placements || [];
   if (!list.length) { wrap.innerHTML = '<p class="muted">No entries yet for ' + esc(SPORT_CONFIG[sport].name) + '.</p>'; return; }
-  const isFrisbee = sport === 'frisbee';
   const groups = {};
   list.forEach(p => (groups[p.group_name || ''] ||= []).push(p));
   wrap.innerHTML = Object.keys(groups).sort().map(g => `
@@ -898,13 +901,11 @@ function renderPlacements() {
       ${groups[g].map(p => `
         <div class="list-item" data-placement="${p.id}">
           <span class="name">${esc(p.name)}</span>
-          ${isFrisbee ? `
-            <div style="flex:0 0 90px"><label style="margin:0">Gold</label><input type="number" min="0" value="${p.gold_tries != null ? p.gold_tries : ''}" onchange="savePlacement(${p.id}, {gold_tries: this.value})" /></div>
-            <div style="flex:0 0 90px"><label style="margin:0">Silver</label><input type="number" min="0" value="${p.silver_tries != null ? p.silver_tries : ''}" onchange="savePlacement(${p.id}, {silver_tries: this.value})" /></div>
-          ` : `
-            <div style="flex:0 0 90px"><label style="margin:0">Place</label><input type="number" min="1" max="3" value="${p.place != null ? p.place : ''}" onchange="savePlacement(${p.id}, {place: this.value})" /></div>
-          `}
+          <div style="flex:0 0 130px"><label style="margin:0">Place (1/2/3)</label><input type="number" min="1" max="3" value="${p.place != null ? p.place : ''}" onchange="savePlacement(${p.id}, {place: this.value})" /></div>
           <button class="btn-danger" onclick="deletePlacement(${p.id}, this)">Delete</button>
+        </div>
+        <div class="list-item" style="margin-top:-.3rem">
+          <div class="grow2"><label style="margin:0">Players</label><textarea rows="2" onchange="savePlacement(${p.id}, {note: this.value})">${esc(p.note || '')}</textarea></div>
         </div>`).join('')}
     </div>`).join('');
 }

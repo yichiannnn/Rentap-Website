@@ -103,7 +103,7 @@
     .fx-podium-row.bronze { border-color: #b3762f; }
     .fx-rank { font-family: var(--display); font-size: 1.1rem; letter-spacing: .04em; color: var(--gold); min-width: 2.6rem; }
     .fx-pname { flex: 1; color: var(--light); font-weight: 600; }
-    .fx-tally { color: var(--text-muted); font-size: .82rem; white-space: nowrap; }
+    .fx-tally { display: block; color: var(--text-muted); font-size: .82rem; font-weight: 400; margin-top: .15rem; }
 
     /* track: races with per-lane finishing times */
     .fx-race { border-bottom: 1px solid var(--border); padding: .9rem 0; }
@@ -815,27 +815,24 @@ function winnerOnlyHTML(f) {
   return bracketBlock(slug, d.matches, { title: FAMILIES[f].name });
 }
 
-// ══════════════════════════ PLACEMENTS (frisbee tally, basketball 1st/2nd/3rd) ══════════════════════════
+// ══════════════════════════ PLACEMENTS (frisbee / basketball: 1st, 2nd, 3rd) ══════════════════════════
 const ORDINAL = n => n + (n % 10 === 1 && n % 100 !== 11 ? 'st' : n % 10 === 2 && n % 100 !== 12 ? 'nd' : n % 10 === 3 && n % 100 !== 13 ? 'rd' : 'th');
 function placementsHTML(f) {
   const slug = famSlugs(f)[0];
   const list = (data[slug] && data[slug].placements) || [];
   if (!list.length) return emptyBlock('Results appear here once entries are recorded.');
-  const isFrisbee = slug === 'frisbee';
   const groups = {};
   list.forEach(p => (groups[p.group_name || ''] ||= []).push(p));
   let html = '';
   Object.keys(groups).sort().forEach(g => {
-    const rows = groups[g].slice().sort(isFrisbee
-      ? (a, b) => (b.gold_tries || 0) - (a.gold_tries || 0) || (b.silver_tries || 0) - (a.silver_tries || 0) || a.name.localeCompare(b.name)
-      : (a, b) => (a.place || 99) - (b.place || 99) || a.name.localeCompare(b.name));
+    const rows = groups[g].slice().sort((a, b) => (a.place || 99) - (b.place || 99) || a.name.localeCompare(b.name));
     const title = g ? 'Group ' + esc(g) : FAMILIES[f].name + ' Results';
-    html += `<div class="block"><div class="block-title">${title}<span class="count-badge">${rows.length} ${isFrisbee ? 'teams' : 'entries'}</span></div><ol class="fx-podium">`;
-    rows.forEach((p, i) => {
-      const rank = isFrisbee ? i + 1 : p.place;
+    html += `<div class="block"><div class="block-title">${title}<span class="count-badge">${rows.length} entries</span></div><ol class="fx-podium">`;
+    rows.forEach(p => {
+      const rank = p.place;
       const medal = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
-      const detail = isFrisbee ? `<span class="fx-tally">${p.gold_tries || 0} gold · ${p.silver_tries || 0} silver</span>` : '';
-      html += `<li class="fx-podium-row ${medal}"><span class="fx-rank">${rank ? ORDINAL(rank) : '—'}</span><span class="fx-pname">${esc(p.name)}</span>${detail}</li>`;
+      const players = p.note ? `<span class="fx-tally">${esc(p.note.split('\n').filter(Boolean).join(' · '))}</span>` : '';
+      html += `<li class="fx-podium-row ${medal}"><span class="fx-rank">${rank ? ORDINAL(rank) : '—'}</span><span class="fx-pname">${esc(p.name)}${players}</span></li>`;
     });
     html += '</ol></div>';
   });
