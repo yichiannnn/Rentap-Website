@@ -1,7 +1,7 @@
 import { sql } from '@vercel/postgres';
 import { SLUGS, familyOf, codeNumber, computeStandings } from '../lib/standings.js';
 
-const PLACEMENT_SPORTS = ['frisbee', 'basketball'];
+const PLACEMENT_SPORTS = ['basketball']; // frisbee ranks players within their own team instead
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -92,7 +92,7 @@ async function loadSports(slugs) {
   let players = [];
   if (teamIds.length) {
     const playersRes = await sql`
-      SELECT id, team_id, name, number FROM players
+      SELECT id, team_id, name, number, place FROM players
       WHERE team_id = ANY(${teamIds})
       ORDER BY number NULLS LAST, name
     `;

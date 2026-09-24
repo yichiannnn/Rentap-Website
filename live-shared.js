@@ -39,7 +39,7 @@ window.SPORT_CONFIG = {
   basketball:    { name: 'Basketball',  short: 'BB', family: 'basketball', scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 30,
                    placementOnly: true, note: 'Solo entries — teams are formed on the day. Placement by group, no fixed bracket.' },
   frisbee:       { name: 'Frisbee',     short: 'FR', family: 'frisbee',    scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 10,
-                   placementOnly: true, note: 'Disc golf accuracy round — ranked by gold- and silver-tier tries, one team per 10-minute slot.' },
+                   rosterPlacement: true, note: "Each team's players are ranked 1st/2nd/3rd against each other within their own team." },
   'tug-of-war':  { name: 'Tug of War',  short: 'TW', family: 'tug-of-war', scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 15,
                    winnerOnly: true, note: 'Best of 3 pulls — only the winner is shown, no score.' },
   track:         { name: 'Track',       short: 'TR', family: 'track',     scoring: 'time',   clock: false, events: false, groups: false, advance: 0, duration: 10 },

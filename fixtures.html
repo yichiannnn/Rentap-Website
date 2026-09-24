@@ -839,6 +839,29 @@ function placementsHTML(f) {
   return html;
 }
 
+// ══════════════════════════ ROSTER PLACEMENT (frisbee: players ranked within their own team) ══════════════════════════
+function rosterPlacementHTML(f) {
+  const slug = famSlugs(f)[0];
+  const teams = (data[slug] && data[slug].teams) || [];
+  if (!teams.length) return emptyBlock('Results appear here once teams and players are entered.');
+  let html = '';
+  teams.forEach(t => {
+    const players = (t.players || []).slice().sort((a, b) => (a.place || 99) - (b.place || 99) || a.name.localeCompare(b.name));
+    html += `<div class="block"><div class="block-title">${esc(t.name)}<span class="count-badge">${players.length} players</span></div>`;
+    if (players.length) {
+      html += '<ol class="fx-podium">' + players.map(p => {
+        const rank = p.place;
+        const medal = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+        return `<li class="fx-podium-row ${medal}"><span class="fx-rank">${rank ? ORDINAL(rank) : '—'}</span><span class="fx-pname">${esc(p.name)}</span></li>`;
+      }).join('') + '</ol>';
+    } else {
+      html += '<p style="color:var(--text-muted);font-size:.88rem">No players yet.</p>';
+    }
+    html += '</div>';
+  });
+  return html;
+}
+
 // ══════════════════════════ TRACK (finishing times, ranked) ══════════════════════════
 function fmtRaceTime(ms) { return (ms / 1000).toFixed(2) + 's'; }
 function trackCatChips(all) {
@@ -1120,6 +1143,7 @@ function render() {
   else if (f === 'volleyball') html += volleyballHTML();
   else if (f === 'touch-rugby') html += rugbyHTML();
   else if (cfgOf(slugs[0]).placementOnly) html += placementsHTML(f);
+  else if (cfgOf(slugs[0]).rosterPlacement) html += rosterPlacementHTML(f);
   else if (cfgOf(slugs[0]).winnerOnly) html += winnerOnlyHTML(f);
   else html += racketHTML(f);
   html += formatHTML(f);

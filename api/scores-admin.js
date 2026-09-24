@@ -133,22 +133,24 @@ async function route(action, b) {
       if (!team_id) throw fail(400, 'Missing team id');
       if (!name) throw fail(400, 'Player name is required');
       const number = intOrNull(b.number);
+      const place = intOrNull(b.place);
       const { rows } = await sql.sql`
-        INSERT INTO players (team_id, name, number)
-        VALUES (${team_id}, ${name}, ${number})
+        INSERT INTO players (team_id, name, number, place)
+        VALUES (${team_id}, ${name}, ${number}, ${place})
         RETURNING id`;
       return { json: { ok: true, id: rows[0].id } };
     }
     case 'player.update': {
       const id = intOrNull(b.id);
       if (!id) throw fail(400, 'Missing player id');
-      const name = str(b.name, 120);
-      const number = intOrNull(b.number);
-      await sql.sql`
-        UPDATE players SET
-          name = COALESCE(${name}, name),
-          number = ${number}
-        WHERE id = ${id}`;
+      const cols = [], vals = [];
+      const push = (c, v) => { cols.push(`${c}=$${cols.length + 1}`); vals.push(v); };
+      if ('name' in b)   push('name', str(b.name, 120));
+      if ('number' in b) push('number', intOrNull(b.number));
+      if ('place' in b)  push('place', intOrNull(b.place));
+      if (!cols.length) return { json: { ok: true } };
+      vals.push(id);
+      await sql.query(`UPDATE players SET ${cols.join(', ')} WHERE id=$${vals.length}`, vals);
       return { json: { ok: true } };
     }
     case 'player.delete': {
