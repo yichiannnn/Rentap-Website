@@ -1,7 +1,13 @@
 import { db } from '@vercel/postgres';
 import crypto from 'crypto';
 
-const SLUGS = ['football', 'touch-rugby', 'badminton', 'volleyball', 'basketball', 'table-tennis', 'frisbee', 'tug-of-war'];
+// One slug per database `sport`; badminton and table tennis have one per category
+// (mirror of SPORT_CONFIG in live-shared.js and SPORTS in api/live.js).
+const SLUGS = [
+  'football', 'touch-rugby', 'volleyball', 'basketball', 'frisbee', 'tug-of-war',
+  'badminton-ms', 'badminton-md', 'badminton-xd', 'badminton-wd', 'badminton-ws',
+  'table-tennis-ms', 'table-tennis-ws', 'table-tennis-od',
+];
 const EVENT_TYPES = ['goal', 'own_goal', 'penalty_goal', 'yellow', 'red', 'sub', 'note'];
 const SCORING_EVENTS = ['goal', 'own_goal', 'penalty_goal'];
 const STAGES = ['group', 'quarter', 'semi', 'third', 'final'];
@@ -51,7 +57,10 @@ export default async function handler(req, res) {
     return res.status(result.status || 200).json(result.json || { ok: true });
   } catch (err) {
     console.error('scores-admin error', action, err);
-    const msg = err.userMessage || 'Operation failed';
+    // 42703 = undefined_column: the schema migration in SETUP-LIVE-SCORES.md has not been run
+    const msg = err.userMessage || (err.code === '42703'
+      ? 'The database is missing a column — run the migration block in SETUP-LIVE-SCORES.md'
+      : 'Operation failed');
     return res.status(err.statusCode || 500).json({ error: msg });
   }
 }
@@ -75,10 +84,11 @@ async function route(action, b) {
       if (!name) throw fail(400, 'Team name is required');
       const group_name = str(b.group_name, 20);
       const color = str(b.color, 20);
+      const code = str(b.code, 12);        // entry code for racket categories (MS1, MD4 …)
       try {
         const { rows } = await sql.sql`
-          INSERT INTO teams (sport, name, group_name, color)
-          VALUES (${sport}, ${name}, ${group_name}, ${color})
+          INSERT INTO teams (sport, name, group_name, color, code)
+          VALUES (${sport}, ${name}, ${group_name}, ${color}, ${code})
           RETURNING id`;
         return { json: { ok: true, id: rows[0].id } };
       } catch (e) {
@@ -93,11 +103,13 @@ async function route(action, b) {
       const name = str(b.name, 120);
       const group_name = str(b.group_name, 20);
       const color = str(b.color, 20);
+      const code = str(b.code, 12);
       await sql.sql`
         UPDATE teams SET
           name = COALESCE(${name}, name),
           group_name = ${group_name},
-          color = ${color}
+          color = ${color},
+          code = ${code}
         WHERE id = ${id}`;
       return { json: { ok: true } };
     }
@@ -151,10 +163,15 @@ async function route(action, b) {
       const team_b_id = intOrNull(b.team_b_id);
       const scheduled_at = str(b.scheduled_at, 40); // ISO string or null
       const half_length = intOrNull(b.half_length) || 10;
+      const duration_min = intOrNull(b.duration_min);
+      const referee = str(b.referee, 120);
+      const placeholder_a = str(b.placeholder_a, 60); // "Champion A", "Winner SF1" … until the team is known
+      const placeholder_b = str(b.placeholder_b, 60);
       const { rows } = await sql.sql`
-        INSERT INTO matches (sport, stage, group_name, label, team_a_id, team_b_id, scheduled_at, half_length, updated_at)
+        INSERT INTO matches (sport, stage, group_name, label, team_a_id, team_b_id, scheduled_at, half_length,
+                             duration_min, referee, placeholder_a, placeholder_b, updated_at)
         VALUES (${sport}, ${stage}, ${group_name}, ${label}, ${team_a_id}, ${team_b_id},
-                ${scheduled_at}, ${half_length}, now())
+                ${scheduled_at}, ${half_length}, ${duration_min}, ${referee}, ${placeholder_a}, ${placeholder_b}, now())
         RETURNING id`;
       return { json: { ok: true, id: rows[0].id } };
     }
@@ -166,13 +183,17 @@ async function route(action, b) {
       const cols = [];
       const vals = [];
       const push = (col, val) => { cols.push(`${col}=$${cols.length + 1}`); vals.push(val); };
-      if ('stage' in b)        push('stage', STAGES.includes(b.stage) ? b.stage : 'group');
-      if ('group_name' in b)   push('group_name', str(b.group_name, 20));
-      if ('label' in b)        push('label', str(b.label, 80));
-      if ('team_a_id' in b)    push('team_a_id', intOrNull(b.team_a_id));
-      if ('team_b_id' in b)    push('team_b_id', intOrNull(b.team_b_id));
-      if ('scheduled_at' in b) push('scheduled_at', str(b.scheduled_at, 40));
-      if ('half_length' in b)  push('half_length', intOrNull(b.half_length) || 10);
+      if ('stage' in b)         push('stage', STAGES.includes(b.stage) ? b.stage : 'group');
+      if ('group_name' in b)    push('group_name', str(b.group_name, 20));
+      if ('label' in b)         push('label', str(b.label, 80));
+      if ('team_a_id' in b)     push('team_a_id', intOrNull(b.team_a_id));
+      if ('team_b_id' in b)     push('team_b_id', intOrNull(b.team_b_id));
+      if ('scheduled_at' in b)  push('scheduled_at', str(b.scheduled_at, 40));
+      if ('half_length' in b)   push('half_length', intOrNull(b.half_length) || 10);
+      if ('duration_min' in b)  push('duration_min', intOrNull(b.duration_min));
+      if ('referee' in b)       push('referee', str(b.referee, 120));
+      if ('placeholder_a' in b) push('placeholder_a', str(b.placeholder_a, 60));
+      if ('placeholder_b' in b) push('placeholder_b', str(b.placeholder_b, 60));
       if (!cols.length) return { json: { ok: true } };
       vals.push(id);
       await sql.query(
@@ -199,6 +220,22 @@ async function route(action, b) {
       return setStatus(sql, b.id, `status='finished'`);
     case 'match.reopen':
       return setStatus(sql, b.id, `status='live'`);
+    // Undo a mistaken kick-off or score: back to scheduled, 0–0, no sets, no events.
+    case 'match.reset':
+      return resetMatch(b);
+
+    // ── BULK WIPE (seeding) ────────────────────────
+    // Deletes every match and team (players and events cascade) of one sport.
+    // Requires `confirm` to equal the slug so a stray call cannot clear a sport.
+    case 'sport.wipe': {
+      const sport = str(b.sport, 40);
+      // the two retired single-category slugs may still hold old test data
+      if (!SLUGS.includes(sport) && !['badminton', 'table-tennis'].includes(sport)) throw fail(400, 'Unknown sport');
+      if (b.confirm !== sport) throw fail(400, 'Repeat the sport slug in `confirm` to wipe it');
+      const m = await sql.sql`DELETE FROM matches WHERE sport = ${sport} RETURNING id`;
+      const t = await sql.sql`DELETE FROM teams WHERE sport = ${sport} RETURNING id`;
+      return { json: { ok: true, matches: m.rows.length, teams: t.rows.length } };
+    }
 
     // ── DIRECT SCORE (points sports / corrections) ─
     case 'match.score': {
@@ -250,6 +287,28 @@ async function setStatus(sql, rawId, setClause) {
   // setClause is a fixed internal string, never user input
   await sql.query(`UPDATE matches SET ${setClause}, updated_at=now() WHERE id=$1`, [id]);
   return { json: { ok: true } };
+}
+
+async function resetMatch(b) {
+  const id = intOrNull(b.id);
+  if (!id) throw fail(400, 'Missing match id');
+  const client = await db.connect();
+  try {
+    await client.sql`BEGIN`;
+    const upd = await client.sql`
+      UPDATE matches SET status='scheduled', score_a=0, score_b=0, sets=NULL,
+                         first_half_at=NULL, second_half_at=NULL, updated_at=now()
+      WHERE id=${id} RETURNING id`;
+    if (!upd.rows.length) { await client.sql`ROLLBACK`; throw fail(404, 'Match not found'); }
+    await client.sql`DELETE FROM match_events WHERE match_id=${id}`;
+    await client.sql`COMMIT`;
+    return { json: { ok: true } };
+  } catch (e) {
+    try { await client.sql`ROLLBACK`; } catch {}
+    throw e;
+  } finally {
+    client.release();
+  }
 }
 
 // Derive current minute from the match clock fields (server side fallback)

@@ -1,22 +1,82 @@
 /* RENTAP XVII — live-shared.js
-   Shared, dependency-free helpers for live.html and scores-admin.html.
-   Plain script (no modules): defines globals. */
+   Shared, dependency-free helpers for fixtures.html, scores-admin.html and the
+   content pages. Plain script (no modules): defines globals. */
 
 /* ── Sport configuration ─────────────────────────────
-   Add a new sport by adding one entry here and creating its
-   teams / matches in the database. No structural changes needed. */
+   One entry per database `sport` slug. Badminton and table tennis have one
+   slug per category so each category keeps its own groups, standings and
+   bracket; `family` groups those slugs under one public tab. The points
+   rules live server side in api/live.js — this only drives the UI.
+     scoring  'goals' | 'points' | 'sets'
+     clock    derived football minute (kick off / half time flow)
+     events   goal / card timeline
+     groups   group stage with a knockout after it (false = single league)
+     advance  rows per group highlighted as qualifying
+     sets     sets per group match (set sports), setTo: points per set */
 window.SPORT_CONFIG = {
-  football:      { name: 'Football',    scoring: 'goals',  live: true,  clock: true,  groups: true,  knockout: true,  events: true,  advance: 4 },
-  'touch-rugby': { name: 'Rugby Touch', scoring: 'points', live: false, clock: false, groups: true,  knockout: true,  events: false, advance: 2 },
-  badminton:     { name: 'Badminton',   scoring: 'sets',   live: false, clock: false, groups: true,  knockout: true,  events: false, advance: 2 },
-  volleyball:    { name: 'Volleyball',  scoring: 'sets',   live: false, clock: false, groups: true,  knockout: true,  events: false, advance: 2 },
-  basketball:    { name: 'Basketball',  scoring: 'points', live: false, clock: false, groups: true,  knockout: true,  events: false, advance: 2 },
-  'table-tennis': { name: 'Table Tennis', scoring: 'sets', live: false, clock: false, groups: true, knockout: true, events: false, advance: 2 },
-  frisbee:       { name: 'Frisbee',     scoring: 'points', live: false, clock: false, groups: true,  knockout: true,  events: false, advance: 2 },
-  'tug-of-war':  { name: 'Tug of War',  scoring: 'points', live: false, clock: false, groups: true,  knockout: true,  events: false, advance: 2 },
+  football:      { name: 'Football',    short: 'FB', family: 'football',     scoring: 'goals',  clock: true,  events: true,  groups: true,  advance: 2, duration: 30,
+                   note: 'Top two of each group go to the semi-finals.' },
+  volleyball:    { name: 'Volleyball',  short: 'VB', family: 'volleyball',   scoring: 'sets',   clock: false, events: false, groups: false, advance: 0, duration: 60, sets: 2, setTo: 25,
+                   note: 'Single league — champion by league table.' },
+  'touch-rugby': { name: 'Touch Rugby', short: 'RT', family: 'touch-rugby',  scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 45,
+                   note: 'Double round robin — every pair plays twice; champion by league table.' },
+  'badminton-ms': { name: "Men's Singles",   short: 'MS', family: 'badminton', scoring: 'sets', groups: true,  advance: 1, bestRunnerUp: true, duration: 30, sets: 3, setTo: 15,
+                    note: 'Three groups — the group winners and the best runner-up go to the semi-finals.' },
+  'badminton-md': { name: "Men's Doubles",   short: 'MD', family: 'badminton', scoring: 'sets', groups: true,  advance: 2, duration: 30, sets: 3, setTo: 15,
+                    note: 'Four groups — top two of each go to the quarter-finals (Saturday evening).' },
+  'badminton-xd': { name: 'Mixed Doubles',   short: 'XD', family: 'badminton', scoring: 'sets', groups: true,  advance: 2, duration: 30, sets: 3, setTo: 15,
+                    note: 'Two groups — top two of each go to the semi-finals.' },
+  'badminton-wd': { name: "Women's Doubles", short: 'WD', family: 'badminton', scoring: 'sets', groups: false, advance: 0, duration: 30, sets: 3, setTo: 15,
+                    note: 'Single round robin — winner by ranking, no knockout stage.' },
+  'badminton-ws': { name: "Women's Singles", short: 'WS', family: 'badminton', scoring: 'sets', groups: false, advance: 0, duration: 30, sets: 3, setTo: 15,
+                    note: 'Single round robin — winner by ranking, no knockout stage.' },
+  'table-tennis-ms': { name: "Men's Singles",   short: 'MS', family: 'table-tennis', scoring: 'sets', groups: true,  advance: 2, duration: 30, sets: 2, setTo: 11,
+                       note: 'Two groups of four — top two of each go to the semi-finals.' },
+  'table-tennis-ws': { name: "Women's Singles", short: 'WS', family: 'table-tennis', scoring: 'sets', groups: false, advance: 0, duration: 30, sets: 2, setTo: 11,
+                       note: 'Round robin, then 1st v 2nd play the final and 3rd v 4th the 3rd-place match (Saturday).' },
+  'table-tennis-od': { name: 'Open Doubles',    short: 'OD', family: 'table-tennis', scoring: 'sets', groups: true,  advance: 2, duration: 30, sets: 2, setTo: 11,
+                       note: 'Two groups — top two of each go to the semi-finals.' },
+  basketball:    { name: 'Basketball',  short: 'BB', family: 'basketball', scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 30 },
+  frisbee:       { name: 'Frisbee',     short: 'FR', family: 'frisbee',    scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 10 },
+  'tug-of-war':  { name: 'Tug of War',  short: 'TW', family: 'tug-of-war', scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 15 },
 };
 
-window.SPORT_ORDER = ['football', 'volleyball', 'badminton', 'basketball', 'touch-rugby', 'table-tennis', 'frisbee', 'tug-of-war'];
+/* ── Families: one public tab per family, one console optgroup ── */
+window.FAMILIES = {
+  football:      { name: 'Football',     slugs: ['football'],
+                   format: ['Group stage and semi-finals: 10 min – 5 min break – 10 min (30-minute slot). 3rd place: 30-minute slot. Final: 60-minute slot.',
+                            'Win 3 pts · Draw 1 pt · Loss 0. Tie-breakers: head-to-head, goal difference, goals scored.'] },
+  volleyball:    { name: 'Volleyball',   slugs: ['volleyball'],
+                   format: ['Single league in Hall 2 — every team plays every other team once. Two sets to 25 points, one hour per match.',
+                            '2–0 win 3 pts · 1–1 draw 1 pt · 0–2 loss 0. The referee team provides three officials.'] },
+  'touch-rugby': { name: 'Touch Rugby',  slugs: ['touch-rugby'],
+                   format: ['Three teams, double round robin — each pair plays twice. 45-minute matches on the field.',
+                            'Win 3 pts · Draw 1 pt · Loss 0. Champion by league table.'] },
+  badminton:     { name: 'Badminton',    slugs: ['badminton-ms', 'badminton-md', 'badminton-xd', 'badminton-wd', 'badminton-ws'],
+                   format: ['Group stage: best of three games to 15. Semi-finals, finals and 3rd place: best of three to 21.',
+                            '2–0 win 3 pts · 2–1 win 2 pts · 1–2 loss 1 pt · 0–2 loss 0. Courts 1–3 in Hall 1, courts 4–6 in Hall 3.'] },
+  'table-tennis': { name: 'Table Tennis', slugs: ['table-tennis-ms', 'table-tennis-ws', 'table-tennis-od'],
+                   format: ['Group matches: two games to 11 (a 1–1 is a draw). Semi-finals: best of three. Final and 3rd place: best of five.',
+                            '2–0 win 3 pts · 1–1 draw 2 pts · 0–2 loss 0. Saturday in Hall 4, Sunday in Hall 3.'] },
+  basketball:    { name: 'Basketball',   slugs: ['basketball'] },
+  frisbee:       { name: 'Frisbee',      slugs: ['frisbee'] },
+  'tug-of-war':  { name: 'Tug of War',   slugs: ['tug-of-war'] },
+};
+
+/* public fixtures page tabs, and the console's sport list (family order) */
+window.FIXTURE_ORDER = ['football', 'volleyball', 'touch-rugby', 'badminton', 'table-tennis'];
+window.SPORT_ORDER = ['football', 'volleyball', 'touch-rugby', 'badminton', 'table-tennis', 'basketball', 'frisbee', 'tug-of-war']
+  .flatMap(f => FAMILIES[f].slugs);
+
+/* display name for a slug: "Badminton · Men's Doubles" or just "Football" */
+window.sportLabel = function (slug) {
+  const c = SPORT_CONFIG[slug];
+  if (!c) return slug;
+  return c.family === slug ? c.name : FAMILIES[c.family].name + ' · ' + c.name;
+};
+window.stageName = function (stage) {
+  return { group: 'Group', quarter: 'Quarter-final', semi: 'Semi-final', third: '3rd Place', final: 'Final' }[stage] || stage;
+};
 
 /* ── Inline SVG icons (stroke style, matches index.html) ── */
 window.SPORT_ICONS = {
@@ -28,6 +88,11 @@ window.SPORT_ICONS = {
   'table-tennis': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="6.5"/><line x1="8" y1="5" x2="8" y2="15"/><line x1="15" y1="15" x2="20" y2="21"/><circle cx="20" cy="5" r="2.5"/></svg>`,
   frisbee: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="12" cy="12" rx="10" ry="5"/><ellipse cx="12" cy="12" rx="5" ry="2.3"/></svg>`,
   'tug-of-war': `<svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12 Q3 8 7 8 L41 8 Q45 8 45 12 Q45 16 41 16 L7 16 Q3 16 3 12 Z"/><path d="M12 8 Q16 12 14 16"/><path d="M22 8 Q26 12 24 16"/><path d="M32 8 Q36 12 34 16"/></svg>`,
+};
+/* icon for any slug — category slugs use their family's icon */
+window.sportIcon = function (slug) {
+  const c = SPORT_CONFIG[slug];
+  return SPORT_ICONS[c ? c.family : slug] || '';
 };
 
 /* ── HTML escaping (mirror admin.html) ── */
