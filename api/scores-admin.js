@@ -91,10 +91,11 @@ async function route(action, b) {
       const group_name = str(b.group_name, 20);
       const color = str(b.color, 20);
       const code = str(b.code, 12);        // entry code for racket categories (MS1, MD4 …)
+      const scheduled_at = str(b.scheduled_at, 40); // basketball/frisbee: this team/slot's time
       try {
         const { rows } = await sql.sql`
-          INSERT INTO teams (sport, name, group_name, color, code)
-          VALUES (${sport}, ${name}, ${group_name}, ${color}, ${code})
+          INSERT INTO teams (sport, name, group_name, color, code, scheduled_at)
+          VALUES (${sport}, ${name}, ${group_name}, ${color}, ${code}, ${scheduled_at})
           RETURNING id`;
         return { json: { ok: true, id: rows[0].id } };
       } catch (e) {
@@ -106,17 +107,16 @@ async function route(action, b) {
     case 'team.update': {
       const id = intOrNull(b.id);
       if (!id) throw fail(400, 'Missing team id');
-      const name = str(b.name, 120);
-      const group_name = str(b.group_name, 20);
-      const color = str(b.color, 20);
-      const code = str(b.code, 12);
-      await sql.sql`
-        UPDATE teams SET
-          name = COALESCE(${name}, name),
-          group_name = ${group_name},
-          color = ${color},
-          code = ${code}
-        WHERE id = ${id}`;
+      const cols = [], vals = [];
+      const push = (c, v) => { cols.push(`${c}=$${cols.length + 1}`); vals.push(v); };
+      if ('name' in b)         push('name', str(b.name, 120));
+      if ('group_name' in b)   push('group_name', str(b.group_name, 20));
+      if ('color' in b)        push('color', str(b.color, 20));
+      if ('code' in b)         push('code', str(b.code, 12));
+      if ('scheduled_at' in b) push('scheduled_at', str(b.scheduled_at, 40));
+      if (!cols.length) return { json: { ok: true } };
+      vals.push(id);
+      await sql.query(`UPDATE teams SET ${cols.join(', ')} WHERE id=$${vals.length}`, vals);
       return { json: { ok: true } };
     }
     case 'team.delete': {

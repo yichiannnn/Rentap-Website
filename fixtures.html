@@ -816,12 +816,22 @@ function winnerOnlyHTML(f) {
 const ORDINAL = n => n + (n % 10 === 1 && n % 100 !== 11 ? 'st' : n % 10 === 2 && n % 100 !== 12 ? 'nd' : n % 10 === 3 && n % 100 !== 13 ? 'rd' : 'th');
 function rosterPlacementHTML(f) {
   const slug = famSlugs(f)[0];
-  const teams = (data[slug] && data[slug].teams) || [];
-  if (!teams.length) return emptyBlock('Results appear here once teams and players are entered.');
+  const allTeams = (data[slug] && data[slug].teams) || [];
+  if (!allTeams.length) return emptyBlock('Results appear here once teams and players are entered.');
+  // only show a team under a specific day tab once it has a time confirming
+  // it belongs there; "All" still shows everything, timed or not
+  const days = daysToShow();
+  const teams = allTeams
+    .filter(t => state.day === 'all' || (t.scheduled_at && days.includes(dayOf(t))))
+    .sort((a, b) => new Date(a.scheduled_at || 0) - new Date(b.scheduled_at || 0) || a.name.localeCompare(b.name));
+  if (!teams.length) return emptyBlock('No ' + FAMILIES[f].name + ' games on this day.');
   let html = '';
   teams.forEach(t => {
     const players = (t.players || []).slice().sort((a, b) => (a.place || 99) - (b.place || 99) || a.name.localeCompare(b.name));
-    html += `<div class="block"><div class="block-title">${esc(t.name)}<span class="count-badge">${players.length} players</span></div>`;
+    const nameWithTime = t.scheduled_at
+      ? `${esc(t.name)} <span style="color:var(--text-muted);font-size:.72rem;font-weight:400;text-transform:none;letter-spacing:0">${esc(whenLabel(t))}</span>`
+      : esc(t.name);
+    html += `<div class="block"><div class="block-title">${nameWithTime}<span class="count-badge">${players.length} players</span></div>`;
     if (players.length) {
       html += '<ol class="fx-podium">' + players.map(p => {
         const rank = p.place;

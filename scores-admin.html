@@ -164,6 +164,7 @@
           <div class="grow2"><label>Name</label><input id="tName" placeholder="e.g. FC Kuching" /></div>
           <div><label>Group</label><input id="tGroup" placeholder="A / B / blank" maxlength="20" /></div>
           <div id="tCodeWrap" hidden><label>Code</label><input id="tCode" placeholder="e.g. MD1" maxlength="12" /></div>
+          <div id="tTimeWrap" hidden><label>Time</label><input id="tTime" type="datetime-local" /></div>
           <div><label>Colour</label><input id="tColor" type="color" value="#c8922a" /></div>
           <div style="flex:0 0 auto"><button class="btn-primary" onclick="createTeam()">Add</button></div>
         </div>
@@ -413,12 +414,15 @@ async function createTeam() {
   const group_name = document.getElementById('tGroup').value.trim();
   const color = document.getElementById('tColor').value;
   const code = document.getElementById('tCode').value.trim() || null;
+  const timeVal = document.getElementById('tTime').value;
+  const scheduled_at = timeVal ? new Date(timeVal).toISOString() : null;
   if (!name) { flash('teamMsg', 'Team name is required.', false); return; }
   try {
-    await api('team.create', { sport, name, group_name, color, code });
+    await api('team.create', { sport, name, group_name, color, code, scheduled_at });
     document.getElementById('tName').value = '';
     document.getElementById('tGroup').value = '';
     document.getElementById('tCode').value = '';
+    document.getElementById('tTime').value = '';
     await loadSport();
     flash('teamMsg', 'Team added.', true);
   } catch (e) { flash('teamMsg', e.message, false); }
@@ -427,13 +431,18 @@ async function createTeam() {
 function renderTeams() {
   const wrap = document.getElementById('teamList');
   const rosterPlace = !!SPORT_CONFIG[sport].rosterPlacement;
+  document.getElementById('tTimeWrap').hidden = !rosterPlace;
   if (!store.teams.length) { wrap.innerHTML = '<p class="muted">No teams yet for ' + esc(SPORT_CONFIG[sport].name) + '.</p>'; return; }
-  wrap.innerHTML = store.teams.map(t => `
+  const teamsSorted = rosterPlace
+    ? store.teams.slice().sort((a, b) => new Date(a.scheduled_at || 0) - new Date(b.scheduled_at || 0))
+    : store.teams;
+  wrap.innerHTML = teamsSorted.map(t => `
     <div class="card" data-team="${t.id}">
       <div class="list-item">
         <span class="name">${t.code ? `<span class="badge">${esc(t.code)}</span> ` : ''}${esc(t.name)}</span>
         ${t.group_name ? `<span class="badge">Group ${esc(t.group_name)}</span>` : ''}
         <span class="spacer" style="margin-left:auto"></span>
+        ${rosterPlace ? `<input type="datetime-local" value="${toLocalInput(t.scheduled_at)}" style="width:auto" onchange="saveTeamTime(${t.id}, this.value)" />` : ''}
         <button class="btn-danger" onclick="deleteTeam(${t.id}, this)">Delete</button>
       </div>
       <div class="players" style="margin-top:.5rem">
@@ -454,6 +463,11 @@ function renderTeams() {
 }
 async function savePlayerPlace(id, val) {
   try { await api('player.update', { id, place: val === '' ? null : val }); await loadSport(); }
+  catch (e) { flash('globalMsg', e.message, false); }
+}
+async function saveTeamTime(id, val) {
+  const scheduled_at = val ? new Date(val).toISOString() : null;
+  try { await api('team.update', { id, scheduled_at }); await loadSport(); }
   catch (e) { flash('globalMsg', e.message, false); }
 }
 
