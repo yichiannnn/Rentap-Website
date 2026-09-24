@@ -19,13 +19,13 @@ export default async function handler(req, res) {
     if (!sport && !family) {
       const { rows } = await sql`
         SELECT m.id, m.sport, m.status, m.score_a, m.score_b, m.stage, m.label,
-               m.scheduled_at, m.first_half_at, m.second_half_at, m.half_length,
+               m.scheduled_at,
                ta.name AS team_a_name, tb.name AS team_b_name
         FROM matches m
         LEFT JOIN teams ta ON ta.id = m.team_a_id
         LEFT JOIN teams tb ON tb.id = m.team_b_id
-        WHERE m.status IN ('live','halftime') OR m.status = 'scheduled'
-        ORDER BY m.status DESC, m.scheduled_at ASC NULLS LAST, m.id ASC
+        WHERE m.status = 'scheduled'
+        ORDER BY m.scheduled_at ASC NULLS LAST, m.id ASC
       `;
       return res.status(200).json({ generated_at: new Date().toISOString(), matches: rows });
     }
@@ -112,32 +112,11 @@ async function loadSports(slugs) {
     LEFT JOIN teams tb ON tb.id = m.team_b_id
     WHERE m.sport = ANY(${slugs})
     ORDER BY
-      CASE m.status WHEN 'live' THEN 0 WHEN 'halftime' THEN 1 WHEN 'scheduled' THEN 2 ELSE 3 END,
+      CASE m.status WHEN 'scheduled' THEN 0 ELSE 1 END,
       m.scheduled_at ASC NULLS LAST, m.id ASC
   `;
   const matches = matchesRes.rows;
-
-  // ── Events (live + finished football, so timelines stay viewable) ──
-  const eventMatchIds = matches
-    .filter(m => m.status === 'live' || m.status === 'halftime' ||
-                 (m.sport === 'football' && m.status === 'finished'))
-    .map(m => m.id);
-  let events = [];
-  if (eventMatchIds.length) {
-    const evRes = await sql`
-      SELECT id, match_id, team_id, player_id, player_name, type, minute, created_at
-      FROM match_events
-      WHERE match_id = ANY(${eventMatchIds})
-      ORDER BY match_id, minute NULLS LAST, id
-    `;
-    events = evRes.rows;
-  }
-  const eventsByMatch = {};
-  events.forEach(e => (eventsByMatch[e.match_id] ||= []).push(e));
-  matches.forEach(m => {
-    m.events = eventsByMatch[m.id] || [];
-    out[m.sport].matches.push(m);
-  });
+  matches.forEach(m => out[m.sport].matches.push(m));
 
   // ── Per-slug ordering + standings ─────────────────
   for (const slug of slugs) {

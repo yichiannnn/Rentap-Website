@@ -91,34 +91,16 @@
     .score-big .sc { font-size: 2.5rem; font-weight: 800; color: var(--gold); }
     .goal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1rem 0; }
     .goal-btns button { min-height: 64px; font-size: 1rem; background: var(--red); color: #fff; }
-    .minor-btns { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
-    .minor-btns button { flex: 1 1 auto; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); font-size: .82rem; }
     .stepper { display: flex; align-items: center; gap: .5rem; justify-content: center; }
     .stepper button { width: 44px; background: var(--surface-2); border: 1px solid var(--border); color: var(--light); font-size: 1.2rem; }
     .stepper .val { font-size: 1.8rem; font-weight: 800; color: var(--gold); min-width: 2.5rem; text-align: center; }
 
-    .ev-list { list-style: none; padding: 0; margin: 1rem 0 0; }
-    .ev-list li { display: flex; align-items: center; gap: .5rem; padding: .4rem 0; border-bottom: 1px solid var(--border); font-size: .85rem; }
-    .ev-min { color: var(--gold); font-weight: 700; width: 2.5rem; }
-    .ev-txt { flex: 1; color: var(--text); }
     .ev-del { background: transparent; color: #ff8a78; border: 1px solid rgba(168,32,13,.4); min-height: 34px; padding: .2rem .6rem; font-size: .78rem; }
 
     .set-row { display: flex; gap: .5rem; align-items: center; margin-bottom: .5rem; }
     .set-row .setno { color: var(--muted); width: 3rem; font-size: .8rem; }
     .set-row input { width: 70px; text-align: center; }
     .set-sep { color: var(--muted); }
-
-    /* Modal sheet */
-    .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: flex-end; z-index: 100; }
-    .sheet-overlay.open { display: flex; }
-    .sheet { background: var(--surface); border-top: 2px solid var(--gold); border-radius: 14px 14px 0 0; width: 100%; max-width: 900px; margin: 0 auto; padding: 1.25rem 1rem 2rem; max-height: 80vh; overflow-y: auto; }
-    .sheet h3 { color: var(--light); margin: 0 0 1rem; }
-    .picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: .5rem; margin-bottom: 1rem; }
-    .picker-grid button { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); text-align: left; padding: .6rem .7rem; }
-    .picker-grid button.sel { background: var(--gold); color: var(--ink); border-color: var(--gold); }
-    .toggle-line { display: flex; align-items: center; gap: .5rem; margin: .75rem 0; }
-    .toggle-line input { width: auto; min-height: auto; }
-    @media (min-width: 640px) { .sheet-overlay { align-items: center; } .sheet { border-radius: 14px; } }
   </style>
 </head>
 <body>
@@ -194,7 +176,6 @@
         <div class="row" style="margin-top:.6rem">
           <div class="grow2"><label>Kickoff (local)</label><input id="fWhen" type="datetime-local" /></div>
           <div><label>Pitch / Court</label><input id="fLabel" placeholder="e.g. Pitch A" maxlength="80" /></div>
-          <div id="fHalfWrap"><label>Half (min)</label><input id="fHalf" type="number" value="10" min="1" max="45" /></div>
         </div>
         <div class="row" style="margin-top:.6rem">
           <div><label>Referee (team)</label><input id="fRef" placeholder="e.g. Saki Baki" maxlength="120" /></div>
@@ -242,27 +223,6 @@
   </div>
 </div>
 
-<!-- GOAL SHEET -->
-<div class="sheet-overlay" id="sheet">
-  <div class="sheet">
-    <h3 id="sheetTitle">Add Goal</h3>
-    <div class="picker-grid" id="pickerGrid"></div>
-    <div>
-      <label>Or type a name</label>
-      <input id="pickerFree" placeholder="Scorer name (optional)" />
-    </div>
-    <div class="toggle-line">
-      <input type="checkbox" id="ownGoalChk" />
-      <label for="ownGoalChk" style="margin:0;text-transform:none;letter-spacing:0">Own goal (credits the other team)</label>
-    </div>
-    <div class="inline-actions">
-      <button class="btn-gold" onclick="confirmGoal()" id="sheetConfirm">Confirm Goal</button>
-      <button class="btn-ghost" onclick="closeSheet()">Cancel</button>
-    </div>
-    <p id="sheetErr" class="err" hidden></p>
-  </div>
-</div>
-
 <script src="live-shared.js"></script>
 <script>
 // ── STATE ─────────────────────────────────────
@@ -270,7 +230,6 @@ let ADMIN_KEY = '';
 let view = 'teams';
 let sport = 'football';
 let store = { teams: [], matches: [] };   // current sport data
-let sheetCtx = null;                       // { matchId, teamId, players }
 
 // ── AUTH / API ────────────────────────────────
 async function api(action, payload) {
@@ -386,8 +345,7 @@ function renderAll() {
     if (fixturesVisible) { renderFixtureForm(); renderFixtureList(); }
     if (controlVisible) { renderControlSelect(); renderControl(); }
   }
-  // half-length field for football only; entry code for the racket categories
-  document.getElementById('fHalfWrap').style.display = (sport === 'football') ? '' : 'none';
+  // entry code for the racket categories
   document.getElementById('tCodeWrap').hidden = !isRacket();
   document.getElementById('fDur').placeholder = String(SPORT_CONFIG[sport].duration || 30);
 }
@@ -512,14 +470,13 @@ async function createFixture() {
   const team_b_id = document.getElementById('fTeamB').value || null;
   const whenVal = document.getElementById('fWhen').value;
   const label = document.getElementById('fLabel').value.trim();
-  const half_length = parseInt(document.getElementById('fHalf').value, 10) || 10;
   const scheduled_at = whenVal ? new Date(whenVal).toISOString() : null;
   const referee = document.getElementById('fRef').value.trim() || null;
   const placeholder_a = document.getElementById('fPhA').value.trim() || null;
   const placeholder_b = document.getElementById('fPhB').value.trim() || null;
   const duration_min = parseInt(document.getElementById('fDur').value, 10) || null;
   try {
-    await api('match.create', { sport, stage, group_name, team_a_id, team_b_id, scheduled_at, label, half_length, referee, placeholder_a, placeholder_b, duration_min });
+    await api('match.create', { sport, stage, group_name, team_a_id, team_b_id, scheduled_at, label, referee, placeholder_a, placeholder_b, duration_min });
     ['fLabel', 'fRef', 'fPhA', 'fPhB', 'fDur'].forEach(id => { document.getElementById(id).value = ''; });
     await loadSport();
     flash('fixMsg', 'Fixture created.', true);
@@ -642,21 +599,6 @@ function renderControl() {
     html += winnerOnlyControl(m, aName, bName);
   } else if (cfg.scoring === 'sets') {
     html += setsControl(m, aName, bName);
-  } else if (cfg.events) {
-    html += `<div class="card">
-      <div class="score-big"><span class="tname">${aName}</span><span class="sc">${m.score_a} – ${m.score_b}</span><span class="tname">${bName}</span></div>
-      <div class="goal-btns">
-        <button onclick="openGoalSheet(${m.id}, ${m.team_a_id || 'null'})">+ Goal ${aName}</button>
-        <button onclick="openGoalSheet(${m.id}, ${m.team_b_id || 'null'})">+ Goal ${bName}</button>
-      </div>
-      <div class="minor-btns">
-        <button onclick="quickEvent(${m.id}, ${m.team_a_id || 'null'}, 'yellow')">🟨 ${aName}</button>
-        <button onclick="quickEvent(${m.id}, ${m.team_a_id || 'null'}, 'red')">🟥 ${aName}</button>
-        <button onclick="quickEvent(${m.id}, ${m.team_b_id || 'null'}, 'yellow')">🟨 ${bName}</button>
-        <button onclick="quickEvent(${m.id}, ${m.team_b_id || 'null'}, 'red')">🟥 ${bName}</button>
-      </div>
-      ${eventList(m)}
-    </div>`;
   } else {
     // points sports: steppers + direct entry
     html += `<div class="card">
@@ -700,18 +642,13 @@ async function declareWinner(id, side) {
 function statusButtons(m, cfg) {
   const btns = [];
   const B = (label, action, cls) => `<button class="${cls || 'btn-primary'}" onclick="statusAction(${m.id},'${action}')">${label}</button>`;
-  if (m.status === 'scheduled') btns.push(B('Kick Off', 'match.start'));
-  if (m.status === 'live') {
-    if (cfg.clock) btns.push(B('Half Time', 'match.halftime', 'btn-gold'));
-    btns.push(B('Full Time', 'match.finish', 'btn-ghost'));
-  }
-  if (m.status === 'halftime') btns.push(B('Second Half', 'match.second_half'));
+  if (m.status === 'scheduled') btns.push(B('Finish', 'match.finish'));
   if (m.status === 'finished') btns.push(B('Reopen', 'match.reopen', 'btn-ghost'));
   if (m.status !== 'scheduled') btns.push(`<button class="btn-danger" onclick="resetMatch(${m.id}, this)">Reset</button>`);
   return btns.join('');
 }
 
-// Undo a mistaken kick-off or score: back to scheduled, 0–0, no sets, no events.
+// Undo a mistaken score entry: back to scheduled, 0–0, no sets.
 async function resetMatch(id, btn) {
   if (btn.dataset.confirm !== '1') {
     btn.dataset.confirm = '1'; btn.textContent = 'Reset to scheduled?';
@@ -800,84 +737,6 @@ async function saveSets(id) {
   catch (e) { flash('ctrlMsg', e.message, false); }
 }
 
-// events
-function eventList(m) {
-  const evs = (m.events || []).slice().sort((a, b) => (b.minute || 0) - (a.minute || 0) || b.id - a.id);
-  if (!evs.length) return '<p class="muted" style="margin-top:1rem">No events logged.</p>';
-  return `<ul class="ev-list">${evs.map(e => {
-    const teamName = e.team_id === m.team_a_id ? m.team_a_name : (e.team_id === m.team_b_id ? m.team_b_name : '');
-    const label = e.player_name || evTypeLabel(e.type);
-    return `<li>
-      <span class="ev-min">${e.minute != null ? e.minute + "'" : ''}</span>
-      <span class="ev-txt">${evTypeIcon(e.type)} ${esc(label)} <span class="muted">${esc(teamName || '')}</span></span>
-      <button class="ev-del" onclick="deleteEvent(${e.id})">Undo</button>
-    </li>`;
-  }).join('')}</ul>`;
-}
-function evTypeLabel(t) { return { goal: 'Goal', penalty_goal: 'Penalty', own_goal: 'Own goal', yellow: 'Yellow', red: 'Red', sub: 'Sub', note: 'Note' }[t] || t; }
-function evTypeIcon(t) { return { goal: '⚽', penalty_goal: '⚽', own_goal: '⚽', yellow: '🟨', red: '🟥', sub: '🔁', note: '•' }[t] || '•'; }
-
-async function quickEvent(matchId, teamId, type) {
-  try { await api('event.create', { match_id: matchId, team_id: teamId, type }); await loadSport(); }
-  catch (e) { flash('ctrlMsg', e.message, false); }
-}
-async function deleteEvent(id) {
-  try { await api('event.delete', { id }); await loadSport(); }
-  catch (e) { flash('ctrlMsg', e.message, false); }
-}
-
-// goal sheet
-function openGoalSheet(matchId, teamId) {
-  const team = store.teams.find(t => t.id === teamId);
-  sheetCtx = { matchId, teamId, selectedPlayer: null };
-  document.getElementById('sheetTitle').textContent = 'Add Goal — ' + (team ? team.name : 'Team');
-  const grid = document.getElementById('pickerGrid');
-  const players = team ? (team.players || []) : [];
-  grid.innerHTML = players.length
-    ? players.map(p => `<button data-pid="${p.id}" data-pname="${esc(p.name)}" onclick="pickPlayer(this)">${p.number != null ? '#' + p.number + ' ' : ''}${esc(p.name)}</button>`).join('')
-    : '<p class="muted">No roster. Type a name below.</p>';
-  document.getElementById('pickerFree').value = '';
-  document.getElementById('ownGoalChk').checked = false;
-  document.getElementById('sheetErr').hidden = true;
-  document.getElementById('sheet').classList.add('open');
-}
-function pickPlayer(btn) {
-  document.querySelectorAll('#pickerGrid button').forEach(b => b.classList.remove('sel'));
-  btn.classList.add('sel');
-  sheetCtx.selectedPlayer = { id: parseInt(btn.dataset.pid, 10), name: btn.dataset.pname };
-  document.getElementById('pickerFree').value = '';
-}
-function closeSheet() { document.getElementById('sheet').classList.remove('open'); sheetCtx = null; }
-async function confirmGoal() {
-  if (!sheetCtx) return;
-  const own = document.getElementById('ownGoalChk').checked;
-  const free = document.getElementById('pickerFree').value.trim();
-  const btn = document.getElementById('sheetConfirm');
-  const payload = {
-    match_id: sheetCtx.matchId,
-    team_id: sheetCtx.teamId,
-    type: own ? 'own_goal' : 'goal',
-  };
-  if (!own) {
-    if (sheetCtx.selectedPlayer && !free) {
-      payload.player_id = sheetCtx.selectedPlayer.id;
-      payload.player_name = sheetCtx.selectedPlayer.name;
-    } else if (free) {
-      payload.player_name = free;
-    }
-  }
-  btn.disabled = true;
-  try {
-    await api('event.create', payload);
-    closeSheet();
-    await loadSport();
-  } catch (e) {
-    const err = document.getElementById('sheetErr');
-    err.textContent = e.message; err.hidden = false;
-  } finally { btn.disabled = false; }
-}
-
-
 // ── TRACK (events + per-lane finishing times) ────────────────
 let trackEvents = [];
 async function loadTrack() {
@@ -953,7 +812,7 @@ async function deleteRaceEvent(id, btn) {
 }
 
 // ── LABELS ────────────────────────────────────
-function statusLabel(s) { return { scheduled: 'Scheduled', live: 'Live', halftime: 'Half Time', finished: 'Full Time' }[s] || s; }
+function statusLabel(s) { return { scheduled: 'Scheduled', finished: 'Finished' }[s] || s; }
 function stageTitle(s) { return { group: 'Group Stage', quarter: 'Quarter-finals', semi: 'Semi-finals', third: '3rd Place', final: 'Final' }[s] || s; }
 
 // ── BOOT ──────────────────────────────────────

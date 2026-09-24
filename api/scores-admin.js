@@ -8,8 +8,6 @@ const SLUGS = [
   'badminton-ms', 'badminton-md', 'badminton-xd', 'badminton-wd', 'badminton-ws',
   'table-tennis-ms', 'table-tennis-ws', 'table-tennis-od',
 ];
-const EVENT_TYPES = ['goal', 'own_goal', 'penalty_goal', 'yellow', 'red', 'sub', 'note'];
-const SCORING_EVENTS = ['goal', 'own_goal', 'penalty_goal'];
 const STAGES = ['group', 'quarter', 'semi', 'third', 'final'];
 
 // ── constant-time key check ──────────────────────────
@@ -170,16 +168,15 @@ async function route(action, b) {
       const team_a_id = intOrNull(b.team_a_id);
       const team_b_id = intOrNull(b.team_b_id);
       const scheduled_at = str(b.scheduled_at, 40); // ISO string or null
-      const half_length = intOrNull(b.half_length) || 10;
       const duration_min = intOrNull(b.duration_min);
       const referee = str(b.referee, 120);
       const placeholder_a = str(b.placeholder_a, 60); // "Champion A", "Winner SF1" … until the team is known
       const placeholder_b = str(b.placeholder_b, 60);
       const { rows } = await sql.sql`
-        INSERT INTO matches (sport, stage, group_name, label, team_a_id, team_b_id, scheduled_at, half_length,
+        INSERT INTO matches (sport, stage, group_name, label, team_a_id, team_b_id, scheduled_at,
                              duration_min, referee, placeholder_a, placeholder_b, updated_at)
         VALUES (${sport}, ${stage}, ${group_name}, ${label}, ${team_a_id}, ${team_b_id},
-                ${scheduled_at}, ${half_length}, ${duration_min}, ${referee}, ${placeholder_a}, ${placeholder_b}, now())
+                ${scheduled_at}, ${duration_min}, ${referee}, ${placeholder_a}, ${placeholder_b}, now())
         RETURNING id`;
       return { json: { ok: true, id: rows[0].id } };
     }
@@ -197,7 +194,6 @@ async function route(action, b) {
       if ('team_a_id' in b)     push('team_a_id', intOrNull(b.team_a_id));
       if ('team_b_id' in b)     push('team_b_id', intOrNull(b.team_b_id));
       if ('scheduled_at' in b)  push('scheduled_at', str(b.scheduled_at, 40));
-      if ('half_length' in b)   push('half_length', intOrNull(b.half_length) || 10);
       if ('duration_min' in b)  push('duration_min', intOrNull(b.duration_min));
       if ('referee' in b)       push('referee', str(b.referee, 120));
       if ('placeholder_a' in b) push('placeholder_a', str(b.placeholder_a, 60));
@@ -218,19 +214,14 @@ async function route(action, b) {
     }
 
     // ── STATUS FLOW ────────────────────────────────
-    case 'match.start':
-      return setStatus(sql, b.id, `status='live', first_half_at=now()`);
-    case 'match.halftime':
-      return setStatus(sql, b.id, `status='halftime'`);
-    case 'match.second_half':
-      return setStatus(sql, b.id, `status='live', second_half_at=now()`);
+    // Just two states: enter the score once the game is over, then Finish.
     case 'match.finish':
       return setStatus(sql, b.id, `status='finished'`);
     case 'match.reopen':
-      return setStatus(sql, b.id, `status='live'`);
-    // Undo a mistaken kick-off or score: back to scheduled, 0–0, no sets, no events.
+      return setStatus(sql, b.id, `status='scheduled'`);
+    // Undo a mistaken score entry: back to scheduled, 0–0, no sets.
     case 'match.reset':
-      return resetMatch(b);
+      return resetMatch(sql, b);
 
     // ── BULK WIPE (seeding) ────────────────────────
     // Deletes every match and team (players and events cascade) of one sport.
@@ -277,12 +268,6 @@ async function route(action, b) {
         WHERE id=${id}`;
       return { json: { ok: true, score_a: won_a, score_b: won_b } };
     }
-
-    // ── EVENTS (football) ──────────────────────────
-    case 'event.create':
-      return createEvent(b);
-    case 'event.delete':
-      return deleteEvent(b);
 
     // ── TRACK: events + lane entries ────────────────
     case 'race.event.create': {
@@ -371,133 +356,12 @@ async function setStatus(sql, rawId, setClause) {
   return { json: { ok: true } };
 }
 
-async function resetMatch(b) {
+async function resetMatch(sql, b) {
   const id = intOrNull(b.id);
   if (!id) throw fail(400, 'Missing match id');
-  const client = await db.connect();
-  try {
-    await client.sql`BEGIN`;
-    const upd = await client.sql`
-      UPDATE matches SET status='scheduled', score_a=0, score_b=0, sets=NULL,
-                         first_half_at=NULL, second_half_at=NULL, updated_at=now()
-      WHERE id=${id} RETURNING id`;
-    if (!upd.rows.length) { await client.sql`ROLLBACK`; throw fail(404, 'Match not found'); }
-    await client.sql`DELETE FROM match_events WHERE match_id=${id}`;
-    await client.sql`COMMIT`;
-    return { json: { ok: true } };
-  } catch (e) {
-    try { await client.sql`ROLLBACK`; } catch {}
-    throw e;
-  } finally {
-    client.release();
-  }
-}
-
-// Derive current minute from the match clock fields (server side fallback)
-function derivedMinute(m) {
-  const half = m.half_length || 10;
-  const now = Date.now();
-  if (m.status === 'halftime') return half;
-  if (m.status === 'finished') return 2 * half;
-  if (m.second_half_at) {
-    const mins = Math.floor((now - new Date(m.second_half_at).getTime()) / 60000);
-    return Math.min(half + Math.max(0, mins), 2 * half);
-  }
-  if (m.first_half_at) {
-    const mins = Math.floor((now - new Date(m.first_half_at).getTime()) / 60000);
-    return Math.min(Math.max(0, mins), half);
-  }
-  return 0;
-}
-
-async function createEvent(b) {
-  const match_id = intOrNull(b.match_id);
-  const type = b.type;
-  if (!match_id) throw fail(400, 'Missing match id');
-  if (!EVENT_TYPES.includes(type)) throw fail(400, 'Invalid event type');
-
-  const team_id = intOrNull(b.team_id);
-  const player_id = intOrNull(b.player_id);
-  const player_name = str(b.player_name, 120);
-  let minute = intOrNull(b.minute);
-
-  const client = await db.connect();
-  try {
-    await client.sql`BEGIN`;
-
-    const mRes = await client.sql`SELECT * FROM matches WHERE id=${match_id} FOR UPDATE`;
-    if (!mRes.rows.length) { await client.sql`ROLLBACK`; throw fail(404, 'Match not found'); }
-    const m = mRes.rows[0];
-
-    if (minute === null) minute = derivedMinute(m);
-
-    const { rows } = await client.sql`
-      INSERT INTO match_events (match_id, team_id, player_id, player_name, type, minute)
-      VALUES (${match_id}, ${team_id}, ${player_id}, ${player_name}, ${type}, ${minute})
-      RETURNING id`;
-
-    // scoring events adjust the match score
-    if (SCORING_EVENTS.includes(type)) {
-      // own goal credits the OTHER team
-      const creditA = (type === 'own_goal')
-        ? (team_id === m.team_b_id)   // own goal by B → point to A
-        : (team_id === m.team_a_id);
-      if (creditA) {
-        await client.sql`UPDATE matches SET score_a=score_a+1, updated_at=now() WHERE id=${match_id}`;
-      } else {
-        await client.sql`UPDATE matches SET score_b=score_b+1, updated_at=now() WHERE id=${match_id}`;
-      }
-    } else {
-      await client.sql`UPDATE matches SET updated_at=now() WHERE id=${match_id}`;
-    }
-
-    await client.sql`COMMIT`;
-    return { json: { ok: true, id: rows[0].id, minute } };
-  } catch (e) {
-    try { await client.sql`ROLLBACK`; } catch {}
-    throw e;
-  } finally {
-    client.release();
-  }
-}
-
-async function deleteEvent(b) {
-  const id = intOrNull(b.id);
-  if (!id) throw fail(400, 'Missing event id');
-
-  const client = await db.connect();
-  try {
-    await client.sql`BEGIN`;
-    // Delete conditionally; only revert score if a row actually existed.
-    const del = await client.sql`
-      DELETE FROM match_events WHERE id=${id}
-      RETURNING match_id, team_id, type`;
-    if (!del.rows.length) { await client.sql`COMMIT`; return { json: { ok: true, removed: false } }; }
-
-    const ev = del.rows[0];
-    if (SCORING_EVENTS.includes(ev.type)) {
-      const mRes = await client.sql`SELECT team_a_id, team_b_id FROM matches WHERE id=${ev.match_id} FOR UPDATE`;
-      if (mRes.rows.length) {
-        const m = mRes.rows[0];
-        const creditA = (ev.type === 'own_goal')
-          ? (ev.team_id === m.team_b_id)
-          : (ev.team_id === m.team_a_id);
-        if (creditA) {
-          await client.sql`UPDATE matches SET score_a=GREATEST(score_a-1,0), updated_at=now() WHERE id=${ev.match_id}`;
-        } else {
-          await client.sql`UPDATE matches SET score_b=GREATEST(score_b-1,0), updated_at=now() WHERE id=${ev.match_id}`;
-        }
-      }
-    } else {
-      await client.sql`UPDATE matches SET updated_at=now() WHERE id=${ev.match_id}`;
-    }
-
-    await client.sql`COMMIT`;
-    return { json: { ok: true, removed: true } };
-  } catch (e) {
-    try { await client.sql`ROLLBACK`; } catch {}
-    throw e;
-  } finally {
-    client.release();
-  }
+  const upd = await sql.sql`
+    UPDATE matches SET status='scheduled', score_a=0, score_b=0, sets=NULL, updated_at=now()
+    WHERE id=${id} RETURNING id`;
+  if (!upd.rows.length) throw fail(404, 'Match not found');
+  return { json: { ok: true } };
 }

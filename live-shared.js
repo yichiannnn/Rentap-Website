@@ -8,17 +8,15 @@
    bracket; `family` groups those slugs under one public tab. The points
    rules live server side in api/live.js — this only drives the UI.
      scoring  'goals' | 'points' | 'sets'
-     clock    derived football minute (kick off / half time flow)
-     events   goal / card timeline
      groups   group stage with a knockout after it (false = single league)
      advance  rows per group highlighted as qualifying
      sets     sets per group match (set sports), setTo: points per set */
 window.SPORT_CONFIG = {
-  football:      { name: 'Football',    short: 'FB', family: 'football',     scoring: 'goals',  clock: true,  events: true,  groups: true,  advance: 2, duration: 30,
+  football:      { name: 'Football',    short: 'FB', family: 'football',     scoring: 'goals',  groups: true,  advance: 2, duration: 30,
                    note: 'Top two of each group go to the semi-finals.' },
-  volleyball:    { name: 'Volleyball',  short: 'VB', family: 'volleyball',   scoring: 'sets',   clock: false, events: false, groups: false, advance: 0, duration: 60, sets: 2, setTo: 25,
+  volleyball:    { name: 'Volleyball',  short: 'VB', family: 'volleyball',   scoring: 'sets',   groups: false, advance: 0, duration: 60, sets: 2, setTo: 25,
                    note: 'Single league — champion by league table.' },
-  'touch-rugby': { name: 'Touch Rugby', short: 'RT', family: 'touch-rugby',  scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 45,
+  'touch-rugby': { name: 'Touch Rugby', short: 'RT', family: 'touch-rugby',  scoring: 'points', groups: false, advance: 0, duration: 45,
                    note: 'Double round robin — every pair plays twice; champion by league table.' },
   'badminton-ms': { name: "Men's Singles",   short: 'MS', family: 'badminton', scoring: 'sets', groups: true,  advance: 1, bestRunnerUp: true, duration: 30, sets: 3, setTo: 15,
                     note: 'Three groups — the group winners and the best runner-up go to the semi-finals.' },
@@ -36,13 +34,13 @@ window.SPORT_CONFIG = {
                        note: 'Round robin, then 1st v 2nd play the final and 3rd v 4th the 3rd-place match (Saturday).' },
   'table-tennis-od': { name: 'Open Doubles',    short: 'OD', family: 'table-tennis', scoring: 'sets', groups: true,  advance: 2, duration: 30, sets: 2, setTo: 11,
                        note: 'Two groups — top two of each go to the semi-finals.' },
-  basketball:    { name: 'Basketball',  short: 'BB', family: 'basketball', scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 30,
+  basketball:    { name: 'Basketball',  short: 'BB', family: 'basketball', scoring: 'points', groups: false, advance: 0, duration: 30,
                    rosterPlacement: true, note: "Solo entries — teams are formed on the day. Each team's players are then ranked 1st/2nd/3rd against each other." },
-  frisbee:       { name: 'Frisbee',     short: 'FR', family: 'frisbee',    scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 10,
+  frisbee:       { name: 'Frisbee',     short: 'FR', family: 'frisbee',    scoring: 'points', groups: false, advance: 0, duration: 10,
                    rosterPlacement: true, note: "Each team's players are ranked 1st/2nd/3rd against each other within their own team." },
-  'tug-of-war':  { name: 'Tug of War',  short: 'TW', family: 'tug-of-war', scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 15,
+  'tug-of-war':  { name: 'Tug of War',  short: 'TW', family: 'tug-of-war', scoring: 'points', groups: false, advance: 0, duration: 15,
                    winnerOnly: true, note: 'Best of 3 pulls — only the winner is shown, no score.' },
-  track:         { name: 'Track',       short: 'TR', family: 'track',     scoring: 'time',   clock: false, events: false, groups: false, advance: 0, duration: 10 },
+  track:         { name: 'Track',       short: 'TR', family: 'track',     scoring: 'time',   groups: false, advance: 0, duration: 10 },
 };
 
 /* ── Families: one public tab per family, one console optgroup ── */
@@ -122,29 +120,6 @@ window.fmtDateTime = function (iso) {
   const d = new Date(iso);
   if (isNaN(d)) return '';
   return d.toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' });
-};
-
-/* ── Derived football clock label ──────────────────────
-   Returns '07′', 'HT', 'FT', or '' — computed from timestamps,
-   never a ticking server value. */
-window.clockLabel = function (m) {
-  const half = m.half_length || 10;
-  if (m.status === 'finished') return 'FT';
-  if (m.status === 'halftime') return 'HT';
-  if (m.status !== 'live') return '';
-  const now = Date.now();
-  if (m.second_half_at) {
-    const mins = Math.floor((now - new Date(m.second_half_at).getTime()) / 60000);
-    const total = half + Math.max(0, mins);
-    if (total >= 2 * half) return (2 * half) + '′+';
-    return total + '′';
-  }
-  if (m.first_half_at) {
-    const mins = Math.floor((now - new Date(m.first_half_at).getTime()) / 60000);
-    if (mins >= half) return half + '′+';
-    return Math.max(0, mins) + '′';
-  }
-  return '0′';
 };
 
 /* ── Price formatting: EUR cents → '€X.XX' ── */
