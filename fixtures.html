@@ -95,6 +95,30 @@
     details.fx-format summary::-webkit-details-marker { display: none; }
     details.fx-format p { color: var(--text-muted); font-size: .88rem; line-height: 1.6; margin-top: .6rem; max-width: none; }
 
+    /* placements: frisbee tally / basketball 1st-2nd-3rd */
+    .fx-podium { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
+    .fx-podium-row { display: flex; align-items: center; gap: .8rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: .7rem .9rem; }
+    .fx-podium-row.gold { border-color: var(--gold); background: rgba(200,146,42,.1); }
+    .fx-podium-row.silver { border-color: #b9c2c9; }
+    .fx-podium-row.bronze { border-color: #b3762f; }
+    .fx-rank { font-family: var(--display); font-size: 1.1rem; letter-spacing: .04em; color: var(--gold); min-width: 2.6rem; }
+    .fx-pname { flex: 1; color: var(--light); font-weight: 600; }
+    .fx-tally { color: var(--text-muted); font-size: .82rem; white-space: nowrap; }
+
+    /* track: races with per-lane finishing times */
+    .fx-race { border-bottom: 1px solid var(--border); padding: .9rem 0; }
+    .fx-race:last-child { border-bottom: none; }
+    .fx-race-head { display: flex; justify-content: space-between; align-items: baseline; gap: .8rem; margin-bottom: .5rem; }
+    .fx-race-head b { color: var(--light); font-size: .95rem; }
+    .fx-race-head span { color: var(--text-muted); font-size: .8rem; }
+    .fx-race-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .3rem; }
+    .fx-race-list li { display: flex; align-items: center; gap: .7rem; padding: .4rem .6rem; border-radius: var(--radius); background: var(--surface-2); }
+    .fx-race-list li.gold { background: rgba(200,146,42,.12); }
+    .fx-race-list .fx-rank { min-width: 1.8rem; font-size: .95rem; }
+    .fx-race-list .fx-pname { font-size: .9rem; font-weight: 500; color: var(--text); }
+    .fx-race-list .fx-pname small { color: var(--text-muted); font-weight: 400; }
+    .fx-race-list .fx-time { font-variant-numeric: tabular-nums; color: var(--gold); font-weight: 700; font-size: .88rem; }
+
     /* ── BADGES / TEAM BUTTONS ── */
     .fx-badge { --c: var(--gold); display: inline-grid; place-items: center; width: 2.15rem; height: 2.15rem; background: var(--c); color: #fff; font-family: var(--display); font-size: .95rem; letter-spacing: .04em; line-height: 1; clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%); flex-shrink: 0; text-shadow: 0 1px 2px rgba(0,0,0,.45); }
     .fx-badge.lg { width: 3.4rem; height: 3.4rem; font-size: 1.5rem; }
@@ -473,7 +497,16 @@ function todayDay() {
 // ══════════════════════════ DATA ══════════════════════════
 function fetchKey(f) { return famSlugs(f).length === 1 ? 'sport=' + famSlugs(f)[0] : 'family=' + f; }
 function ingest(slug, payload) {
-  data[slug] = { teams: payload.teams || [], matches: payload.matches || [], standings: payload.standings || {} };
+  if (slug === 'track') {
+    // races, not team-vs-team matches: keep empty teams/matches so the
+    // generic anyLive()/hasAny helpers that read those keys still work
+    data.track = { teams: [], matches: [], standings: {}, events: payload.events || [] };
+    return;
+  }
+  data[slug] = {
+    teams: payload.teams || [], matches: payload.matches || [], standings: payload.standings || {},
+    placements: payload.placements || [],
+  };
   teamById[slug] = {};
   data[slug].teams.forEach(t => { teamById[slug][t.id] = t; });
 }
@@ -592,6 +625,7 @@ function stageLabel(slug, m) {
 function resultHTML(slug, m) {
   const cfg = cfgOf(slug);
   if (m.status === 'scheduled') return `<div class="mc-kick">${m.scheduled_at ? esc(fmtT(m.scheduled_at)) : 'TBD'}<small>${esc(m.scheduled_at ? DAYS[dayOf(m)]?.short || '' : '')}</small></div>`;
+  if (cfg.winnerOnly) return isDone(m) ? '<div class="mc-clock ft">FT</div>' : (isLive(m) ? '<div class="mc-clock">In play</div>' : '');
   let clock = '';
   if (cfg.clock) {
     const lbl = clockLabel(m);
@@ -741,13 +775,14 @@ function bracketBlock(slug, kos, opts) {
   const order = ['quarter', 'semi', 'final'];
   const rounds = order.filter(st => kos.some(m => m.stage === st));
   const third = kos.find(m => m.stage === 'third');
+  const winnerOnly = cfgOf(slug).winnerOnly;
   const node = (m, cls) => {
     const fin = isDone(m), aWin = fin && m.score_a > m.score_b, bWin = fin && m.score_b > m.score_a;
-    const show = m.status !== 'scheduled';
+    const show = m.status !== 'scheduled' && !winnerOnly;
     return `<div class="bkt-node${cls ? ' ' + cls : ''}${isLive(m) ? ' live' : ''}" id="m-${m.id}">
       <div class="bkt-meta"><b>${esc(koLabel(slug, m))}</b><span>${esc(whenLabel(m))}${m.label ? ' · ' + esc(m.label) : ''}</span>${isLive(m) ? '<span class="badge-live">LIVE</span>' : ''}</div>
-      <div class="bkt-line${aWin ? ' win' : ''}">${sideHTML(slug, m, 'a', aWin)}<span class="s">${show ? m.score_a : ''}</span></div>
-      <div class="bkt-line${bWin ? ' win' : ''}">${sideHTML(slug, m, 'b', bWin)}<span class="s">${show ? m.score_b : ''}</span></div>
+      <div class="bkt-line${aWin ? ' win' : ''}">${sideHTML(slug, m, 'a', aWin)}<span class="s">${show ? m.score_a : (aWin ? '✓' : '')}</span></div>
+      <div class="bkt-line${bWin ? ' win' : ''}">${sideHTML(slug, m, 'b', bWin)}<span class="s">${show ? m.score_b : (bWin ? '✓' : '')}</span></div>
     </div>`;
   };
   let html = `<div class="block"><div class="block-title">${opts.title || 'Knockout'}</div><div class="bracket">`;
@@ -770,6 +805,65 @@ function formatHTML(f) {
   const lines = (FAMILIES[f] || {}).format || [];
   if (!lines.length) return '';
   return `<details class="fx-format"><summary>Format &amp; points</summary>${lines.map(l => `<p>${esc(l)}</p>`).join('')}</details>`;
+}
+
+// ══════════════════════════ TUG OF WAR (winner only, no score) ══════════════════════════
+function winnerOnlyHTML(f) {
+  const slug = famSlugs(f)[0];
+  const d = data[slug];
+  if (!d || !d.matches.length) return '';
+  return bracketBlock(slug, d.matches, { title: FAMILIES[f].name });
+}
+
+// ══════════════════════════ PLACEMENTS (frisbee tally, basketball 1st/2nd/3rd) ══════════════════════════
+const ORDINAL = n => n + (n % 10 === 1 && n % 100 !== 11 ? 'st' : n % 10 === 2 && n % 100 !== 12 ? 'nd' : n % 10 === 3 && n % 100 !== 13 ? 'rd' : 'th');
+function placementsHTML(f) {
+  const slug = famSlugs(f)[0];
+  const list = (data[slug] && data[slug].placements) || [];
+  if (!list.length) return emptyBlock('Results appear here once entries are recorded.');
+  const isFrisbee = slug === 'frisbee';
+  const groups = {};
+  list.forEach(p => (groups[p.group_name || ''] ||= []).push(p));
+  let html = '';
+  Object.keys(groups).sort().forEach(g => {
+    const rows = groups[g].slice().sort(isFrisbee
+      ? (a, b) => (b.gold_tries || 0) - (a.gold_tries || 0) || (b.silver_tries || 0) - (a.silver_tries || 0) || a.name.localeCompare(b.name)
+      : (a, b) => (a.place || 99) - (b.place || 99) || a.name.localeCompare(b.name));
+    const title = g ? 'Group ' + esc(g) : FAMILIES[f].name + ' Results';
+    html += `<div class="block"><div class="block-title">${title}<span class="count-badge">${rows.length} ${isFrisbee ? 'teams' : 'entries'}</span></div><ol class="fx-podium">`;
+    rows.forEach((p, i) => {
+      const rank = isFrisbee ? i + 1 : p.place;
+      const medal = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+      const detail = isFrisbee ? `<span class="fx-tally">${p.gold_tries || 0} gold · ${p.silver_tries || 0} silver</span>` : '';
+      html += `<li class="fx-podium-row ${medal}"><span class="fx-rank">${rank ? ORDINAL(rank) : '—'}</span><span class="fx-pname">${esc(p.name)}</span>${detail}</li>`;
+    });
+    html += '</ol></div>';
+  });
+  return html;
+}
+
+// ══════════════════════════ TRACK (finishing times, ranked) ══════════════════════════
+function fmtRaceTime(ms) { return (ms / 1000).toFixed(2) + 's'; }
+function trackHTML() {
+  const events = (data.track && data.track.events) || [];
+  if (!events.length) return `<div class="fx-toolbar">${dayBar()}</div>` + emptyBlock('Track results appear here once heats are run.');
+  const byGroup = {};
+  events.forEach(e => (byGroup[e.event_group] ||= []).push(e));
+  let html = `<div class="fx-toolbar">${dayBar()}</div>`;
+  Object.keys(byGroup).forEach(g => {
+    html += `<div class="block"><div class="block-title">${esc(g)}</div>`;
+    byGroup[g].forEach(e => {
+      const entries = e.entries || [];
+      html += `<div class="fx-race"><div class="fx-race-head"><b>${esc(e.label)}</b><span>${e.scheduled_at ? esc(whenLabel({ scheduled_at: e.scheduled_at })) : 'TBD'}</span></div><ol class="fx-race-list">`;
+      entries.forEach((en, i) => {
+        const rank = en.time_ms != null ? i + 1 : null;
+        html += `<li class="${rank === 1 ? 'gold' : ''}"><span class="fx-rank">${rank || '—'}</span><span class="fx-pname">${esc(en.name)}${en.placeholder ? ' <small>(TBD)</small>' : ''}</span><span class="fx-time">${en.time_ms != null ? fmtRaceTime(en.time_ms) : ''}</span></li>`;
+      });
+      html += '</ol></div>';
+    });
+    html += '</div>';
+  });
+  return html;
 }
 
 // ══════════════════════════ FOOTBALL (UCL style) ══════════════════════════
@@ -1010,12 +1104,17 @@ function render() {
   const panel = $('#panel');
   const slugs = famSlugs(f);
   if (!slugs.some(s => data[s])) { panel.innerHTML = loadingHTML(); return; }
-  const hasAny = slugs.some(s => data[s] && (data[s].matches.length || data[s].teams.length));
+  const hasAny = slugs.some(s => data[s] && (data[s].matches.length || data[s].teams.length ||
+    (data[s].placements && data[s].placements.length) || (data[s].events && data[s].events.length)));
   if (!hasAny) { panel.innerHTML = emptyBlock('Fixtures for ' + esc(FAMILIES[f].name) + ' appear here once the draw is published.'); renderTicker(); return; }
-  let html = toolbarHTML(f);
+  let html = '';
+  if (f === 'track') { panel.innerHTML = trackHTML(); renderTicker(); return; }
+  html += toolbarHTML(f);
   if (f === 'football') html += footballHTML();
   else if (f === 'volleyball') html += volleyballHTML();
   else if (f === 'touch-rugby') html += rugbyHTML();
+  else if (cfgOf(slugs[0]).placementOnly) html += placementsHTML(f);
+  else if (cfgOf(slugs[0]).winnerOnly) html += winnerOnlyHTML(f);
   else html += racketHTML(f);
   html += formatHTML(f);
   panel.innerHTML = html;

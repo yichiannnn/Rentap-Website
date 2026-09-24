@@ -150,6 +150,8 @@
       <button class="vtab active" data-view="teams" onclick="setView('teams')">Teams &amp; Squads</button>
       <button class="vtab" data-view="fixtures" onclick="setView('fixtures')">Fixtures</button>
       <button class="vtab" data-view="control" onclick="setView('control')">Match Control</button>
+      <button class="vtab" data-view="placements" onclick="setView('placements')" hidden>Placements</button>
+      <button class="vtab" data-view="track" onclick="setView('track')">Track</button>
     </div>
 
     <p id="globalMsg" class="err" hidden></p>
@@ -214,6 +216,42 @@
       </div>
       <div id="controlBody"></div>
     </div>
+
+    <!-- PLACEMENTS (frisbee tally, basketball 1st/2nd/3rd) -->
+    <div class="panel" id="panel-placements">
+      <div class="card">
+        <h3>Add Entry</h3>
+        <div class="row">
+          <div class="grow2"><label>Team / Entry Name</label><input id="plName" placeholder="e.g. Crackfurt SC" /></div>
+          <div><label>Group</label><input id="plGroup" placeholder="blank = one overall group" maxlength="20" /></div>
+          <div style="flex:0 0 auto"><button class="btn-primary" onclick="createPlacement()">Add</button></div>
+        </div>
+        <p id="plMsg" class="err" hidden></p>
+      </div>
+      <div id="placementList"></div>
+    </div>
+
+    <!-- TRACK -->
+    <div class="panel" id="panel-track">
+      <div class="card">
+        <h3>Add Event</h3>
+        <div class="row">
+          <div class="grow2"><label>Label</label><input id="trLabel" placeholder="e.g. 100m Men Heat 1" /></div>
+          <div class="grow2"><label>Event Group</label><input id="trGroup" placeholder="e.g. 100m Men" /></div>
+          <div><label>Stage</label><select id="trStage">
+            <option value="heat">Heat</option>
+            <option value="final">Final</option>
+            <option value="relay">Relay</option>
+          </select></div>
+        </div>
+        <div class="row" style="margin-top:.6rem">
+          <div class="grow2"><label>Time (local)</label><input id="trWhen" type="datetime-local" /></div>
+          <div style="flex:0 0 auto"><button class="btn-primary" onclick="createRaceEvent()">Add Event</button></div>
+        </div>
+        <p id="trMsg" class="err" hidden></p>
+      </div>
+      <div id="trackList"></div>
+    </div>
   </div>
 </div>
 
@@ -244,7 +282,7 @@
 let ADMIN_KEY = '';
 let view = 'teams';
 let sport = 'football';
-let store = { teams: [], matches: [] };   // current sport data
+let store = { teams: [], matches: [], placements: [] };   // current sport data
 let sheetCtx = null;                       // { matchId, teamId, players }
 
 // ── AUTH / API ────────────────────────────────
@@ -302,6 +340,7 @@ function initApp() {
   }).join('');
   sel.value = sport;
   loadSport();
+  loadTrack();
 }
 
 function isRacket() { return ['badminton', 'table-tennis'].includes(SPORT_CONFIG[sport].family); }
@@ -331,18 +370,30 @@ async function loadSport() {
     const json = await fetch('/api/live?sport=' + encodeURIComponent(sport) + '&_=' + Date.now(), { cache: 'no-store' }).then(r => r.json());
     store.teams = json.teams || [];
     store.matches = json.matches || [];
+    store.placements = json.placements || [];
   } catch (e) {
-    store.teams = []; store.matches = [];
+    store.teams = []; store.matches = []; store.placements = [];
   }
   renderAll();
 }
 
 function renderAll() {
-  renderTeams();
-  renderFixtureForm();
-  renderFixtureList();
-  renderControlSelect();
-  renderControl();
+  const placementMode = !!SPORT_CONFIG[sport].placementOnly;
+  document.querySelector('[data-view="teams"]').hidden = placementMode;
+  document.querySelector('[data-view="fixtures"]').hidden = placementMode;
+  document.querySelector('[data-view="control"]').hidden = placementMode;
+  document.querySelector('[data-view="placements"]').hidden = !placementMode;
+  if (placementMode) {
+    if (['teams', 'fixtures', 'control'].includes(view)) setView('placements');
+    renderPlacements();
+  } else {
+    if (view === 'placements') setView('teams');
+    renderTeams();
+    renderFixtureForm();
+    renderFixtureList();
+    renderControlSelect();
+    renderControl();
+  }
   // half-length field for football only; entry code for the racket categories
   document.getElementById('fHalfWrap').style.display = (sport === 'football') ? '' : 'none';
   document.getElementById('tCodeWrap').hidden = !isRacket();
@@ -576,7 +627,9 @@ function renderControl() {
   const aName = esc(m.team_a_name || m.placeholder_a || 'Team A');
   const bName = esc(m.team_b_name || m.placeholder_b || 'Team B');
 
-  if (cfg.scoring === 'sets') {
+  if (cfg.winnerOnly) {
+    html += winnerOnlyControl(m, aName, bName);
+  } else if (cfg.scoring === 'sets') {
     html += setsControl(m, aName, bName);
   } else if (cfg.events) {
     html += `<div class="card">
@@ -611,6 +664,26 @@ function renderControl() {
 
   html += `<p id="ctrlMsg" class="err" hidden></p>`;
   body.innerHTML = html;
+}
+
+// winner-only control (tug of war): declare a side the winner, no score entry
+function winnerOnlyControl(m, aName, bName) {
+  const done = m.status === 'finished';
+  const aWin = done && m.score_a > m.score_b, bWin = done && m.score_b > m.score_a;
+  return `<div class="card">
+    <div class="score-big"><span class="tname">${aName}${aWin ? ' ✓' : ''}</span><span class="sc"></span><span class="tname">${bName}${bWin ? ' ✓' : ''}</span></div>
+    <div class="goal-btns">
+      <button onclick="declareWinner(${m.id}, 'a')">${aName} Wins</button>
+      <button onclick="declareWinner(${m.id}, 'b')">${bName} Wins</button>
+    </div>
+  </div>`;
+}
+async function declareWinner(id, side) {
+  try {
+    await api('match.score', { id, score_a: side === 'a' ? 1 : 0, score_b: side === 'b' ? 1 : 0 });
+    await api('match.finish', { id });
+    await loadSport();
+  } catch (e) { flash('ctrlMsg', e.message, false); }
 }
 
 function statusButtons(m, cfg) {
@@ -791,6 +864,128 @@ async function confirmGoal() {
     const err = document.getElementById('sheetErr');
     err.textContent = e.message; err.hidden = false;
   } finally { btn.disabled = false; }
+}
+
+// ── PLACEMENTS (frisbee tally, basketball 1st/2nd/3rd) ──────
+async function createPlacement() {
+  const name = document.getElementById('plName').value.trim();
+  const group_name = document.getElementById('plGroup').value.trim();
+  if (!name) { flash('plMsg', 'Entry name is required.', false); return; }
+  try {
+    await api('placement.create', { sport, name, group_name });
+    document.getElementById('plName').value = '';
+    document.getElementById('plGroup').value = '';
+    await loadSport();
+    flash('plMsg', 'Entry added.', true);
+  } catch (e) { flash('plMsg', e.message, false); }
+}
+function renderPlacements() {
+  const wrap = document.getElementById('placementList');
+  const list = store.placements || [];
+  if (!list.length) { wrap.innerHTML = '<p class="muted">No entries yet for ' + esc(SPORT_CONFIG[sport].name) + '.</p>'; return; }
+  const isFrisbee = sport === 'frisbee';
+  const groups = {};
+  list.forEach(p => (groups[p.group_name || ''] ||= []).push(p));
+  wrap.innerHTML = Object.keys(groups).sort().map(g => `
+    <div class="card">
+      <h3>${g ? 'Group ' + esc(g) : 'Entries'}</h3>
+      ${groups[g].map(p => `
+        <div class="list-item" data-placement="${p.id}">
+          <span class="name">${esc(p.name)}</span>
+          ${isFrisbee ? `
+            <div style="flex:0 0 90px"><label style="margin:0">Gold</label><input type="number" min="0" value="${p.gold_tries != null ? p.gold_tries : ''}" onchange="savePlacement(${p.id}, {gold_tries: this.value})" /></div>
+            <div style="flex:0 0 90px"><label style="margin:0">Silver</label><input type="number" min="0" value="${p.silver_tries != null ? p.silver_tries : ''}" onchange="savePlacement(${p.id}, {silver_tries: this.value})" /></div>
+          ` : `
+            <div style="flex:0 0 90px"><label style="margin:0">Place</label><input type="number" min="1" max="3" value="${p.place != null ? p.place : ''}" onchange="savePlacement(${p.id}, {place: this.value})" /></div>
+          `}
+          <button class="btn-danger" onclick="deletePlacement(${p.id}, this)">Delete</button>
+        </div>`).join('')}
+    </div>`).join('');
+}
+async function savePlacement(id, fields) {
+  const payload = { id };
+  for (const k in fields) payload[k] = fields[k] === '' ? null : fields[k];
+  try { await api('placement.update', payload); await loadSport(); }
+  catch (e) { flash('plMsg', e.message, false); }
+}
+async function deletePlacement(id, btn) {
+  if (btn.dataset.confirm !== '1') { btn.dataset.confirm = '1'; btn.textContent = 'Confirm?'; setTimeout(() => { if (btn) { btn.dataset.confirm = '0'; btn.textContent = 'Delete'; } }, 3000); return; }
+  try { await api('placement.delete', { id }); await loadSport(); }
+  catch (e) { flash('plMsg', e.message, false); }
+}
+
+// ── TRACK (events + per-lane finishing times) ────────────────
+let trackEvents = [];
+async function loadTrack() {
+  try {
+    const json = await fetch('/api/live?sport=track&_=' + Date.now(), { cache: 'no-store' }).then(r => r.json());
+    trackEvents = json.events || [];
+  } catch (e) { trackEvents = []; }
+  renderTrack();
+}
+async function createRaceEvent() {
+  const label = document.getElementById('trLabel').value.trim();
+  const event_group = document.getElementById('trGroup').value.trim();
+  const stage = document.getElementById('trStage').value;
+  const whenVal = document.getElementById('trWhen').value;
+  if (!label) { flash('trMsg', 'Event label is required.', false); return; }
+  if (!event_group) { flash('trMsg', 'Event group is required.', false); return; }
+  try {
+    await api('race.event.create', { label, event_group, stage, scheduled_at: whenVal ? new Date(whenVal).toISOString() : null });
+    document.getElementById('trLabel').value = '';
+    await loadTrack();
+    flash('trMsg', 'Event added.', true);
+  } catch (e) { flash('trMsg', e.message, false); }
+}
+function renderTrack() {
+  const wrap = document.getElementById('trackList');
+  if (!trackEvents.length) { wrap.innerHTML = '<p class="muted">No track events yet.</p>'; return; }
+  wrap.innerHTML = trackEvents.map(e => `
+    <div class="card">
+      <div class="list-item">
+        <span class="name">${esc(e.label)}</span>
+        <span class="badge">${esc(e.event_group)}</span>
+        <span class="badge">${esc(e.stage)}</span>
+        <span style="margin-left:auto"></span>
+        <button class="btn-danger" onclick="deleteRaceEvent(${e.id}, this)">Delete</button>
+      </div>
+      ${(e.entries || []).map(en => `
+        <div class="list-item" style="margin-top:.4rem">
+          <div style="flex:0 0 60px"><label style="margin:0">Lane</label><input type="number" min="1" value="${en.lane != null ? en.lane : ''}" onchange="saveRaceEntry(${en.id}, {lane: this.value})" /></div>
+          <div class="grow2"><label style="margin:0">Name</label><input value="${esc(en.name)}" onchange="saveRaceEntry(${en.id}, {name: this.value})" /></div>
+          <div style="flex:0 0 110px"><label style="margin:0">Time (s)</label><input type="number" min="0" step="0.01" value="${en.time_ms != null ? (en.time_ms / 1000).toFixed(2) : ''}" onchange="saveRaceEntry(${en.id}, {time_ms: this.value ? Math.round(parseFloat(this.value) * 1000) : null})" /></div>
+          <button class="ev-del" onclick="deleteRaceEntry(${e.id}, ${en.id})">Remove</button>
+        </div>`).join('') || '<p class="muted" style="margin-top:.4rem">No lanes yet.</p>'}
+      <div class="row" style="margin-top:.6rem">
+        <div style="flex:0 0 60px"><label>Lane</label><input id="rl-${e.id}" type="number" min="1" placeholder="1" /></div>
+        <div class="grow2"><label>Name</label><input id="rn-${e.id}" placeholder="Runner name" /></div>
+        <div style="flex:0 0 auto"><button class="btn-ghost" onclick="addRaceEntry(${e.id})">Add Lane</button></div>
+      </div>
+    </div>`).join('');
+}
+async function addRaceEntry(eventId) {
+  const lane = document.getElementById('rl-' + eventId).value;
+  const name = document.getElementById('rn-' + eventId).value.trim();
+  if (!name) return;
+  try {
+    await api('race.entry.create', { event_id: eventId, lane: lane || null, name });
+    await loadTrack();
+  } catch (e) { flash('trMsg', e.message, false); }
+}
+async function saveRaceEntry(id, fields) {
+  const payload = { id };
+  for (const k in fields) payload[k] = fields[k] === '' ? null : fields[k];
+  try { await api('race.entry.update', payload); await loadTrack(); }
+  catch (e) { flash('trMsg', e.message, false); }
+}
+async function deleteRaceEntry(eventId, id) {
+  try { await api('race.entry.delete', { id }); await loadTrack(); }
+  catch (e) { flash('trMsg', e.message, false); }
+}
+async function deleteRaceEvent(id, btn) {
+  if (btn.dataset.confirm !== '1') { btn.dataset.confirm = '1'; btn.textContent = 'Confirm?'; setTimeout(() => { if (btn) { btn.dataset.confirm = '0'; btn.textContent = 'Delete'; } }, 3000); return; }
+  try { await api('race.event.delete', { id }); await loadTrack(); }
+  catch (e) { flash('trMsg', e.message, false); }
 }
 
 // ── LABELS ────────────────────────────────────

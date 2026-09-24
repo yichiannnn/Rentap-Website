@@ -1,6 +1,8 @@
 import { sql } from '@vercel/postgres';
 import { SLUGS, familyOf, codeNumber, computeStandings } from '../lib/standings.js';
 
+const PLACEMENT_SPORTS = ['frisbee', 'basketball'];
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
@@ -30,6 +32,12 @@ export default async function handler(req, res) {
       return res.status(200).json({ generated_at: new Date().toISOString(), matches: rows });
     }
 
+    // ── Track: races, not team-vs-team matches, so it's a separate shape ──
+    if (sport === 'track') {
+      const events = await loadRaceEvents();
+      return res.status(200).json({ sport: 'track', generated_at: new Date().toISOString(), events });
+    }
+
     // ── Which slugs to load ───────────────────────────
     // ?sport=<slug> for one sport, ?family=badminton for every badminton
     // category, ?family=all for everything (used by the name search).
@@ -55,7 +63,12 @@ export default async function handler(req, res) {
     }
 
     const bySlug = await loadSports(slugs);
-    if (family) return res.status(200).json({ family, generated_at: stamp, sports: bySlug });
+    if (family) {
+      // family=all also carries track's races, so the initial bulk load
+      // (used by "Find my matches") doesn't need a second round trip.
+      if (family === 'all') bySlug.track = { events: await loadRaceEvents() };
+      return res.status(200).json({ family, generated_at: stamp, sports: bySlug });
+    }
     return res.status(200).json({ sport, generated_at: stamp, ...bySlug[sport] });
   } catch (err) {
     console.error('live error', err);
@@ -137,5 +150,36 @@ async function loadSports(slugs) {
       a.name.localeCompare(b.name));
     out[slug].standings = computeStandings(slug, out[slug].teams, out[slug].matches);
   }
+
+  // ── Placements (frisbee tally, basketball 1st/2nd/3rd) ───────────────
+  const placementSlugs = slugs.filter(s => PLACEMENT_SPORTS.includes(s));
+  if (placementSlugs.length) {
+    const { rows } = await sql`
+      SELECT * FROM placements WHERE sport = ANY(${placementSlugs})
+      ORDER BY sport, group_name NULLS FIRST, sort, name
+    `;
+    rows.forEach(p => (out[p.sport].placements ||= []).push(p));
+  }
+  placementSlugs.forEach(s => { out[s].placements ||= []; });
+
   return out;
+}
+
+// ── Track: events with their lane entries, ranked by time ────────────
+async function loadRaceEvents() {
+  const evRes = await sql`SELECT * FROM race_events ORDER BY sort, scheduled_at NULLS LAST, id`;
+  const events = evRes.rows;
+  const ids = events.map(e => e.id);
+  let entries = [];
+  if (ids.length) {
+    const enRes = await sql`
+      SELECT * FROM race_entries WHERE event_id = ANY(${ids})
+      ORDER BY (time_ms IS NULL), time_ms, lane NULLS LAST, id
+    `;
+    entries = enRes.rows;
+  }
+  const byEvent = {};
+  entries.forEach(e => (byEvent[e.event_id] ||= []).push(e));
+  events.forEach(e => { e.entries = byEvent[e.id] || []; });
+  return events;
 }

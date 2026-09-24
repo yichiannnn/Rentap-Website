@@ -31,6 +31,12 @@ const intOrNull = v => {
   const n = parseInt(v, 10);
   return Number.isFinite(n) ? n : null;
 };
+const boolOr = (v, dflt) => {
+  if (v === undefined || v === null) return dflt;
+  if (v === true || v === 'true' || v === 1 || v === '1') return true;
+  if (v === false || v === 'false' || v === 0 || v === '0') return false;
+  return dflt;
+};
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -275,6 +281,117 @@ async function route(action, b) {
       return createEvent(b);
     case 'event.delete':
       return deleteEvent(b);
+
+    // ── TRACK: events + lane entries ────────────────
+    case 'race.event.create': {
+      const label = str(b.label, 120);
+      const event_group = str(b.event_group, 80);
+      if (!label) throw fail(400, 'Event label is required');
+      if (!event_group) throw fail(400, 'Missing event group');
+      const stage = ['heat', 'final', 'relay'].includes(b.stage) ? b.stage : 'heat';
+      const scheduled_at = str(b.scheduled_at, 40);
+      const sort = intOrNull(b.sort) || 0;
+      const { rows } = await sql.sql`
+        INSERT INTO race_events (label, event_group, stage, scheduled_at, sort)
+        VALUES (${label}, ${event_group}, ${stage}, ${scheduled_at}, ${sort})
+        RETURNING id`;
+      return { json: { ok: true, id: rows[0].id } };
+    }
+    case 'race.event.update': {
+      const id = intOrNull(b.id);
+      if (!id) throw fail(400, 'Missing event id');
+      const cols = [], vals = [];
+      const push = (c, v) => { cols.push(`${c}=$${cols.length + 1}`); vals.push(v); };
+      if ('label' in b)        push('label', str(b.label, 120));
+      if ('event_group' in b)  push('event_group', str(b.event_group, 80));
+      if ('stage' in b)        push('stage', ['heat', 'final', 'relay'].includes(b.stage) ? b.stage : 'heat');
+      if ('scheduled_at' in b) push('scheduled_at', str(b.scheduled_at, 40));
+      if ('status' in b)       push('status', ['scheduled', 'finished'].includes(b.status) ? b.status : 'scheduled');
+      if ('sort' in b)         push('sort', intOrNull(b.sort) || 0);
+      if (!cols.length) return { json: { ok: true } };
+      vals.push(id);
+      await sql.query(`UPDATE race_events SET ${cols.join(', ')}, updated_at=now() WHERE id=$${vals.length}`, vals);
+      return { json: { ok: true } };
+    }
+    case 'race.event.delete': {
+      const id = intOrNull(b.id);
+      if (!id) throw fail(400, 'Missing event id');
+      await sql.sql`DELETE FROM race_events WHERE id = ${id}`;
+      return { json: { ok: true } };
+    }
+    case 'race.entry.create': {
+      const event_id = intOrNull(b.event_id);
+      const name = str(b.name, 120);
+      if (!event_id) throw fail(400, 'Missing event id');
+      if (!name) throw fail(400, 'Entry name is required');
+      const lane = intOrNull(b.lane);
+      const placeholder = boolOr(b.placeholder, false);
+      const { rows } = await sql.sql`
+        INSERT INTO race_entries (event_id, lane, name, placeholder)
+        VALUES (${event_id}, ${lane}, ${name}, ${placeholder})
+        RETURNING id`;
+      return { json: { ok: true, id: rows[0].id } };
+    }
+    case 'race.entry.update': {
+      const id = intOrNull(b.id);
+      if (!id) throw fail(400, 'Missing entry id');
+      const cols = [], vals = [];
+      const push = (c, v) => { cols.push(`${c}=$${cols.length + 1}`); vals.push(v); };
+      if ('name' in b)        push('name', str(b.name, 120));
+      if ('lane' in b)        push('lane', intOrNull(b.lane));
+      if ('time_ms' in b)     push('time_ms', intOrNull(b.time_ms));
+      if ('placeholder' in b) push('placeholder', boolOr(b.placeholder, false));
+      if (!cols.length) return { json: { ok: true } };
+      vals.push(id);
+      await sql.query(`UPDATE race_entries SET ${cols.join(', ')} WHERE id=$${vals.length}`, vals);
+      // touch the parent event's updated_at so the change probe picks it up
+      await sql.sql`UPDATE race_events SET updated_at=now() WHERE id=(SELECT event_id FROM race_entries WHERE id=${id})`;
+      return { json: { ok: true } };
+    }
+    case 'race.entry.delete': {
+      const id = intOrNull(b.id);
+      if (!id) throw fail(400, 'Missing entry id');
+      await sql.sql`DELETE FROM race_entries WHERE id = ${id}`;
+      return { json: { ok: true } };
+    }
+
+    // ── PLACEMENTS (frisbee tally, basketball 1st/2nd/3rd) ──
+    case 'placement.create': {
+      const sport = str(b.sport, 40);
+      if (!['frisbee', 'basketball'].includes(sport)) throw fail(400, 'Unknown placement sport');
+      const name = str(b.name, 120);
+      if (!name) throw fail(400, 'Entry name is required');
+      const group_name = str(b.group_name, 20);
+      const sort = intOrNull(b.sort) || 0;
+      const { rows } = await sql.sql`
+        INSERT INTO placements (sport, group_name, name, sort)
+        VALUES (${sport}, ${group_name}, ${name}, ${sort})
+        RETURNING id`;
+      return { json: { ok: true, id: rows[0].id } };
+    }
+    case 'placement.update': {
+      const id = intOrNull(b.id);
+      if (!id) throw fail(400, 'Missing placement id');
+      const cols = [], vals = [];
+      const push = (c, v) => { cols.push(`${c}=$${cols.length + 1}`); vals.push(v); };
+      if ('name' in b)         push('name', str(b.name, 120));
+      if ('group_name' in b)   push('group_name', str(b.group_name, 20));
+      if ('note' in b)         push('note', str(b.note, 500));
+      if ('gold_tries' in b)   push('gold_tries', intOrNull(b.gold_tries));
+      if ('silver_tries' in b) push('silver_tries', intOrNull(b.silver_tries));
+      if ('place' in b)        push('place', intOrNull(b.place));
+      if ('sort' in b)         push('sort', intOrNull(b.sort) || 0);
+      if (!cols.length) return { json: { ok: true } };
+      vals.push(id);
+      await sql.query(`UPDATE placements SET ${cols.join(', ')}, updated_at=now() WHERE id=$${vals.length}`, vals);
+      return { json: { ok: true } };
+    }
+    case 'placement.delete': {
+      const id = intOrNull(b.id);
+      if (!id) throw fail(400, 'Missing placement id');
+      await sql.sql`DELETE FROM placements WHERE id = ${id}`;
+      return { json: { ok: true } };
+    }
 
     default:
       throw fail(400, 'Unknown action');

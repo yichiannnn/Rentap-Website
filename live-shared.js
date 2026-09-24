@@ -36,9 +36,13 @@ window.SPORT_CONFIG = {
                        note: 'Round robin, then 1st v 2nd play the final and 3rd v 4th the 3rd-place match (Saturday).' },
   'table-tennis-od': { name: 'Open Doubles',    short: 'OD', family: 'table-tennis', scoring: 'sets', groups: true,  advance: 2, duration: 30, sets: 2, setTo: 11,
                        note: 'Two groups — top two of each go to the semi-finals.' },
-  basketball:    { name: 'Basketball',  short: 'BB', family: 'basketball', scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 30 },
-  frisbee:       { name: 'Frisbee',     short: 'FR', family: 'frisbee',    scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 10 },
-  'tug-of-war':  { name: 'Tug of War',  short: 'TW', family: 'tug-of-war', scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 15 },
+  basketball:    { name: 'Basketball',  short: 'BB', family: 'basketball', scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 30,
+                   placementOnly: true, note: 'Solo entries — teams are formed on the day. Placement by group, no fixed bracket.' },
+  frisbee:       { name: 'Frisbee',     short: 'FR', family: 'frisbee',    scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 10,
+                   placementOnly: true, note: 'Disc golf accuracy round — ranked by gold- and silver-tier tries, one team per 10-minute slot.' },
+  'tug-of-war':  { name: 'Tug of War',  short: 'TW', family: 'tug-of-war', scoring: 'points', clock: false, events: false, groups: false, advance: 0, duration: 15,
+                   winnerOnly: true, note: 'Best of 3 pulls — only the winner is shown, no score.' },
+  track:         { name: 'Track',       short: 'TR', family: 'track',     scoring: 'time',   clock: false, events: false, groups: false, advance: 0, duration: 10 },
 };
 
 /* ── Families: one public tab per family, one console optgroup ── */
@@ -61,10 +65,13 @@ window.FAMILIES = {
   basketball:    { name: 'Basketball',   slugs: ['basketball'] },
   frisbee:       { name: 'Frisbee',      slugs: ['frisbee'] },
   'tug-of-war':  { name: 'Tug of War',   slugs: ['tug-of-war'] },
+  track:         { name: 'Track',        slugs: ['track'] },
 };
 
-/* public fixtures page tabs, and the console's sport list (family order) */
-window.FIXTURE_ORDER = ['football', 'volleyball', 'touch-rugby', 'badminton', 'table-tennis'];
+/* public fixtures page tabs, and the console's sport list (family order).
+   'track' is not in SPORT_ORDER: it has no teams/matches, so it never appears
+   in the console's Teams/Fixtures sport picker — it gets its own console tab. */
+window.FIXTURE_ORDER = ['football', 'volleyball', 'touch-rugby', 'badminton', 'table-tennis', 'basketball', 'frisbee', 'track', 'tug-of-war'];
 window.SPORT_ORDER = ['football', 'volleyball', 'touch-rugby', 'badminton', 'table-tennis', 'basketball', 'frisbee', 'tug-of-war']
   .flatMap(f => FAMILIES[f].slugs);
 
@@ -88,6 +95,7 @@ window.SPORT_ICONS = {
   'table-tennis': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="6.5"/><line x1="8" y1="5" x2="8" y2="15"/><line x1="15" y1="15" x2="20" y2="21"/><circle cx="20" cy="5" r="2.5"/></svg>`,
   frisbee: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="12" cy="12" rx="10" ry="5"/><ellipse cx="12" cy="12" rx="5" ry="2.3"/></svg>`,
   'tug-of-war': `<svg viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12 Q3 8 7 8 L41 8 Q45 8 45 12 Q45 16 41 16 L7 16 Q3 16 3 12 Z"/><path d="M12 8 Q16 12 14 16"/><path d="M22 8 Q26 12 24 16"/><path d="M32 8 Q36 12 34 16"/></svg>`,
+  track: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="5" width="21" height="14" rx="7"/><rect x="4" y="7.5" width="16" height="9" rx="4.5"/><rect x="6.5" y="9.5" width="11" height="5" rx="2.5"/></svg>`,
 };
 /* icon for any slug — category slugs use their family's icon */
 window.sportIcon = function (slug) {
