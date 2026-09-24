@@ -28,8 +28,7 @@
         <li><a href="bazaar.html">Bazaar</a></li>
         <li><a href="merch.html">Merch</a></li>
         <li><a href="announcements.html">News</a></li>
-        <!-- <li><a href="fixtures.html">Fixtures</a></li> hidden until go-live -->
-        <li><a href="#register" class="nav-cta">Register</a></li>
+        <li><a href="fixtures.html" class="nav-cta">Fixtures &amp; Results</a></li>
       </ul>
     </nav>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
@@ -76,10 +75,7 @@
     </div>
 
     <div class="hero-ctas">
-      <a href="#register" class="btn btn-primary">Register as Player</a>
-      <a href="#register" class="btn btn-gold">Become a Volunteer</a>
-      <a href="#register" class="btn btn-light">Cheer as Spectator</a>
-      <a href="#register" class="btn btn-green">Sell as Vendor</a>
+      <a href="fixtures.html" class="btn btn-primary">View Fixtures &amp; Results</a>
     </div>
   </div>
   <a href="#about" class="hero-scroll" aria-label="Scroll to about section">
@@ -482,119 +478,6 @@
   </div>
 </section>
 
-<!-- ===== REGISTER ===== -->
-<section class="section section--register" id="register">
-  <div class="container">
-    <span class="eyebrow eyebrow--light">Join Us</span>
-    <h2 class="section-heading section-heading--light">Sign Up for <em>RENTAP XVII</em></h2>
-    <div class="register-grid">
-      <div class="reg-card">
-        <div class="reg-card-top">
-          <span class="reg-tag">Player</span>
-          <h3>Compete</h3>
-          <p>Register individually or as a team, choose your sport, and play for glory.</p>
-        </div>
-        <ul class="reg-list" aria-label="Player registration details">
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Pick one solo sport &amp; one team sport (recommended, to avoid clashes)
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Open to all nationalities — Malaysian teams prioritised
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            First-come, first-served — limited slots per sport
-          </li>
-        </ul>
-        <button class="btn btn-primary reg-btn" onclick="openModal('player')">Player Registration</button>
-      </div>
-
-      <div class="reg-card reg-card--alt">
-        <div class="reg-card-top">
-          <span class="reg-tag reg-tag--alt">Volunteer</span>
-          <h3>Serve</h3>
-          <p>Be part of the team behind the tournament. Free sign-up, big impact.</p>
-        </div>
-        <ul class="reg-list" aria-label="Volunteer registration includes">
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Free registration
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Roles: Emcee, Photographer, Medic, Sports Coordinator, Runner
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Exclusive volunteer t-shirt
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Free meals throughout the event
-          </li>
-        </ul>
-        <button class="btn btn-outline reg-btn" onclick="openModal('volunteer')">Volunteer Sign-Up</button>
-      </div>
-
-      <div class="reg-card reg-card--spec">
-        <div class="reg-card-top">
-          <span class="reg-tag reg-tag--spec">Spectator</span>
-          <h3>Cheer</h3>
-          <p>Come support the teams and enjoy the food bazaar. Everyone is welcome.</p>
-        </div>
-        <ul class="reg-list" aria-label="Spectator entry includes">
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            <strong>MGSS members: free entrance</strong>
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Non-members: a sport ticket is required
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Access to all matches &amp; ceremonies
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Malaysian food bazaar all weekend
-          </li>
-        </ul>
-        <button class="btn btn-outline reg-btn" onclick="openModal('spectator')">Spectator Registration</button>
-      </div>
-
-      <div class="reg-card reg-card--vendor">
-        <div class="reg-card-top">
-          <span class="reg-tag reg-tag--vendor">Food Vendor</span>
-          <h3>Sell</h3>
-          <p>Run a food stall at the RENTAP bazaar and serve our hungry crowd all weekend.</p>
-        </div>
-        <ul class="reg-list" aria-label="Food vendor registration includes">
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Your own stall at the food bazaar
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Reach the whole tournament crowd
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Both days of the event
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-            Details shared after sign-up
-          </li>
-        </ul>
-        <button class="btn btn-outline reg-btn" onclick="openModal('vendor')">Vendor Registration</button>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ===== PRACTICAL INFO ===== -->
 <section class="section" id="info">
   <div class="container">
@@ -738,9 +621,8 @@
           <li><a href="#about">About RENTAP</a></li>
           <li><a href="#sports">Sports Categories</a></li>
           <li><a href="#schedule">Schedule</a></li>
-          <!-- <li><a href="fixtures.html">Fixtures &amp; Results</a></li> hidden until go-live -->
+          <li><a href="fixtures.html">Fixtures &amp; Results</a></li>
           <li><a href="#culture">Culture &amp; Bazaar</a></li>
-          <li><a href="#register">Register</a></li>
           <li><a href="#info">Practical Info</a></li>
         </ul>
       </nav>
