@@ -1,6 +1,6 @@
 import { db } from '@vercel/postgres';
 import crypto from 'crypto';
-import { resolveAdvancement } from '../lib/advance.js';
+import { resolveAdvancement, resolveTrackAdvancement } from '../lib/advance.js';
 
 // One slug per database `sport`; badminton and table tennis have one per category
 // (mirror of SPORT_CONFIG in live-shared.js and SPORTS in api/live.js).
@@ -327,6 +327,8 @@ async function route(action, b) {
         INSERT INTO race_entries (event_id, lane, name, placeholder)
         VALUES (${event_id}, ${lane}, ${name}, ${placeholder})
         RETURNING id`;
+      const ev = await sql.sql`SELECT event_group FROM race_events WHERE id=${event_id}`;
+      if (ev.rows.length) await autoAdvanceTrack(sql, ev.rows[0].event_group);
       return { json: { ok: true, id: rows[0].id } };
     }
     case 'race.entry.update': {
@@ -342,13 +344,24 @@ async function route(action, b) {
       vals.push(id);
       await sql.query(`UPDATE race_entries SET ${cols.join(', ')} WHERE id=$${vals.length}`, vals);
       // touch the parent event's updated_at so the change probe picks it up
-      await sql.sql`UPDATE race_events SET updated_at=now() WHERE id=(SELECT event_id FROM race_entries WHERE id=${id})`;
+      const ev = await sql.sql`
+        SELECT re.id AS event_id, re.event_group FROM race_events re
+        JOIN race_entries ent ON ent.event_id = re.id WHERE ent.id = ${id}`;
+      if (ev.rows.length) {
+        await sql.sql`UPDATE race_events SET updated_at=now() WHERE id=${ev.rows[0].event_id}`;
+        await autoAdvanceTrack(sql, ev.rows[0].event_group);
+      }
       return { json: { ok: true } };
     }
     case 'race.entry.delete': {
       const id = intOrNull(b.id);
       if (!id) throw fail(400, 'Missing entry id');
+      const pre = await sql.sql`SELECT event_id FROM race_entries WHERE id=${id}`;
       await sql.sql`DELETE FROM race_entries WHERE id = ${id}`;
+      if (pre.rows.length) {
+        const ev = await sql.sql`SELECT event_group FROM race_events WHERE id=${pre.rows[0].event_id}`;
+        if (ev.rows.length) await autoAdvanceTrack(sql, ev.rows[0].event_group);
+      }
       return { json: { ok: true } };
     }
 
@@ -374,6 +387,25 @@ async function autoAdvance(sql, sport) {
       `UPDATE matches SET ${col}=$1, updated_at=now() WHERE id=$2 AND ${col} IS NULL`,
       [f.team_id, f.matchId]
     );
+  }
+}
+
+// Track equivalent of autoAdvance: once every heat in an event_group has
+// recorded times, fill any "Top N" placeholder lane in that group's
+// final/relay event(s) with the Nth-fastest qualifier.
+async function autoAdvanceTrack(sql, eventGroup) {
+  const eventsRes = await sql.sql`SELECT * FROM race_events WHERE event_group = ${eventGroup}`;
+  const events = eventsRes.rows;
+  if (!events.length) return;
+  const ids = events.map(e => e.id);
+  const entriesRes = await sql.sql`SELECT * FROM race_entries WHERE event_id = ANY(${ids})`;
+  const byEvent = {};
+  entriesRes.rows.forEach(en => (byEvent[en.event_id] ||= []).push(en));
+  events.forEach(e => { e.entries = byEvent[e.id] || []; });
+
+  const fills = resolveTrackAdvancement(events);
+  for (const f of fills) {
+    await sql.sql`UPDATE race_entries SET name=${f.name}, placeholder=false WHERE id=${f.entryId} AND placeholder=true`;
   }
 }
 
