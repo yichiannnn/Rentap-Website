@@ -768,7 +768,7 @@ function trackHTML() {
     html += `<div class="block"><div class="block-title">${esc(g)}</div>`;
     byGroup[g].forEach(e => {
       const entries = e.entries || [];
-      html += `<div class="fx-race"><div class="fx-race-head"><b>${esc(e.label)}</b><span>${e.scheduled_at ? esc(whenLabel({ scheduled_at: e.scheduled_at })) : 'TBD'}</span></div><ol class="fx-race-list">`;
+      html += `<div class="fx-race" id="m-${e.id}"><div class="fx-race-head"><b>${esc(e.label)}</b><span>${e.scheduled_at ? esc(whenLabel({ scheduled_at: e.scheduled_at })) : 'TBD'}</span></div><ol class="fx-race-list">`;
       entries.forEach((en, i) => {
         const rank = en.time_ms != null ? i + 1 : null;
         html += `<li class="${rank === 1 ? 'gold' : ''}"><span class="fx-rank">${rank || '—'}</span><span class="fx-pname">${esc(en.name)}${en.placeholder ? ' <small>(TBD)</small>' : ''}</span><span class="fx-time">${en.time_ms != null ? fmtRaceTime(en.time_ms) : ''}</span></li>`;
@@ -1129,6 +1129,17 @@ function buildIndex() {
       byName.get(key).memberships.push({ slug, team: t });
     }));
   });
+  // track: not team rosters — index each real (non-placeholder) lane's name,
+  // splitting relay entries ("A / B / C / D") so every runner is findable
+  (data.track && data.track.events || []).forEach(e => (e.entries || []).forEach(en => {
+    if (en.placeholder) return;
+    en.name.split(' / ').map(s => s.trim()).filter(Boolean).forEach(name => {
+      const key = norm(name);
+      if (!key) return;
+      if (!byName.has(key)) byName.set(key, { name, key, memberships: [] });
+      byName.get(key).memberships.push({ slug: 'track', event: e, entry: en });
+    });
+  }));
   searchIndex = Array.from(byName.values()).sort((a, b) => a.name.localeCompare(b.name));
 }
 function suggest(q) {
@@ -1168,12 +1179,13 @@ function renderMe() {
   const p = searchIndex.find(x => x.key === state.person);
   if (!p) return;
   const rows = [];
-  p.memberships.forEach(({ slug, team }) => {
-    teamEvents(slug, team).forEach(ev => rows.push({ slug, team, ...ev }));
+  p.memberships.forEach(mem => {
+    if (mem.slug === 'track') { rows.push({ slug: 'track', track: true, m: mem.event, entry: mem.entry, cert: 'fixed' }); return; }
+    teamEvents(mem.slug, mem.team).forEach(ev => rows.push({ slug: mem.slug, team: mem.team, ...ev }));
   });
   rows.sort((a, b) => byTime({ m: a.m }, { m: b.m }) || a.slug.localeCompare(b.slug));
   const fixed = rows.filter(r => r.cert === 'fixed').length;
-  const sports = [...new Set(p.memberships.map(x => sportLabel(x.slug) + (x.team.code ? ' ' + x.team.code : '')))];
+  const sports = [...new Set(p.memberships.map(x => sportLabel(x.slug) + (x.team && x.team.code ? ' ' + x.team.code : '')))];
   let html = `<div class="fx-me-head"><h2>${esc(p.name)}</h2><span class="meta">${fixed} match${fixed === 1 ? '' : 'es'} · ${rows.length - fixed} if qualified · ${esc(sports.join(' · '))}</span><button class="btn btn-ghost" type="button" id="fxMeClear">Clear</button></div>`;
   if (!rows.length) html += '<p class="fx-me-empty">No matches found for this name yet.</p>';
   [1, 2, 0].forEach(d => {
@@ -1181,6 +1193,15 @@ function renderMe() {
     if (!list.length) return;
     html += `<div class="fx-me-day">${d ? DAYS[d].long : 'Time to be confirmed'}</div><ul class="fx-me-list">`;
     list.forEach(r => {
+      if (r.track) {
+        const res = r.entry.time_ms != null
+          ? `<span class="res">${esc(fmtRaceTime(r.entry.time_ms))}<small>Result</small></span>`
+          : `<span class="res"><small>${esc(r.m.label || '')}</small></span>`;
+        html += `<li><button class="fx-me-row" type="button" data-goto="track|track|${r.m.id}">
+          <span class="when">${esc(fmtT(r.m.scheduled_at) || 'TBD')}<small></small></span>
+          <span class="what"><b>Track</b> · ${esc(r.m.label)}<span>${esc(r.m.event_group)}${r.entry.lane != null ? ' · Lane ' + r.entry.lane : ''}</span></span>${res}</button></li>`;
+        return;
+      }
       const cfg = cfgOf(r.slug);
       const res = r.m.status === 'scheduled' ? `<span class="res"><small>${esc(r.m.label || '')}</small></span>`
         : `<span class="res">${r.m.score_a}–${r.m.score_b}<small>Full time</small></span>`;
@@ -1212,6 +1233,13 @@ document.addEventListener('click', e => {
   if (t.dataset.person) { selectPerson(t.dataset.person); return; }
   if (t.dataset.goto) {
     const [f, slug, id] = t.dataset.goto.split('|');
+    if (slug === 'track') {
+      const e = data.track && data.track.events.find(x => String(x.id) === id);
+      if (e) { state.cat.track = e.event_group; if (dayOf(e)) state.day = dayOf(e); }
+      selectFamily('track');
+      setTimeout(() => jumpTo('m-' + id, true), 80);
+      return;
+    }
     if (famSlugs(f).length > 1) state.cat[f] = slug;
     const d = data[slug] && data[slug].matches.find(m => String(m.id) === id);
     if (d && dayOf(d)) state.day = dayOf(d);
