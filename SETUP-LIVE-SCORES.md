@@ -183,10 +183,79 @@ node --env-file=.env scripts/seed-fixtures.mjs --base https://<deployment> --wip
 old test data). Matches are created in the file's order because the public bracket
 labels knockout rounds by creation order (QF1..4, SF1..2).
 
+### Track tables (created with the track fixtures)
+```sql
+CREATE TABLE IF NOT EXISTS race_events (
+  id           SERIAL PRIMARY KEY,
+  label        TEXT NOT NULL,                  -- "100m Men Heat 1"
+  event_group  TEXT NOT NULL,                  -- "100m Men" — one medal race per group
+  stage        TEXT NOT NULL DEFAULT 'heat',   -- heat | final | relay
+  scheduled_at TIMESTAMPTZ,
+  status       TEXT NOT NULL DEFAULT 'scheduled',
+  sort         INTEGER NOT NULL DEFAULT 0,
+  updated_at   TIMESTAMPTZ DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS race_entries (
+  id          SERIAL PRIMARY KEY,
+  event_id    INTEGER NOT NULL REFERENCES race_events(id) ON DELETE CASCADE,
+  lane        INTEGER,
+  name        TEXT NOT NULL,                   -- runner, or "A / B / C / D" for a relay team
+  time_ms     INTEGER,
+  placeholder BOOLEAN NOT NULL DEFAULT false   -- "Top 3" lane filled once the heats are timed
+);
+```
+
 ### Working on the page without a database
 `node scripts/dev-server.mjs --demo` serves the site on http://localhost:3400 and
-answers `/api/live` from the seed file, with a few pretend results so standings,
-brackets and timelines are populated.
+answers `/api/live` (and `/api/awards`) from the seed file, with pretend results so
+standings, brackets, track finals and the Best Athlete page are populated.
+
+---
+
+## Best Athlete (admin only)
+
+`/awards-admin.html` (same admin key as the score console; not linked anywhere)
+derives every gold, silver and bronze from the results and ranks the athletes per
+gender so the committee can pick the best male and female athlete. Counted: football,
+volleyball, touch rugby, badminton, table tennis and track (19 competitions). Frisbee
+and basketball rank players inside their own team, so they are never counted.
+
+### One-time migration
+```sql
+CREATE TABLE IF NOT EXISTS athletes (
+  name_key   TEXT PRIMARY KEY,                 -- normalised name (lib/names.js normName)
+  name       TEXT NOT NULL,
+  gender     TEXT NOT NULL CHECK (gender IN ('M','F')),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+### Loading the genders
+The roster sheet is the only place gender exists. `build-fixtures.py` writes
+`data/athletes-seed.json` (roster genders, plus the gender implied by the competition
+for the few entrants the roster does not list); upload it once:
+
+```bash
+python3 scripts/build-fixtures.py
+node --env-file=.env scripts/seed-fixtures.mjs --athletes --base https://<deployment>
+```
+
+Anyone still without a gender shows up on the page in a "needs gender" list with a
+select box — fixing it there is the same upsert.
+
+### How the score works
+- A medal is gold 3 / silver 2 / bronze 1 points (editable on the page).
+- Per sport, the best medal counts fully and every further medal in the same sport
+  counts 50 % (slider) — three badminton golds are worth 2 golds, never 3. Medals in
+  different sports always count fully.
+- Team medals (football, volleyball, touch rugby, relays) count 100 % (slider);
+  doubles pairs count as individual unless the toggle is on.
+- Order: score → golds → number of sports → individual medals. A tie at the top is
+  flagged; the judges decide.
+- Only decided competitions award medals: a final that finished level, a league with
+  unplayed matches or a race with an untimed lane is listed as pending with the
+  reason. Fix a level final by reopening it in the score console and entering the
+  deciding score; an untimed lane is a DNF once the race is marked finished.
 
 ## Notes
 

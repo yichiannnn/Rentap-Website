@@ -10,9 +10,14 @@ and an exact comparison with the workbook's own 'Player Timetable' sheet), then 
 one JSON document that scripts/seed-fixtures.mjs loads into the database through
 /api/scores-admin.
 
+Also writes data/athletes-seed.json — every entrant's gender for the admin-only Best
+Athlete page — from the Name and Gender columns of the 'All Participant' roster, with
+the gender implied by the competition (men's singles, women's doubles, "100m Women" …)
+for the few entrants the roster does not list.
+
 The output goes under data/ (gitignored) because it carries players' full names. The
-script never copies the workbook and never reads the PIC/phone cells or the
-'All Participant' sheet.
+script never copies the workbook and never reads the PIC/phone cells; from
+'All Participant' it reads only columns A and B.
 """
 import argparse
 import collections
@@ -23,6 +28,7 @@ import json
 import os
 import re
 import sys
+import unicodedata
 
 import openpyxl
 
@@ -240,7 +246,12 @@ def parse_entries(ws, family, rows, triples):
 
 
 def parse_grid(ws, family, entries, day, header_row, first_row, hall_for, venue_word, matches):
-    check(s(ws[f'A{header_row}'].value) == 'Time', f'{family} day {day}: header row moved (A{header_row})')
+    # the "Time" header sits at header_row in the v6 workbook; tolerate a row or two of drift
+    found = next((r for r in (header_row, header_row - 1, header_row + 1, header_row - 2, header_row + 2)
+                  if s(ws[f'A{r}'].value) == 'Time'), None)
+    check(found is not None, f'{family} day {day}: header row moved (expected "Time" near A{header_row})')
+    first_row += found - header_row
+    header_row = found
     for i, (lc, _) in enumerate(COURT_PAIRS):
         hdr = s(ws.cell(header_row, lc).value)
         if hdr is not None:
@@ -448,11 +459,68 @@ def oracle(wb, sports):
     return counts
 
 
+# ───────────────────────── Athletes (gender) ─────────────────────────
+def norm_name(v):
+    """Same identity rule as lib/names.js normName(): no accents, lower case, single spaces."""
+    text = unicodedata.normalize('NFD', str(v or ''))
+    text = ''.join(ch for ch in text if unicodedata.category(ch) != 'Mn')
+    return re.sub(r'\s+', ' ', text.lower()).strip()
+
+
+def build_athletes(wb, sports):
+    """[{name, gender}] for every entrant: the roster's own M/F, or the gender the
+    competition implies for entrants the roster does not list. Returns
+    (athletes, inferred, unknown)."""
+    ws = wb['All Participant']
+    check(s(ws['A1'].value) == 'Name' and s(ws['B1'].value) == 'Gender',
+          f'All Participant: expected Name / Gender in A1 / B1, got {ws["A1"].value!r} / {ws["B1"].value!r}')
+    roster = {}
+    for r in range(2, ws.max_row + 1):
+        name, gender = s(ws.cell(r, 1).value), s(ws.cell(r, 2).value)
+        if not name:
+            continue
+        check(gender in ('M', 'F'), f'All Participant row {r}: gender {gender!r} is not M or F')
+        roster[norm_name(name)] = dict(name=name, gender=gender)
+
+    # entrants with the gender their competition implies (None when it implies nothing)
+    implied = {}
+    for slug, sp in sports.items():
+        gender = ('M' if slug.endswith(('-ms', '-md')) or slug == 'football'
+                  else 'F' if slug.endswith(('-ws', '-wd')) else None)
+        for t in sp['teams']:
+            for p in t['players']:
+                implied.setdefault(norm_name(p), dict(name=p, gender=gender))
+    tws = wb['Track Schedule']   # runner lists per event, headed "100m Men", "4x100m Women (…)" …
+    check(str(tws['A23'].value).startswith('Player'), 'Track Schedule: the player list moved (expected it at A23)')
+    for c in range(1, tws.max_column + 1):
+        hdr = s(tws.cell(24, c).value)
+        if not hdr:
+            continue
+        gender = 'F' if 'women' in hdr.lower() else 'M' if 'men' in hdr.lower() else None
+        for r in range(25, tws.max_row + 1):
+            name = s(tws.cell(r, c).value)
+            if name:
+                implied.setdefault(norm_name(name), dict(name=name, gender=gender))
+
+    athletes = [dict(name=v['name'], gender=v['gender']) for v in roster.values()]
+    inferred, unknown = [], []
+    for key, v in implied.items():
+        if key in roster:
+            continue
+        if v['gender']:
+            athletes.append(dict(name=v['name'], gender=v['gender']))
+            inferred.append(f"{v['name']} → {v['gender']}")
+        else:
+            unknown.append(v['name'])
+    return athletes, inferred, unknown
+
+
 # ───────────────────────── Main ─────────────────────────
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('xlsx', nargs='?', help='schedule workbook (default: the only .xlsx under data/)')
     ap.add_argument('-o', '--out', default=os.path.join(ROOT, 'data', 'fixtures-seed.json'))
+    ap.add_argument('-a', '--athletes-out', default=os.path.join(ROOT, 'data', 'athletes-seed.json'))
     args = ap.parse_args()
 
     path = args.xlsx
@@ -484,6 +552,7 @@ def main():
                                                   for m in sp['matches']]) for slug, sp in sports.items()}
         verify(verify_input)
         counts = oracle(wb, verify_input)
+        athletes, inferred, unknown = build_athletes(wb, sports)
     except SheetError as e:
         sys.exit(f'build-fixtures: {e}')
 
@@ -506,6 +575,16 @@ def main():
         print(f'{slug:18} {len(sp["teams"]):5} {groups:5} {len(sp["matches"]) - groups:3}   {d1:3} / {len(sp["matches"]) - d1}')
     print('Player Timetable check: ' + ', '.join(f'{k[0]} {k[1]} {v}' for k, v in sorted(counts.items())))
     print(f'wrote {os.path.relpath(args.out, ROOT)}')
+
+    with open(args.athletes_out, 'w', encoding='utf-8') as fh:
+        json.dump(athletes, fh, ensure_ascii=False, indent=1)
+    by_gender = collections.Counter(a['gender'] for a in athletes)
+    print(f'athletes: {len(athletes)} ({by_gender["M"]} M / {by_gender["F"]} F), '
+          f'{len(inferred)} not on the roster with gender implied by their competition'
+          + (': ' + '; '.join(inferred) if inferred else ''))
+    if unknown:
+        print(f'  {len(unknown)} entrant(s) without a gender — set it on awards-admin.html: ' + '; '.join(unknown))
+    print(f'wrote {os.path.relpath(args.athletes_out, ROOT)}')
 
 
 if __name__ == '__main__':

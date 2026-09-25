@@ -4,11 +4,14 @@
 
    Usage:
      node --env-file=.env scripts/seed-fixtures.mjs [--base URL] [--wipe] [--only slug,slug] [--dry-run]
+     node --env-file=.env scripts/seed-fixtures.mjs --athletes [--base URL] [--dry-run]
 
-     --base URL   site to post to (default: https://rentap-vxii.vercel.app; use a Vercel preview URL first)
+     --base URL   site to post to (default: https://rentap-vxii.vercel.app)
      --wipe       delete the existing teams and matches of each seeded sport first (also clears the
-                  old test data under basketball / badminton / table-tennis)
+                  old test data under the retired badminton / table-tennis slugs)
      --only       comma-separated slugs, e.g. --only football,badminton-md
+     --athletes   only upload data/athletes-seed.json (every entrant's gender, for the Best Athlete
+                  page) through /api/awards — an upsert, nothing is wiped
      --dry-run    print what would be created without posting anything
 
    Needs ADMIN_KEY (from .env) and data/fixtures-seed.json (from scripts/build-fixtures.py).
@@ -29,10 +32,36 @@ const ONLY = opt('--only', '') ? opt('--only', '').split(',').map(s => s.trim())
 const KEY = process.env.ADMIN_KEY;
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SEED = path.join(ROOT, 'data', 'fixtures-seed.json');
-const LEGACY_SLUGS = ['basketball', 'badminton', 'table-tennis']; // old test data lives here
+const ATHLETES = path.join(ROOT, 'data', 'athletes-seed.json');
+// the retired single-category slugs may still hold old test data (basketball is real data now)
+const LEGACY_SLUGS = ['badminton', 'table-tennis'];
 
 function die(msg) { console.error('seed-fixtures: ' + msg); process.exit(1); }
 if (!KEY && !DRY) die('ADMIN_KEY is not set (run with: node --env-file=.env scripts/seed-fixtures.mjs …)');
+
+// ── --athletes: gender list for the Best Athlete page (upsert through /api/awards) ──
+if (flag('--athletes')) {
+  if (!fs.existsSync(ATHLETES)) die('data/athletes-seed.json not found — run: python3 scripts/build-fixtures.py');
+  const athletes = JSON.parse(fs.readFileSync(ATHLETES, 'utf8'));
+  const chunks = [];
+  for (let i = 0; i < athletes.length; i += 100) chunks.push(athletes.slice(i, i + 100));
+  console.log(`${DRY ? 'DRY RUN — ' : ''}uploading ${athletes.length} athletes' genders to ${BASE} in ${chunks.length} request(s)`);
+  if (!DRY) {
+    for (const chunk of chunks) {
+      const res = await fetch(BASE + '/api/awards', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-key': KEY },
+        body: JSON.stringify({ athletes: chunk }),
+      });
+      let json = {};
+      try { json = await res.json(); } catch {}
+      if (!res.ok) die(`POST /api/awards → HTTP ${res.status} ${json.error || ''}`.trim());
+      console.log(`  upserted ${json.upserted}`);
+    }
+  }
+  console.log('done');
+  process.exit(0);
+}
+
 if (!fs.existsSync(SEED)) die('data/fixtures-seed.json not found — run: python3 scripts/build-fixtures.py');
 
 const seed = JSON.parse(fs.readFileSync(SEED, 'utf8'));
@@ -85,7 +114,7 @@ async function seedSport(slug) {
     await api('match.create', {
       sport: slug, stage: m.stage, group_name: m.group, label: m.venue,
       team_a_id: m.a ? ids[m.a] : null, team_b_id: m.b ? ids[m.b] : null,
-      scheduled_at: when(m), half_length: m.half, duration_min: m.duration,
+      scheduled_at: when(m), duration_min: m.duration,
       referee: m.referee, placeholder_a: m.placeholder_a, placeholder_b: m.placeholder_b,
     });
   }
