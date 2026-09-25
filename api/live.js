@@ -75,8 +75,8 @@ export default async function handler(req, res) {
 }
 
 // Load teams, rosters, matches, events and standings for several slugs with
-// four queries in total, then split the rows per slug.
-async function loadSports(slugs) {
+// four queries in total, then split the rows per slug. (Exported for api/awards.js.)
+export async function loadSports(slugs) {
   const out = {};
   slugs.forEach(s => { out[s] = { teams: [], matches: [], standings: {} }; });
 
@@ -132,7 +132,7 @@ async function loadSports(slugs) {
 }
 
 // ── Track: events with their lane entries, ranked by time ────────────
-async function loadRaceEvents() {
+export async function loadRaceEvents() {
   const evRes = await sql`SELECT * FROM race_events ORDER BY sort, scheduled_at NULLS LAST, id`;
   const events = evRes.rows;
   const ids = events.map(e => e.id);
