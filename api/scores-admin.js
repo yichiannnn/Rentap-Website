@@ -243,6 +243,19 @@ async function route(action, b) {
       return { json: { ok: true, matches: m.rows.length, teams: t.rows.length } };
     }
 
+    // ── ONE-TIME MIGRATION (Best Athlete) ──────────
+    // Same statement as the migration block in SETUP-LIVE-SCORES.md; idempotent.
+    case 'migrate.athletes': {
+      await sql.sql`
+        CREATE TABLE IF NOT EXISTS athletes (
+          name_key   TEXT PRIMARY KEY,
+          name       TEXT NOT NULL,
+          gender     TEXT NOT NULL CHECK (gender IN ('M','F')),
+          updated_at TIMESTAMPTZ DEFAULT now()
+        )`;
+      return { json: { ok: true } };
+    }
+
     // ── DIRECT SCORE (points sports / corrections) ─
     case 'match.score': {
       const id = intOrNull(b.id);
