@@ -102,7 +102,7 @@
         <thead>
           <tr>
             <th>#</th><th>Type</th><th>Name</th><th>Email</th><th>Phone</th><th>University</th>
-            <th>Sport</th><th>Category</th><th>Team</th><th>Members / Partner</th><th>Role</th><th>Membership</th><th>Member No.</th><th>People</th><th>Description</th><th>Proof</th><th>Registered</th><th></th>
+            <th>Sport</th><th>Category</th><th>Team</th><th>Members / Partner</th><th>Role</th><th>Membership</th><th>Member No.</th><th>People</th><th>Description</th><th>Registered</th><th></th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -297,7 +297,6 @@
         <td>${esc(r.member_no)}</td>
         <td>${esc(r.people)}</td>
         <td>${esc(r.food)}</td>
-        <td>${r.payment_proof ? `<a href="${r.payment_proof}" target="_blank" rel="noopener" class="proof-link">View</a>` : ''}</td>
         <td>${esc(when)}</td>
         <td><button class="btn-del" onclick="deleteRow(${r.id}, '${esc(r.name).replace(/'/g, "\\'")}')" title="Delete this registration">Delete</button></td>
       </tr>`;

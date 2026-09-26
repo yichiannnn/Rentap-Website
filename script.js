@@ -204,7 +204,7 @@ const modalBox = document.getElementById('modalBox');
 const REG_OPEN = {
   player: false,
   volunteer: false,
-  spectator: false,
+  spectator: true,
   vendor: false
 };
 
