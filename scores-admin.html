@@ -295,6 +295,21 @@ function sideName(m, side) {
   const t = store.teams.find(x => x.id === m['team_' + side + '_id']);
   return t ? teamLabel(t) : (m['placeholder_' + side] || 'TBD');
 }
+function koLabel(m) {
+  if (m.stage === 'final') return 'Final';
+  if (m.stage === 'third') return '3rd Place';
+  const same = store.matches.filter(x => x.stage === m.stage).sort((a, b) => a.id - b.id);
+  const n = same.findIndex(x => x.id === m.id) + 1;
+  return (m.stage === 'quarter' ? 'QF' : 'SF') + n;
+}
+// Same convention as fixtures.html's stageLabel() — used to prefix the Match
+// Control dropdown so matches from different stages scheduled close together
+// (e.g. a group decider right before the semis it feeds into) aren't mistaken
+// for duplicates of each other.
+function matchStageLabel(m) {
+  if (m.stage === 'group') return m.group_name ? 'Group ' + m.group_name : 'Group';
+  return stageName(m.stage) + (m.stage === 'quarter' || m.stage === 'semi' ? ' ' + koLabel(m).replace(/\D/g, '') : '');
+}
 function whenLabel(m) {
   return m.scheduled_at ? new Date(m.scheduled_at).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' }) : 'no time set';
 }
@@ -568,7 +583,7 @@ function renderControlSelect() {
   const prev = sel.value;
   if (!store.matches.length) { sel.innerHTML = '<option value="">No matches</option>'; return; }
   sel.innerHTML = store.matches.map(m =>
-    `<option value="${m.id}">${esc(sideName(m, 'a'))} v ${esc(sideName(m, 'b'))} — ${esc(whenLabel(m))} — ${esc(statusLabel(m.status))}</option>`
+    `<option value="${m.id}">[${esc(matchStageLabel(m))}] ${esc(sideName(m, 'a'))} v ${esc(sideName(m, 'b'))} — ${esc(whenLabel(m))} — ${esc(statusLabel(m.status))}</option>`
   ).join('');
   if (prev && store.matches.some(m => String(m.id) === prev)) sel.value = prev;
 }
