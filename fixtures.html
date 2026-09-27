@@ -1063,9 +1063,13 @@ function closeSheet() {
   sheetOpener = null;
 }
 function miniList(slug, items) {
-  // items: [{m, cert}] for one team
-  return `<ul class="fx-mini">${items.map(({ m, cert, vs }) => {
-    const res = m.status === 'scheduled' ? '' : `<span class="res">${m.score_a}–${m.score_b}</span>`;
+  // items: [{m, cert, vs, side}] for one team - `side` ('a'|'b') is which side
+  // of the match THIS team was on, so the score always reads "us–them" instead
+  // of always showing score_a first regardless of whose sheet you're viewing.
+  return `<ul class="fx-mini">${items.map(({ m, cert, vs, side }) => {
+    const mine = side === 'b' ? m.score_b : m.score_a;
+    const theirs = side === 'b' ? m.score_a : m.score_b;
+    const res = m.status === 'scheduled' ? '' : `<span class="res">${mine}–${theirs}</span>`;
     return `<li class="${cert === 'if qualified' ? 'iq' : ''}"><span class="when">${esc(whenLabel(m))}</span>
       <span class="what">${esc(vs)}<span class="where">${esc(stageLabel(slug, m))}${m.label ? ' · ' + esc(m.label) : ''}${cert === 'if qualified' ? ' · if qualified' : ''}</span></span>${res}</li>`;
   }).join('')}</ul>`;
@@ -1075,8 +1079,9 @@ function teamEvents(slug, team) {
   (data[slug] ? data[slug].matches : []).forEach(m => {
     const mine = m.team_a_id === team.id || m.team_b_id === team.id;
     if (mine) {
-      const oppSide = m.team_a_id === team.id ? 'b' : 'a';
-      out.push({ m, cert: 'fixed', vs: 'v ' + sideText(slug, m, oppSide) });
+      const mySide = m.team_a_id === team.id ? 'a' : 'b';
+      const oppSide = mySide === 'a' ? 'b' : 'a';
+      out.push({ m, cert: 'fixed', vs: 'v ' + sideText(slug, m, oppSide), side: mySide });
     } else if (m.stage !== 'group' && (!m.team_a_id || !m.team_b_id)) {
       out.push({ m, cert: 'if qualified', vs: koLabel(slug, m) + ': ' + sideText(slug, m, 'a') + ' v ' + sideText(slug, m, 'b') });
     }
@@ -1203,8 +1208,10 @@ function renderMe() {
         return;
       }
       const cfg = cfgOf(r.slug);
+      const mine = r.side === 'b' ? r.m.score_b : r.m.score_a;
+      const theirs = r.side === 'b' ? r.m.score_a : r.m.score_b;
       const res = r.m.status === 'scheduled' ? `<span class="res"><small>${esc(r.m.label || '')}</small></span>`
-        : `<span class="res">${r.m.score_a}–${r.m.score_b}<small>Full time</small></span>`;
+        : `<span class="res">${mine}–${theirs}<small>Full time</small></span>`;
       html += `<li><button class="fx-me-row${r.cert === 'if qualified' ? ' iq' : ''}" type="button" data-goto="${cfg.family}|${r.slug}|${r.m.id}">
         <span class="when">${esc(fmtT(r.m.scheduled_at) || 'TBD')}<small>${r.m.scheduled_at ? 'to ' + esc(fmtT(endIso(r.slug, r.m))) : ''}</small></span>
         <span class="what"><b>${esc(sportLabel(r.slug))}</b> · ${esc(r.vs)}<span>${esc(stageLabel(r.slug, r.m))}${r.m.label ? ' · ' + esc(r.m.label) : ''}${r.cert === 'if qualified' ? ' · if qualified' : ''}${r.team.code ? ' · you are ' + esc(r.team.code) : ''}</span></span>${res}</button></li>`;
