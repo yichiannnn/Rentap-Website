@@ -644,15 +644,16 @@ function standingsTable(slug, rows, opts) {
   const bru = opts.bestRunnerUp;
   let html = `<div class="table-wrap"><table class="standings"><thead><tr>
     <th class="pos">#</th><th class="left">${isRacketSlug(slug) ? 'Entry' : 'Team'}</th><th>P</th><th class="hide-sm">W</th><th class="hide-sm">D</th><th class="hide-sm">L</th>
-    <th>${isSet ? 'SD' : 'GD'}</th><th>Pts</th><th class="hide-sm">Form</th></tr></thead><tbody>`;
+    <th>${isSet ? 'SD' : 'GD'}</th>${isSet ? '<th class="hide-sm">PD</th>' : ''}<th>Pts</th><th class="hide-sm">Form</th></tr></thead><tbody>`;
   rows.forEach((r, i) => {
     const team = teamById[slug][r.team_id] || { name: r.team, code: r.code, color: null, id: r.team_id };
     const adv = cfg.advance && i < cfg.advance ? 'adv' : (bru && bru === r.team_id ? 'bru' : '');
     const gd = r.gf - r.ga;
+    const pd = (r.pf || 0) - (r.pa || 0);
     html += `<tr class="${adv}"><td class="pos">${i + 1}</td>
       <td class="left">${teamBtn(slug, team)}</td>
       <td>${r.p}</td><td class="hide-sm">${r.w}</td><td class="hide-sm">${r.d}</td><td class="hide-sm">${r.l}</td>
-      <td>${gd > 0 ? '+' + gd : gd}</td><td class="pts">${r.pts}</td>
+      <td>${gd > 0 ? '+' + gd : gd}</td>${isSet ? `<td class="hide-sm">${pd > 0 ? '+' + pd : pd}</td>` : ''}<td class="pts">${r.pts}</td>
       <td class="hide-sm"><span class="form-dots">${(r.form || []).map(f => `<span class="fd ${f}"></span>`).join('')}</span></td></tr>`;
   });
   return html + '</tbody></table></div>';
