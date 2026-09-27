@@ -35,7 +35,7 @@ window.SPORT_CONFIG = {
   'table-tennis-od': { name: 'Open Doubles',    short: 'OD', family: 'table-tennis', scoring: 'sets', groups: true,  advance: 2, duration: 30, sets: 2, setTo: 11,
                        note: 'Two groups — top two of each go to the semi-finals.' },
   basketball:    { name: 'Basketball',  short: 'BB', family: 'basketball', scoring: 'points', groups: false, advance: 0, duration: 30,
-                   rosterPlacement: true, note: "Solo entries — teams are formed on the day. Each team's players are then ranked 1st/2nd/3rd against each other." },
+                   teamPlacement: true, note: 'Sukaneka format — three squads formed on the day finish Gold, Silver and Bronze; not a knockout bracket.' },
   frisbee:       { name: 'Frisbee',     short: 'FR', family: 'frisbee',    scoring: 'points', groups: false, advance: 0, duration: 10,
                    rosterPlacement: true, note: "Each team's players are ranked 1st/2nd/3rd against each other within their own team." },
   'tug-of-war':  { name: 'Tug of War',  short: 'TW', family: 'tug-of-war', scoring: 'points', groups: false, advance: 0, duration: 15,

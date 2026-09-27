@@ -714,7 +714,7 @@ function winnerOnlyHTML(f) {
   return bracketBlock(slug, d.matches, { title: FAMILIES[f].name });
 }
 
-// ══════════════════════════ ROSTER PLACEMENT (basketball / frisbee: players ranked within their own team) ══════════════════════════
+// ══════════════════════════ ROSTER PLACEMENT (frisbee: players ranked within their own team) ══════════════════════════
 const ORDINAL = n => n + (n % 10 === 1 && n % 100 !== 11 ? 'st' : n % 10 === 2 && n % 100 !== 12 ? 'nd' : n % 10 === 3 && n % 100 !== 13 ? 'rd' : 'th');
 function rosterPlacementHTML(f) {
   const slug = famSlugs(f)[0];
@@ -746,6 +746,32 @@ function rosterPlacementHTML(f) {
     html += '</div>';
   });
   return html;
+}
+
+// ══════════════════════════ TEAM PLACEMENT (basketball: three whole teams finish gold/silver/bronze, no bracket) ══════════════════════════
+function teamPlacementHTML(f) {
+  const slug = famSlugs(f)[0];
+  const teams = (data[slug] && data[slug].teams) || [];
+  if (!teams.length) return emptyBlock('Results appear here once teams and players are entered.');
+  const MEDAL_RANK = { gold: 1, silver: 2, bronze: 3 };
+  const medalOf = t => {
+    const g = (t.group_name || '').trim().toLowerCase();
+    return MEDAL_RANK[g] ? g : '';
+  };
+  const sorted = teams.slice().sort((a, b) => (MEDAL_RANK[medalOf(a)] || 99) - (MEDAL_RANK[medalOf(b)] || 99) || a.name.localeCompare(b.name));
+  const totalPlayers = teams.reduce((n, t) => n + (t.players || []).length, 0);
+  const cards = sorted.map(t => {
+    const medal = medalOf(t);
+    const label = medal ? medal[0].toUpperCase() + medal.slice(1) : t.name;
+    const players = (t.players || []).slice().sort((a, b) => a.name.localeCompare(b.name));
+    return `<li class="fx-podium-row ${medal}" style="flex-direction:column;align-items:stretch;gap:.5rem">
+      <div style="display:flex;align-items:center;gap:.6rem"><b style="font-family:var(--display);letter-spacing:.05em;font-size:1.05rem">${esc(label)}</b><span class="count-badge">${players.length} player${players.length === 1 ? '' : 's'}</span></div>
+      ${players.length
+        ? `<ul style="list-style:none;margin:0;padding:0;display:grid;gap:.3rem">${players.map(p => `<li class="fx-pname">${esc(p.name)}</li>`).join('')}</ul>`
+        : '<p style="color:var(--text-muted);font-size:.88rem;margin:0">No players yet.</p>'}
+    </li>`;
+  }).join('');
+  return `<div class="block"><div class="block-title">Final Placing<span class="count-badge">${teams.length} teams · ${totalPlayers} players</span></div><ul class="fx-podium">${cards}</ul></div>`;
 }
 
 // ══════════════════════════ TRACK (finishing times, ranked) ══════════════════════════
@@ -985,6 +1011,7 @@ function render() {
   else if (f === 'volleyball') html += volleyballHTML();
   else if (f === 'touch-rugby') html += rugbyHTML();
   else if (cfgOf(slugs[0]).rosterPlacement) html += rosterPlacementHTML(f);
+  else if (cfgOf(slugs[0]).teamPlacement) html += teamPlacementHTML(f);
   else if (cfgOf(slugs[0]).winnerOnly) html += winnerOnlyHTML(f);
   else html += racketHTML(f);
   html += formatHTML(f);

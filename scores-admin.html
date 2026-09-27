@@ -340,12 +340,15 @@ async function loadSport() {
 
 function renderAll() {
   const trackMode = sport === 'track';
-  // basketball and frisbee: real Teams & Squads (with a per-player Place
-  // field), but no fixtures/match control since there's no fixed format
-  const rosterPlaceMode = !trackMode && !!SPORT_CONFIG[sport].rosterPlacement;
+  // frisbee: real Teams & Squads with a per-player Place field (ranked within
+  // their own team). basketball: real Teams & Squads too, but each whole team
+  // gets a Gold/Silver/Bronze placing via its Group field instead of ranking
+  // players individually. Neither has fixtures/match control - no fixed format.
+  const cfg = SPORT_CONFIG[sport];
+  const noBracketMode = !trackMode && !!(cfg.rosterPlacement || cfg.teamPlacement);
   const teamsVisible = !trackMode;
-  const fixturesVisible = !trackMode && !rosterPlaceMode;
-  const controlVisible = !trackMode && !rosterPlaceMode;
+  const fixturesVisible = !trackMode && !noBracketMode;
+  const controlVisible = !trackMode && !noBracketMode;
   document.querySelector('[data-view="teams"]').hidden = !teamsVisible;
   document.querySelector('[data-view="fixtures"]').hidden = !fixturesVisible;
   document.querySelector('[data-view="control"]').hidden = !controlVisible;
@@ -363,6 +366,7 @@ function renderAll() {
   // entry code for the racket categories
   document.getElementById('tCodeWrap').hidden = !isRacket();
   document.getElementById('fDur').placeholder = String(SPORT_CONFIG[sport].duration || 30);
+  document.getElementById('tGroup').placeholder = cfg.teamPlacement ? 'Gold / Silver / Bronze' : 'A / B / blank';
 }
 
 function setView(v) {
