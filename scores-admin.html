@@ -788,10 +788,13 @@ function renderTrack() {
         <button class="btn-danger" onclick="deleteRaceEvent(${e.id}, this)">Delete</button>
       </div>
       ${(e.entries || []).map(en => `
-        <div class="list-item" style="margin-top:.4rem">
+        <div class="list-item" style="margin-top:.4rem${en.placeholder ? ';background:rgba(200,146,42,.12);border-radius:6px' : ''}">
           <div style="flex:0 0 60px"><label style="margin:0">Lane</label><input type="number" min="1" value="${en.lane != null ? en.lane : ''}" onchange="saveRaceEntry(${en.id}, {lane: this.value})" /></div>
           <div class="grow2"><label style="margin:0">Name</label><input value="${esc(en.name)}" onchange="saveRaceEntry(${en.id}, {name: this.value})" /></div>
           <div style="flex:0 0 110px"><label style="margin:0">Time (s)</label><input type="number" min="0" step="0.01" value="${en.time_ms != null ? (en.time_ms / 1000).toFixed(2) : ''}" onchange="saveRaceEntry(${en.id}, {time_ms: this.value ? Math.round(parseFloat(this.value) * 1000) : null})" /></div>
+          <label style="flex:0 0 auto;display:flex;align-items:center;gap:.35rem;font-size:.8rem" title="Checked = still a TBD/placeholder lane, excluded from awards until unchecked">
+            <input type="checkbox" ${en.placeholder ? 'checked' : ''} onchange="saveRaceEntry(${en.id}, {placeholder: this.checked})" style="width:auto" /> TBD
+          </label>
           <button class="ev-del" onclick="deleteRaceEntry(${e.id}, ${en.id})">Remove</button>
         </div>`).join('') || '<p class="muted" style="margin-top:.4rem">No lanes yet.</p>'}
       <div class="row" style="margin-top:.6rem">
